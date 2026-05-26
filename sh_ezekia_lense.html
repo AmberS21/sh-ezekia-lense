@@ -1574,7 +1574,7 @@ function loadDemo() {
   updateDirtyBadge();
   ALL = generateDemo();
   buildColToggles();
-  buildFilterOptions();
+  buildFilterOptions();    document.getElementById('globalSearch').value = '';
   applyFilters();
   document.getElementById('sidebarSub').textContent = 'Demo · 60 sample candidates';
   showToast('Demo data loaded — 60 candidates.', 'info');
@@ -1629,7 +1629,7 @@ async function connectFromUrl() {
     ALL = await enrichCandidates(rawCandidates);
 
     buildColToggles();
-    buildFilterOptions();
+    buildFilterOptions();    document.getElementById('globalSearch').value = '';
     applyFilters();
     showToast(`Loaded ${ALL.length} candidates from Ezekia.`, 'success');
     logUsage('load', `Loaded project: ${CURRENT_PROJECT_NAME} (${ALL.length} candidates)`);
@@ -1984,7 +1984,7 @@ function selectPipelineTag(cid, newTag, event) {
     item.classList.toggle('active', item.textContent.trim() === newTag);
   });
 
-  buildFilterOptions();
+  buildFilterOptions();    document.getElementById('globalSearch').value = '';
   updateStats();
 }
 
