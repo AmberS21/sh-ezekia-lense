@@ -14,7 +14,7 @@
   --bg3: #232831;
   --bg4: #2c323d;
   --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
+  --border2: rgba(255,255,255,0.14);h
   --text: #e8eaf0;
   --text2: #9aa0b0;
   --text3: #6a7185;
@@ -1425,7 +1425,7 @@ let EXPORT_FMT = 'xlsx';
 const PENDING = new Map();
 
 // API / session state
-const BASE = '/api/proxy/ezekia';
+const BASE = (JSON.parse(localStorage.getItem('sh.ezekia.config') || '{}').proxyUrl) || '/api/proxy/ezekia';
 let CURRENT_PROJECT_ID = null;
 let CURRENT_PROJECT_NAME = '';
 
