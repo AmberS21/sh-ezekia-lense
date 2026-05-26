@@ -1,0 +1,2704 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SH Ezekia Lense</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root,
+[data-theme="dark"] {
+  /* lighter than the original near-black; easier on the eyes during a long session */
+  --bg: #14171c;
+  --bg2: #1a1e25;
+  --bg3: #232831;
+  --bg4: #2c323d;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8eaf0;
+  --text2: #9aa0b0;
+  --text3: #6a7185;
+  --accent: #5a99ff;
+  --accent2: #3a6fd8;
+  --accent-glow: rgba(90,153,255,0.18);
+  --green: #3ecf8e;
+  --amber: #f5a623;
+  --red: #f56565;
+  --purple: #a78bfa;
+  --teal: #2dd4bf;
+  --row-hover: rgba(255,255,255,0.03);
+  --shadow: 0 8px 28px rgba(0,0,0,0.35);
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+[data-theme="light"] {
+  --bg: #f6f7fa;
+  --bg2: #ffffff;
+  --bg3: #f0f2f6;
+  --bg4: #e6e9ef;
+  --border: rgba(15,23,42,0.08);
+  --border2: rgba(15,23,42,0.14);
+  --text: #1a1f2e;
+  --text2: #5a6478;
+  --text3: #8b92a3;
+  --accent: #3a6fd8;
+  --accent2: #2954b0;
+  --accent-glow: rgba(58,111,216,0.12);
+  --green: #16a673;
+  --amber: #d68910;
+  --red: #d04848;
+  --purple: #7c5cf0;
+  --teal: #0fb5a0;
+  --row-hover: rgba(15,23,42,0.03);
+  --shadow: 0 4px 16px rgba(15,23,42,0.08);
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+body, .sidebar, .topbar, .footer, .filter-select, .badge, .row-btn,
+.top-btn, .sb-btn, .table-area, table, td, th, input, select, button {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ---- LAYOUT ---- */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 0 0 0;
+}
+/* Scrollable middle section */
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 0.5rem;
+}
+/* Admin button pinned at bottom */
+.sidebar-footer {
+  flex-shrink: 0;
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+}
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.table-area { flex: 1; overflow: auto; padding: 0; }
+.footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* ---- LOGO ---- */
+.logo-area {
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+.logo {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-dot {
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent);
+}
+.logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+
+/* ---- SIDEBAR SECTIONS ---- */
+.sb-section { padding: 0 1rem; margin-bottom: 1.25rem; }
+.sb-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+.sb-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+  margin-bottom: 6px;
+}
+.sb-input:focus { border-color: var(--accent); }
+.sb-input::placeholder { color: var(--text3); }
+.sb-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.sb-btn:hover { background: var(--accent2); }
+.sb-btn:active { transform: scale(0.98); }
+.sb-btn.secondary {
+  background: var(--bg4);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  margin-top: 4px;
+}
+.sb-btn.secondary:hover { background: var(--bg3); color: var(--text); }
+
+/* filter chips */
+.filter-group { margin-bottom: 6px; }
+.filter-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; display: block; }
+.filter-select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+.filter-select:focus { border-color: var(--accent); }
+.filter-select option { background: var(--bg3); }
+
+/* column toggles */
+.col-toggle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.col-chip {
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text3);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.1s;
+  user-select: none;
+}
+.col-chip.on {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.col-chip:hover { border-color: var(--border2); color: var(--text2); }
+.col-chip.on:hover { color: var(--accent); }
+
+/* Column reorder drag-and-drop */
+.col-reorder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 6px;
+}
+.col-reorder-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  font-size: 11px;
+  color: var(--text2);
+  cursor: grab;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s;
+}
+.col-reorder-item:active { cursor: grabbing; }
+.col-reorder-item.dragging {
+  opacity: 0.4;
+}
+.col-reorder-item.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+.col-reorder-item .drag-handle {
+  color: var(--text3);
+  font-size: 10px;
+  flex-shrink: 0;
+  cursor: grab;
+}
+.col-reorder-item .col-vis-toggle {
+  margin-left: auto;
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+  transition: all 0.1s;
+  color: var(--text3);
+}
+.col-reorder-item.col-visible .col-vis-toggle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.col-reorder-item.col-always { opacity: 0.6; cursor: default; }
+.col-reorder-item.col-always .drag-handle { opacity: 0; pointer-events: none; }
+
+/* stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 0;
+}
+.stat-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-align: center;
+}
+.stat-num { font-size: 18px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 1px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ---- TOPBAR ---- */
+.search-wrap { flex: 1; position: relative; max-width: 420px; }
+.search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
+.topbar-search {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 10px 7px 34px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.topbar-search:focus { border-color: var(--accent); }
+.topbar-search::placeholder { color: var(--text3); }
+.topbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.top-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+}
+.top-btn:hover { background: var(--bg4); color: var(--text); border-color: var(--border2); }
+.top-btn.ai-btn { border-color: rgba(167,139,250,0.4); color: var(--purple); background: rgba(167,139,250,0.08); }
+.top-btn.ai-btn:hover { background: rgba(167,139,250,0.15); }
+.top-btn.export-btn { border-color: rgba(62,207,142,0.4); color: var(--green); background: rgba(62,207,142,0.08); }
+.top-btn.export-btn:hover { background: rgba(62,207,142,0.15); }
+
+/* Update Ezekia Project button */
+.top-btn.push-btn {
+  border-color: rgba(135,206,235,0.45);
+  color: #87CEEB;
+  background: rgba(135,206,235,0.08);
+  position: relative;
+}
+.top-btn.push-btn:hover { background: rgba(135,206,235,0.16); color: #b0dff5; }
+.top-btn.push-btn:disabled { opacity: 0.4; cursor: default; }
+[data-theme="light"] .top-btn.push-btn { color: #1a7aad; border-color: rgba(26,122,173,0.4); background: rgba(26,122,173,0.07); }
+[data-theme="light"] .top-btn.push-btn:hover { background: rgba(26,122,173,0.13); }
+
+/* Dirty change badge on push button */
+.dirty-badge {
+  display: none;
+  background: var(--amber);
+  color: #fff;
+  font-size: 9px;
+  font-family: var(--mono);
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-left: 2px;
+}
+.dirty-badge.visible { display: inline-block; }
+
+/* Dirty row indicator */
+td.dirty-cell { position: relative; }
+td.dirty-cell::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--amber);
+  border-radius: 0 1px 1px 0;
+}
+
+/* ── PIPELINE TAG INLINE EDITOR ── */
+.tag-edit-wrap { position: relative; display: inline-block; }
+.tag-edit-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tag-edit-btn::after {
+  content: '▾';
+  font-size: 9px;
+  opacity: 0.55;
+  margin-left: 2px;
+}
+.tag-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 300;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  width: 270px;
+  max-height: 280px;
+  overflow-y: auto;
+  display: none;
+  flex-direction: column;
+  padding: 4px 0;
+}
+.tag-dropdown.open { display: flex; }
+.tag-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text2);
+  transition: background 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tag-dropdown-item:hover { background: var(--bg3); color: var(--text); }
+.tag-dropdown-item.active { color: var(--accent); font-weight: 500; }
+.tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── PROGRESS NOTES actions ── */
+.notes-wrap { position: relative; }
+.notes-actions { display: none; gap: 4px; margin-top: 4px; }
+.notes-actions.show { display: flex; }
+.notes-action-btn {
+  font-size: 10px; padding: 2px 7px;
+  border-radius: 4px; border: 1px solid var(--border);
+  background: transparent; color: var(--text3);
+  cursor: pointer; font-family: var(--font); transition: all 0.1s;
+}
+.notes-action-btn:hover { background: var(--bg4); color: var(--text2); border-color: var(--border2); }
+.notes-action-btn.del { color: var(--red); border-color: rgba(245,101,101,0.3); }
+.notes-action-btn.del:hover { background: rgba(245,101,101,0.1); }
+
+/* ── ADMIN PAGE ── */
+.admin-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--bg);
+  flex-direction: column;
+}
+.admin-overlay.open { display: flex; }
+.admin-topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.admin-title {
+  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text);
+}
+.admin-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  max-width: 780px;
+  margin: 0 auto;
+  width: 100%;
+}
+.admin-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.admin-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 1rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.admin-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.admin-label {
+  font-size: 12px;
+  color: var(--text2);
+  width: 160px;
+  flex-shrink: 0;
+}
+.admin-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.admin-input:focus { border-color: var(--accent); }
+.admin-input::placeholder { color: var(--text3); }
+.admin-save-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.admin-save-btn:hover { background: var(--accent2); }
+.admin-note {
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.6;
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--bg3);
+  border-radius: 5px;
+  border: 1px solid var(--border);
+}
+
+/* Usage log table */
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.log-table th {
+  text-align: left;
+  padding: 7px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+}
+.log-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  border-right: none;
+}
+.log-table tr:last-child td { border-bottom: none; }
+.log-table tr:hover td { background: var(--row-hover); }
+.log-action-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
+}
+.log-action-notes   { background: rgba(90,153,255,0.12); color: #8ab4ff; }
+.log-action-summary { background: rgba(167,139,250,0.12); color: #c4aafc; }
+.log-action-tag     { background: rgba(245,166,35,0.12); color: #f7c05a; }
+.log-action-push    { background: rgba(62,207,142,0.14); color: #5fd9a0; }
+.log-empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text3);
+  font-size: 13px;
+}
+.admin-action-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+/* ── PUSH CONFIRM MODAL ── */
+#pushModal .modal { max-width: 460px; }
+.push-summary {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 1rem;
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.push-summary strong { color: var(--text); }
+.push-change-list {
+  margin-top: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+  font-size: 12px;
+  color: var(--text2);
+}
+.push-change-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.push-change-row:last-child { border-bottom: none; }
+.push-change-name { font-weight: 500; color: var(--text); min-width: 130px; }
+.push-change-field {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--bg4);
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.push-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1rem; }
+.badge-count {
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* ---- TABLE ---- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+thead { position: sticky; top: 0; z-index: 10; }
+thead tr {
+  background: #1a5f7a;
+  border-bottom: 1px solid #0e4560;
+}
+th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #e8f4f8;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.1s, background 0.1s;
+  border-right: 1px solid rgba(255,255,255,0.12);
+}
+th:last-child { border-right: none; }
+th:hover { background: #1e6e8f; color: #fff; }
+th.active { color: #87CEEB; background: #154f66; }
+.th-inner { display: flex; align-items: center; gap: 5px; }
+.sort-icon { font-size: 9px; opacity: 0.5; color: #e8f4f8; }
+th.active .sort-icon { opacity: 1; color: #87CEEB; }
+
+td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  color: var(--text);
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-right: 1px solid var(--border);
+}
+td:last-child { border-right: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr.selected td { background: var(--accent-glow); }
+
+.td-name { font-weight: 500; color: var(--text); }
+.td-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600;
+  margin-right: 8px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.name-cell { display: flex; align-items: center; }
+
+/* stage badges */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Stage badges (kept for the existing Stage column) */
+.badge-longlist  { background: rgba(90,153,255,0.15); color: #8ab4ff; border: 1px solid rgba(90,153,255,0.30); }
+.badge-shortlist { background: rgba(90,153,255,0.25); color: #a8c5ff; border: 1px solid rgba(90,153,255,0.45); }
+.badge-1st       { background: rgba(245,166,35,0.15);  color: #f7c05a; border: 1px solid rgba(245,166,35,0.30); }
+.badge-2nd       { background: rgba(245,166,35,0.25);  color: #f9ce78; border: 1px solid rgba(245,166,35,0.45); }
+.badge-final     { background: rgba(167,139,250,0.18); color: #c4aafc; border: 1px solid rgba(167,139,250,0.35); }
+.badge-offer     { background: rgba(62,207,142,0.15);  color: #5fd9a0; border: 1px solid rgba(62,207,142,0.30); }
+.badge-placed    { background: rgba(62,207,142,0.25);  color: #85e4b8; border: 1px solid rgba(62,207,142,0.45); }
+.badge-onhold    { background: rgba(155,160,176,0.15); color: #b0b6c5; border: 1px solid rgba(155,160,176,0.30); }
+.badge-rejected  { background: rgba(245,101,101,0.14); color: #f58d8d; border: 1px solid rgba(245,101,101,0.28); }
+.badge-active    { background: rgba(45,212,191,0.14);  color: #5de8d4; border: 1px solid rgba(45,212,191,0.28); }
+.badge-default   { background: var(--bg4); color: var(--text2); border: 1px solid var(--border); }
+
+/* Pipeline-tag badges (the new "Status" column → "Pipeline Tag")
+   colour-coded to make a long table scannable at a glance:
+   - blues  = sourcing/pipeline
+   - ambers = engagement
+   - purples= interview track
+   - greens = positive outcomes
+   - reds   = rejections
+   - greys  = dormant/admin */
+.tag-pipe-longlist        { background: rgba(90,153,255,0.14);  color: #8ab4ff; border: 1px solid rgba(90,153,255,0.28); }
+.tag-pipe-shortlist       { background: rgba(45,212,191,0.16);  color: #5de8d4; border: 1px solid rgba(45,212,191,0.30); }
+.tag-pipe-carveout        { background: rgba(124,92,240,0.14);  color: #b9a4fa; border: 1px solid rgba(124,92,240,0.28); }
+.tag-pipe-disqualified    { background: rgba(155,160,176,0.12); color: #9aa0b0; border: 1px solid rgba(155,160,176,0.25); }
+.tag-pipe-approached      { background: rgba(245,166,35,0.16);  color: #f7c05a; border: 1px solid rgba(245,166,35,0.30); }
+.tag-pipe-incontact       { background: rgba(232,160,32,0.20);  color: #f5c168; border: 1px solid rgba(232,160,32,0.38); }
+.tag-pipe-onhold          { background: rgba(181,160,74,0.18);  color: #d6c280; border: 1px solid rgba(181,160,74,0.32); }
+.tag-pipe-discussion      { background: rgba(212,140,196,0.16); color: #e6a8d6; border: 1px solid rgba(212,140,196,0.30); }
+.tag-pipe-briefing        { background: rgba(140,156,180,0.18); color: #b0bccd; border: 1px solid rgba(140,156,180,0.32); }
+.tag-pipe-consultantint   { background: rgba(122,180,232,0.18); color: #a8c8ee; border: 1px solid rgba(122,180,232,0.32); }
+.tag-pipe-clientint       { background: rgba(58,180,212,0.20);  color: #7ed4ea; border: 1px solid rgba(58,180,212,0.36); }
+.tag-pipe-offerac         { background: rgba(62,207,142,0.26);  color: #85e4b8; border: 1px solid rgba(62,207,142,0.46); font-weight: 600; }
+.tag-pipe-offerrej        { background: rgba(245,101,101,0.14); color: #f58d8d; border: 1px solid rgba(245,101,101,0.28); }
+.tag-pipe-rejcons         { background: rgba(220,120,110,0.14); color: #ef9e94; border: 1px solid rgba(220,120,110,0.28); }
+.tag-pipe-rejcand         { background: rgba(232,108,148,0.14); color: #f095b1; border: 1px solid rgba(232,108,148,0.28); }
+.tag-pipe-rejcandint      { background: rgba(220,90,170,0.14);  color: #ea96c8; border: 1px solid rgba(220,90,170,0.28); }
+.tag-pipe-rejclient       { background: rgba(180,100,232,0.14); color: #c8a4f0; border: 1px solid rgba(180,100,232,0.28); }
+.tag-pipe-rejclientint    { background: rgba(150,100,232,0.14); color: #b4a0f0; border: 1px solid rgba(150,100,232,0.28); }
+.tag-pipe-placed          { background: rgba(62,207,142,0.32);  color: #95edc4; border: 1px solid rgba(62,207,142,0.55); font-weight: 600; }
+.tag-pipe-source          { background: rgba(140,148,168,0.14); color: #aab0c0; border: 1px solid rgba(140,148,168,0.28); }
+.tag-pipe-fbcand          { background: rgba(74,212,196,0.16);  color: #7fe0d0; border: 1px solid rgba(74,212,196,0.30); }
+.tag-pipe-fbclient        { background: rgba(74,168,232,0.16);  color: #7fc2ee; border: 1px solid rgba(74,168,232,0.30); }
+.tag-pipe-pipeline        { background: rgba(232,140,90,0.16);  color: #f0b48a; border: 1px solid rgba(232,140,90,0.30); }
+.tag-pipe-processed       { background: rgba(160,176,90,0.16);  color: #c4d088; border: 1px solid rgba(160,176,90,0.30); }
+.tag-pipe-identified      { background: rgba(74,164,148,0.16);  color: #82c8b8; border: 1px solid rgba(74,164,148,0.30); }
+
+/* Light-theme adjustments for pipeline tags — increase contrast against light bg */
+[data-theme="light"] .tag-pipe-longlist        { background: rgba(58,111,216,0.10); color: #2b5fbf; border-color: rgba(58,111,216,0.30); }
+[data-theme="light"] .tag-pipe-shortlist       { background: rgba(15,181,160,0.10); color: #0a7d70; border-color: rgba(15,181,160,0.30); }
+[data-theme="light"] .tag-pipe-carveout        { background: rgba(124,92,240,0.10); color: #5b3fc7; border-color: rgba(124,92,240,0.30); }
+[data-theme="light"] .tag-pipe-disqualified    { background: rgba(120,128,148,0.10); color: #5a6478; border-color: rgba(120,128,148,0.25); }
+[data-theme="light"] .tag-pipe-approached      { background: rgba(214,137,16,0.10); color: #a8650a; border-color: rgba(214,137,16,0.30); }
+[data-theme="light"] .tag-pipe-incontact       { background: rgba(196,118,30,0.12); color: #93540a; border-color: rgba(196,118,30,0.32); }
+[data-theme="light"] .tag-pipe-onhold          { background: rgba(168,144,60,0.14); color: #6e5a14; border-color: rgba(168,144,60,0.30); }
+[data-theme="light"] .tag-pipe-discussion      { background: rgba(192,120,170,0.12); color: #8c3a72; border-color: rgba(192,120,170,0.30); }
+[data-theme="light"] .tag-pipe-briefing        { background: rgba(110,128,160,0.14); color: #46546e; border-color: rgba(110,128,160,0.30); }
+[data-theme="light"] .tag-pipe-consultantint   { background: rgba(70,140,200,0.12); color: #25588a; border-color: rgba(70,140,200,0.30); }
+[data-theme="light"] .tag-pipe-clientint       { background: rgba(20,140,170,0.12); color: #0a6580; border-color: rgba(20,140,170,0.30); }
+[data-theme="light"] .tag-pipe-offerac         { background: rgba(22,166,115,0.16); color: #0d6e4d; border-color: rgba(22,166,115,0.45); }
+[data-theme="light"] .tag-pipe-offerrej        { background: rgba(208,72,72,0.10); color: #a83030; border-color: rgba(208,72,72,0.30); }
+[data-theme="light"] .tag-pipe-rejcons         { background: rgba(190,90,80,0.10); color: #913a30; border-color: rgba(190,90,80,0.28); }
+[data-theme="light"] .tag-pipe-rejcand         { background: rgba(208,72,128,0.10); color: #93264f; border-color: rgba(208,72,128,0.28); }
+[data-theme="light"] .tag-pipe-rejcandint      { background: rgba(190,72,150,0.10); color: #802256; border-color: rgba(190,72,150,0.28); }
+[data-theme="light"] .tag-pipe-rejclient       { background: rgba(140,72,200,0.10); color: #5a2090; border-color: rgba(140,72,200,0.28); }
+[data-theme="light"] .tag-pipe-rejclientint    { background: rgba(110,72,200,0.10); color: #422090; border-color: rgba(110,72,200,0.28); }
+[data-theme="light"] .tag-pipe-placed          { background: rgba(22,166,115,0.22); color: #0a5c40; border-color: rgba(22,166,115,0.55); }
+[data-theme="light"] .tag-pipe-source          { background: rgba(110,118,140,0.12); color: #4a5466; border-color: rgba(110,118,140,0.28); }
+[data-theme="light"] .tag-pipe-fbcand          { background: rgba(28,170,150,0.12); color: #0e6e5e; border-color: rgba(28,170,150,0.30); }
+[data-theme="light"] .tag-pipe-fbclient        { background: rgba(40,140,200,0.12); color: #155888; border-color: rgba(40,140,200,0.30); }
+[data-theme="light"] .tag-pipe-pipeline        { background: rgba(212,116,68,0.12); color: #8a4220; border-color: rgba(212,116,68,0.30); }
+[data-theme="light"] .tag-pipe-processed       { background: rgba(132,148,60,0.14); color: #565e1e; border-color: rgba(132,148,60,0.30); }
+[data-theme="light"] .tag-pipe-identified      { background: rgba(50,134,118,0.12); color: #195045; border-color: rgba(50,134,118,0.30); }
+
+/* ──────────────────────────────────────────────
+   INLINE-EDITABLE CELLS (Progress Notes, Summary)
+   ────────────────────────────────────────────── */
+.editable {
+  display: block;
+  min-width: 180px;
+  max-width: 320px;
+  cursor: text;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  border: 1px solid transparent;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  position: relative;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.editable:hover {
+  background: var(--bg3);
+  border-color: var(--border);
+}
+.editable:focus {
+  background: var(--bg2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.editable.is-empty:not(:focus)::before {
+  content: '+ Add note';
+  color: var(--text3);
+  font-style: italic;
+  font-size: 11px;
+}
+.editable.is-empty.summary-cell:not(:focus)::before {
+  content: '+ Add summary';
+}
+.edit-status {
+  display: block;
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 3px;
+  height: 12px;
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
+.edit-status.saving { color: var(--amber); }
+.edit-status.saved  { color: var(--green); }
+.edit-status.error  { color: var(--red); }
+
+/* Pending (locally edited, not yet pushed) indicator */
+.editable.is-pending {
+  border-color: rgba(245,166,35,0.4) !important;
+  background: rgba(245,166,35,0.05) !important;
+}
+
+/* rating stars */
+.rating-a { color: var(--green); font-weight: 600; }
+.rating-b { color: var(--amber); font-weight: 600; }
+.rating-c { color: var(--text3); }
+
+/* row action */
+.row-actions { display: flex; gap: 4px; }
+.row-btn {
+  font-size: 10px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+}
+.row-btn:hover { border-color: var(--border2); color: var(--text2); background: var(--bg4); }
+.row-btn.ai { border-color: rgba(167,139,250,0.35); color: var(--purple); }
+.row-btn.ai:hover { background: rgba(167,139,250,0.12); }
+
+/* ---- PAGINATION ---- */
+.footer-left { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text3); }
+.footer-right { display: flex; align-items: center; gap: 6px; }
+.pg-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+}
+.pg-btn:hover:not(:disabled) { background: var(--bg4); color: var(--text); border-color: var(--border2); }
+.pg-btn:disabled { opacity: 0.3; cursor: default; }
+.pg-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.pg-nums { display: flex; gap: 3px; }
+.per-page-select {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* ---- AI MODAL ---- */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  width: 580px;
+  max-width: 95vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(12px);
+  transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.modal-title-icon { color: var(--purple); font-size: 16px; }
+.modal-close {
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 18px; line-height: 1;
+  transition: color 0.1s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 1.25rem 1.5rem; flex: 1; overflow-y: auto; }
+.cand-snapshot {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  font-size: 12px;
+}
+.snap-row { display: flex; flex-direction: column; }
+.snap-key { color: var(--text3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1px; }
+.snap-val { color: var(--text); font-weight: 500; }
+.ai-prompts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+.ai-prompt-btn {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(167,139,250,0.3);
+  background: rgba(167,139,250,0.08);
+  color: var(--purple);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+}
+.ai-prompt-btn:hover { background: rgba(167,139,250,0.18); }
+.ai-input-row { display: flex; gap: 8px; }
+.ai-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.ai-input:focus { border-color: var(--purple); }
+.ai-input::placeholder { color: var(--text3); }
+.ai-send-btn {
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.ai-send-btn:hover { opacity: 0.85; }
+.ai-response {
+  margin-top: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text2);
+  min-height: 80px;
+  display: none;
+}
+.ai-response.visible { display: block; }
+.ai-thinking { color: var(--text3); font-style: italic; }
+
+/* ---- EXPORT MODAL ---- */
+.export-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+.export-option {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.export-option:hover { border-color: var(--border2); }
+.export-option.selected { border-color: var(--green); background: rgba(62,207,142,0.06); }
+.export-icon { font-size: 20px; }
+.export-info { flex: 1; }
+.export-name { font-size: 13px; font-weight: 500; }
+.export-desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ---- ACTIVE FILTERS DISPLAY ---- */
+.active-filters {
+  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  padding: 6px 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.active-filters:empty { display: none; }
+.filter-tag {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(79,142,247,0.3);
+  color: var(--accent);
+}
+.filter-tag-x { cursor: pointer; opacity: 0.7; }
+.filter-tag-x:hover { opacity: 1; }
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ---- EMPTY / LOADING ---- */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text3);
+}
+.empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+.empty-msg { font-size: 14px; }
+
+.info-note {
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+  padding: 8px 10px;
+  background: var(--bg3);
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  margin-top: 6px;
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        SH Ezekia Lense
+      </div>
+      <div class="logo-sub" id="sidebarSub">Sheffield Haworth · candidate pipeline · v2.0</div>
+    </div>
+
+    <div class="sidebar-scroll">
+
+    <!-- CONNECTION -->
+    <div class="sb-section">
+      <div class="sb-label">Load Project</div>
+      <input class="sb-input" id="projectUrl" type="text" placeholder="Paste Ezekia project URL…" />
+      <button class="sb-btn" onclick="connectFromUrl()">Load Project</button>
+      <button class="sb-btn secondary" onclick="loadDemo()">Load Demo Data</button>
+      <div class="info-note">Paste an Ezekia assignment or project URL. Credentials are managed in Admin settings.</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="sb-section">
+      <div class="sb-label">Overview</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotal">—</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-box"><div class="stat-num" id="statFiltered">—</div><div class="stat-lbl">Shown</div></div>
+        <div class="stat-box"><div class="stat-num" id="statActive">—</div><div class="stat-lbl">Active</div></div>
+        <div class="stat-box"><div class="stat-num" id="statPlaced">—</div><div class="stat-lbl">Placed</div></div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="sb-section">
+      <div class="sb-label">Filters</div>
+      <div class="filter-group">
+        <label class="filter-label">Pipeline Tag</label>
+        <select class="filter-select" id="fStatus" onchange="applyFilters()">
+          <option value="">All pipeline tags</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Stage</label>
+        <select class="filter-select" id="fStage" onchange="applyFilters()">
+          <option value="">All stages</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Type</label>
+        <select class="filter-select" id="fType" onchange="applyFilters()">
+          <option value="">All types</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Consultant</label>
+        <select class="filter-select" id="fConsultant" onchange="applyFilters()">
+          <option value="">All consultants</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Rating</label>
+        <select class="filter-select" id="fRating" onchange="applyFilters()">
+          <option value="">All ratings</option>
+          <option>A</option><option>B</option><option>C</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Location</label>
+        <select class="filter-select" id="fLocation" onchange="applyFilters()">
+          <option value="">All locations</option>
+        </select>
+      </div>
+      <button class="sb-btn secondary" onclick="clearFilters()" style="margin-top:4px">Clear all filters</button>
+    </div>
+
+    <!-- COLUMN MANAGER (toggle + reorder) -->
+    <div class="sb-section">
+      <div class="sb-label">Columns</div>
+      <div class="col-reorder-list" id="colReorderList"></div>
+    </div>
+
+    </div><!-- end sidebar-scroll -->
+
+    <!-- ADMIN FOOTER — always visible -->
+    <div class="sidebar-footer">
+      <button class="sb-btn secondary" onclick="openAdmin()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
+        Admin &amp; Settings
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="topbar-search" id="globalSearch" placeholder="Search name, company, title, location, progress notes, summary…" oninput="applyFilters()" />
+      </div>
+      <div class="topbar-right">
+        <span id="selectionInfo" style="font-size:12px;color:var(--text3);display:none"></span>
+        <button class="top-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle day / night mode" aria-label="Toggle theme">
+          <span id="themeToggleIcon">☀</span>
+          <span id="themeToggleLabel">Day</span>
+        </button>
+        <button class="top-btn ai-btn" onclick="openBulkAI()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/></svg>
+          AI Insights
+        </button>
+        <button class="top-btn export-btn" onclick="openExport()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="top-btn push-btn" id="pushBtn" onclick="openPushModal()" disabled title="Make changes to Notes, Summary or Pipeline Tags, then push to Ezekia">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/><path d="M3 20h18"/></svg>
+          Update Ezekia Project
+          <span class="dirty-badge" id="dirtyBadge">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ACTIVE FILTER TAGS -->
+    <div class="active-filters" id="activeTags"></div>
+
+    <!-- TABLE -->
+    <div class="table-area">
+      <table id="mainTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <div class="empty-icon">◎</div>
+        <div class="empty-msg">No candidates match your current filters.</div>
+      </div>
+    </div>
+
+    <!-- FOOTER / PAGINATION -->
+    <div class="footer">
+      <div class="footer-left">
+        <span id="footerInfo">Load data to get started</span>
+        <label style="display:flex;align-items:center;gap:6px;color:var(--text2)">
+          Rows:
+          <select class="per-page-select" id="perPageSel" onchange="changePerPage()">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="250">250</option>
+            <option value="99999">All</option>
+          </select>
+        </label>
+      </div>
+      <div class="footer-right" id="paginationArea"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     ADMIN PAGE
+════════════════════════════════════════════════ -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-topbar">
+    <div class="admin-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
+      SH Ezekia Lense — Admin &amp; Settings
+    </div>
+    <button class="top-btn" onclick="closeAdmin()" style="margin-left:auto">
+      ← Back to Dashboard
+    </button>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- API / PROXY CONFIG -->
+    <div class="admin-section">
+      <div class="admin-section-title">API &amp; Proxy Configuration</div>
+      <div class="admin-row">
+        <span class="admin-label">Proxy Base URL</span>
+        <input class="admin-input" id="adminProxyUrl" type="text" placeholder="/api/proxy/ezekia" />
+      </div>
+      <div class="admin-row">
+        <span class="admin-label">API Key</span>
+        <input class="admin-input" id="adminApiKey" type="password" placeholder="Stored securely — not exposed to browser" />
+      </div>
+      <div class="admin-row">
+        <span class="admin-label">Environment</span>
+        <select class="admin-input" id="adminEnv" style="max-width:180px">
+          <option value="production">Production</option>
+          <option value="staging">Staging</option>
+        </select>
+      </div>
+      <div class="admin-note">
+        The API key is passed server-side via the Azure Functions proxy — it is never sent to or stored in the browser. Changes here update the proxy configuration endpoint.
+      </div>
+      <div class="admin-action-row">
+        <button class="admin-save-btn" onclick="saveAdminConfig()">Save Configuration</button>
+      </div>
+    </div>
+
+    <!-- MS 365 IDENTITY (PLACEHOLDER) -->
+    <div class="admin-section">
+      <div class="admin-section-title">User Identity — Microsoft 365</div>
+      <div class="admin-row">
+        <span class="admin-label">Identity Source</span>
+        <span style="font-size:13px;color:var(--text3);font-style:italic">MS 365 SSO — coming in next release</span>
+      </div>
+      <div class="admin-row">
+        <span class="admin-label">Current Session User</span>
+        <input class="admin-input" id="adminDisplayName" type="text" placeholder="Enter your name (temporary — until MS 365 SSO)" style="max-width:240px" />
+      </div>
+      <div class="admin-note">
+        Once MS 365 integration is live, the tool will automatically identify the logged-in user from the SHGlobalHub session. For now, enter your name above for usage log attribution.
+      </div>
+      <div class="admin-action-row">
+        <button class="admin-save-btn" onclick="saveDisplayName()">Save Name</button>
+      </div>
+    </div>
+
+    <!-- USAGE LOG -->
+    <div class="admin-section">
+      <div class="admin-section-title">Usage Log</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">
+        Records every push made from SH Ezekia Lense — session, project, field changed, and timestamp. Stored locally in this browser session.
+      </div>
+      <div id="usageLogContainer">
+        <div class="log-empty">No activity logged yet in this session.</div>
+      </div>
+      <div class="admin-action-row">
+        <button class="top-btn" onclick="clearUsageLog()" style="font-size:12px">Clear Log</button>
+        <button class="admin-save-btn" onclick="exportUsageLog()" style="display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Log (CSV)
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PUSH CONFIRM MODAL
+════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="pushModal" onclick="closeModal('pushModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#87CEEB" stroke-width="2"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/><path d="M3 20h18"/></svg>
+        Update Ezekia Project
+      </div>
+      <button class="modal-close" onclick="closeModal('pushModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="push-summary" id="pushSummary"></div>
+      <div class="push-modal-actions">
+        <button class="top-btn" onclick="closeModal('pushModal')">Cancel</button>
+        <button class="top-btn push-btn" id="pushConfirmBtn" onclick="executePush()" style="padding:7px 18px;font-size:13px">
+          Push to Ezekia
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI MODAL -->
+<div class="modal-overlay" id="aiModal" onclick="closeModal('aiModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title"><span class="modal-title-icon">✦</span> <span id="aiModalTitle">AI Assistant</span></div>
+      <button class="modal-close" onclick="closeModal('aiModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="cand-snapshot" id="aiCandSnapshot"></div>
+      <div class="ai-prompts" id="aiPrompts"></div>
+      <div class="ai-input-row">
+        <input class="ai-input" id="aiInput" placeholder="Ask anything about this candidate…" onkeydown="if(event.key==='Enter')sendAI()" />
+        <button class="ai-send-btn" onclick="sendAI()">Ask →</button>
+      </div>
+      <div class="ai-response" id="aiResponse"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal" onclick="closeModal('exportModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Export Candidates</div>
+      <button class="modal-close" onclick="closeModal('exportModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px" id="exportScopeInfo"></div>
+      <div class="export-options">
+        <div class="export-option selected" id="expOptXlsx" onclick="selectExport('xlsx')">
+          <div class="export-icon">📊</div>
+          <div class="export-info">
+            <div class="export-name">Excel (.xlsx)</div>
+            <div class="export-desc">All visible columns, formatted with headers</div>
+          </div>
+        </div>
+        <div class="export-option" id="expOptCsv" onclick="selectExport('csv')">
+          <div class="export-icon">📄</div>
+          <div class="export-info">
+            <div class="export-name">CSV</div>
+            <div class="export-desc">Comma-separated, compatible with all tools</div>
+          </div>
+        </div>
+        <div class="export-option" id="expOptJson" onclick="selectExport('json')">
+          <div class="export-icon">{ }</div>
+          <div class="export-info">
+            <div class="export-name">JSON</div>
+            <div class="export-desc">Full structured data, all fields</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)">
+          <input type="checkbox" id="expFiltered" checked /> Export filtered results only
+        </label>
+      </div>
+      <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">
+        <button class="top-btn" onclick="closeModal('exportModal')">Cancel</button>
+        <button class="top-btn export-btn" onclick="runExport()" style="padding:7px 18px;font-size:13px">Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+// SH EZEKIA LENSE — v2.0
+// Sheffield Haworth internal CRM view + write tool
+// ═══════════════════════════════════════════════
+
+// ── STATE ──
+let ALL = [];
+let FILTERED = [];
+let SORT_COL = 'name';
+let SORT_DIR = 1;
+let PAGE = 1;
+let PER_PAGE = 25;
+let AI_CAND = null;
+let EXPORT_FMT = 'xlsx';
+
+// Pending changes map: key = `${candidateId}:${field}`, value = { cid, field, oldValue, newValue, candidateName }
+const PENDING = new Map();
+
+// API / session state
+const BASE = '/api/proxy/ezekia';
+let CURRENT_PROJECT_ID = null;
+let CURRENT_PROJECT_NAME = '';
+
+// Usage log array — persists for the browser session
+const USAGE_LOG = [];
+
+// ── COLUMNS ──
+const COLUMNS = [
+  { key: 'name',            label: 'Name',             always: true },
+  { key: 'status',          label: 'Pipeline Tag',     badge: true  },
+  { key: 'stage',           label: 'Stage',            badge: true  },
+  { key: 'current_title',   label: 'Current Title'                  },
+  { key: 'current_company', label: 'Current Company'                },
+  { key: 'location',        label: 'Location'                       },
+  { key: 'nationality',     label: 'Nationality'                    },
+  { key: 'compensation',    label: 'Compensation'                   },
+  { key: 'currency',        label: 'Currency'                       },
+  { key: 'type',            label: 'Type'                           },
+  { key: 'consultant',      label: 'Consultant'                     },
+  { key: 'rating',          label: 'Rating'                         },
+  { key: 'source',          label: 'Source'                         },
+  { key: 'languages',       label: 'Languages'                      },
+  { key: 'linkedin',        label: 'LinkedIn'                       },
+  { key: 'email',           label: 'Email'                          },
+  { key: 'phone',           label: 'Phone'                          },
+  { key: 'education',       label: 'Education'                      },
+  { key: 'previous_co',     label: 'Prev Company'                   },
+  { key: 'availability',    label: 'Availability'                   },
+  { key: 'interview_date',  label: 'Interview Date'                 },
+  { key: 'added_date',      label: 'Added Date'                     },
+  { key: 'last_updated',    label: 'Last Updated'                   },
+  { key: 'notes',           label: 'Progress Notes',   editable: true },
+  { key: 'summary',         label: 'Summary',          editable: true },
+];
+
+let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated']);
+
+// ── PIPELINE TAGS ──
+const PIPELINE_TAGS = [
+  'Longlist',
+  'Short List and/or CV Sent to Client',
+  'Carve out List',
+  'Disqualified after Initial Search',
+  'Approached',
+  'In Contact/Scheduling call',
+  'On Hold',
+  'In Discussion',
+  'Reviewing Briefing Document',
+  'Consultant Interview',
+  'Client Interview',
+  'Offer Accepted',
+  'Offer Rejected / Rescinded',
+  'Rejected by Consultant',
+  'Rejected by Candidate',
+  'Rejected by Candidate after Interview/Withdrew',
+  'Rejected by Client',
+  'Rejected by Client after Interview',
+  'Placed',
+  'Source / Referral / Market Intel',
+  'Interview Feedback - Candidate',
+  'Interview Feedback - Client',
+  'Pipeline/Target List',
+  'Processed',
+  'Identified'
+];
+
+// ══════════════════════════════════════════════════════
+// DEMO DATA
+// ══════════════════════════════════════════════════════
+function generateDemo() {
+  const first = ['Sarah','James','Priya','Thomas','Li','Amara','Carlos','Emma','Rajiv','Nina','David','Fatima','Marco','Yuki','Sophie','Ahmed','Claire','Kwame','Elena','Patrick','Aiko','Ibrahim','Natasha','Oliver','Mei','Tariq','Rebecca','Sven','Zanele','François','Ingrid','Kofi','Leila','Michael','Nadia','Oscar','Pita','Qian','Rosa','Sanjay','Talia','Ugo','Vera','Walter','Xiu','Yusuf','Zara','Anton','Brigitte','Chioma'];
+  const last = ['Chen','Okafor','Müller','Andersen','Nakamura','Patel','García','Svensson','Dubois','Kowalski','Al-Rashid','Kim','Fernández','Johansson','Mensah','Tanaka','Rossi','Olawale','Bergström','Nkosi','Hassan','Lindqvist','Yamamoto','Boateng','Eriksson','Souza','Delacroix','Fischer','Onyeka','Tran'];
+  const titles = ['Chief Financial Officer','Chief Operating Officer','Chief Revenue Officer','VP Strategy','VP Operations','Managing Director','Head of Finance','Head of Marketing','Group FD','CEO','President EMEA','General Manager','SVP Commercial','Director of Transformation'];
+  const companies = ['HSBC','Goldman Sachs','Unilever','BP','Vodafone','AstraZeneca','Barclays','Shell','Rio Tinto','Standard Chartered','Diageo','GlaxoSmithKline','BHP','Prudential','Reckitt','National Grid','Pearson','Imperial Brands','BAE Systems','Rolls-Royce'];
+  const stages = ['Longlist','Shortlist','1st Interview','2nd Interview','Final Interview','Offer','Placed','On Hold','Rejected'];
+  const locations = ['London, UK','New York, USA','Singapore','Dubai, UAE','Hong Kong','Frankfurt, Germany','Paris, France','Sydney, Australia','Johannesburg, SA','Mumbai, India'];
+  const types = ['Internal','External','Referral'];
+  const consultants = ['Amber T.','James K.','Sarah M.','Rocky P.','Frances L.'];
+  const sources = ['LinkedIn','Referral','Database','Direct Approach','Headhunt'];
+  const langs = ['English','English, French','English, Mandarin','English, Arabic','English, German','English, Spanish'];
+  const educations = ['MBA, INSEAD','BA Economics, Oxford','MSc Finance, LSE','MBA, Wharton','BEng, Imperial College','MA, Cambridge'];
+  const avail = ['Immediate','1 month','3 months','Notice period: 6 months','Gardening leave'];
+  const sampleNotes = [
+    'Strong first call — very interested in the mandate. Follow-up scheduled for Thursday.',
+    'On gardening leave; available from mid-Q3. Compensation gap of ~12% — to be discussed.',
+    '',
+    'Compensation gap of ~12% — to be discussed with client.',
+    '',
+  ];
+  const sampleSummaries = [
+    '15+ yrs FS leadership; built team from scratch at current employer.',
+    'Operations transformation specialist with APAC exposure.',
+    'CFO with two IPO exits; strong investor relations background.',
+    'Strategy leader; ex-MBB, then operator at scale-up.',
+    '',
+    'Quiet candidate — strong on substance, light on profile. Worth pursuing.',
+    '',
+  ];
+
+  return Array.from({length: 60}, (_,i) => {
+    const fn = first[i % first.length];
+    const ln = last[i % last.length];
+    const stage = stages[i % stages.length];
+    const status = PIPELINE_TAGS[i % PIPELINE_TAGS.length];
+    const comp = companies[i % companies.length];
+    const basesal = 180000 + (i * 17300);
+    const curr = ['USD','GBP','EUR','SGD','AED','ZAR'][i % 6];
+    const d = new Date(2024, i % 12, (i % 28) + 1);
+    const d2 = new Date(2025, (i+2) % 12, (i % 28) + 1);
+    const intd = stage.includes('Interview') ? `2025-0${(i%9)+1}-${String((i%20)+5).padStart(2,'0')}` : '';
+    return {
+      id: 10000 + i,
+      name: `${fn} ${ln}`,
+      status,
+      stage,
+      current_title: titles[i % titles.length],
+      current_company: comp,
+      location: locations[i % locations.length],
+      nationality: locations[i % locations.length].split(', ').pop(),
+      compensation: curr + ' ' + basesal.toLocaleString(),
+      currency: curr,
+      type: types[i % types.length],
+      consultant: consultants[i % consultants.length],
+      rating: ['A','A','B','B','B','C'][i % 6],
+      source: sources[i % sources.length],
+      languages: langs[i % langs.length],
+      linkedin: `linkedin.com/in/${fn.toLowerCase()}-${ln.toLowerCase().replace(/[^a-z]/g,'')}`,
+      email: `${fn.toLowerCase()}.${ln.toLowerCase().replace(/[^a-z]/g,'')}@example.com`,
+      phone: `+${44+i%50} ${700+i} ${100000+i*7}`.slice(0,16),
+      education: educations[i % educations.length],
+      previous_co: companies[(i+5) % companies.length],
+      availability: avail[i % avail.length],
+      interview_date: intd,
+      added_date: d.toISOString().slice(0,10),
+      last_updated: d2.toISOString().slice(0,10),
+      notes: sampleNotes[i % sampleNotes.length],
+      summary: sampleSummaries[i % sampleSummaries.length],
+    };
+  });
+}
+
+function loadDemo() {
+  CURRENT_PROJECT_ID = null;
+  CURRENT_PROJECT_NAME = 'Demo Project';
+  PENDING.clear();
+  updateDirtyBadge();
+  ALL = generateDemo();
+  buildColToggles();
+  buildFilterOptions();
+  applyFilters();
+  document.getElementById('sidebarSub').textContent = 'Demo · 60 sample candidates';
+  showToast('Demo data loaded — 60 candidates.', 'info');
+}
+
+// ══════════════════════════════════════════════════════
+// URL PARSING & LIVE PROJECT LOAD
+// ══════════════════════════════════════════════════════
+function parseEzekiaUrl(url) {
+  const match = url.match(/\/(assignments?|projects?|opportunities?|lists?)\/(\d+)/i);
+  if (!match) return null;
+  return { entityType: match[1].toLowerCase().replace(/s$/, ''), entityId: match[2] };
+}
+
+async function connectFromUrl() {
+  const raw = (document.getElementById('projectUrl').value || '').trim();
+  if (!raw) { showToast('Please paste an Ezekia project or assignment URL.', 'error'); return; }
+
+  const parsed = parseEzekiaUrl(raw);
+  if (!parsed) { showToast('Could not read that URL. Expected: https://app.ezekia.com/assignments/{id}/pipeline', 'error'); return; }
+
+  // Clear any pending changes before loading fresh data
+  if (PENDING.size > 0) {
+    if (!confirm('You have unsaved changes. Loading a new project will discard them. Continue?')) return;
+  }
+  PENDING.clear();
+  updateDirtyBadge();
+
+  CURRENT_PROJECT_ID = parsed.entityId;
+  CURRENT_ENTITY_TYPE = parsed.entityType;
+
+  const loadBtn = document.querySelector('.sb-btn:not(.secondary)');
+  if (loadBtn) { loadBtn.textContent = 'Loading…'; loadBtn.disabled = true; }
+  showToast(`Connecting to Ezekia — ${parsed.entityType} ${parsed.entityId}…`, 'info');
+
+  try {
+    // 1. Project details
+    const projResp = await fetch(`${BASE}/v4/projects/${parsed.entityId}`);
+    if (!projResp.ok) throw new Error(`Project fetch failed (${projResp.status})`);
+    const projData = await projResp.json();
+    const proj = projData.data || projData;
+    CURRENT_PROJECT_NAME = proj.name || proj.title || `Project ${parsed.entityId}`;
+    document.getElementById('sidebarSub').textContent = CURRENT_PROJECT_NAME;
+
+    // 2. Candidates
+    const candResp = await fetch(`${BASE}/v4/projects/${parsed.entityId}/candidates?fields[]=meta.candidate`);
+    if (!candResp.ok) throw new Error(`Candidates fetch failed (${candResp.status})`);
+    const candData = await candResp.json();
+    const rawCandidates = candData.data || [];
+
+    // 3. Enrich in batches of 5
+    ALL = await enrichCandidates(rawCandidates);
+
+    buildColToggles();
+    buildFilterOptions();
+    applyFilters();
+    showToast(`Loaded ${ALL.length} candidates from Ezekia.`, 'success');
+    logUsage('load', `Loaded project: ${CURRENT_PROJECT_NAME} (${ALL.length} candidates)`);
+  } catch (err) {
+    console.error('SH Ezekia Lense load error:', err);
+    showToast(`Load failed: ${err.message}`, 'error');
+  } finally {
+    if (loadBtn) { loadBtn.textContent = 'Load Project'; loadBtn.disabled = false; }
+  }
+}
+
+async function enrichCandidates(rawCandidates) {
+  const results = [];
+  const BATCH = 5;
+  for (let i = 0; i < rawCandidates.length; i += BATCH) {
+    const batch = rawCandidates.slice(i, i + BATCH);
+    const enriched = await Promise.all(batch.map(bc => enrichOne(bc)));
+    results.push(...enriched);
+  }
+  return results;
+}
+
+async function enrichOne(_bc) {
+  // Resolve pipeline tag immediately (loop-var-safe)
+  _bc._resolvedPipelineTag = '';
+  if (_bc.meta && _bc.meta.candidate && _bc.meta.candidate.pipelineTags) {
+    const tags = _bc.meta.candidate.pipelineTags.slice().sort((a, b) =>
+      new Date(b.addedAt || 0) - new Date(a.addedAt || 0)
+    );
+    if (tags.length > 0) _bc._resolvedPipelineTag = tags[0].text || '';
+  }
+
+  const personId = _bc.id;
+  let person = {}, additionalInfo = [];
+
+  try {
+    const [pResp, aResp] = await Promise.all([
+      fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate`),
+      fetch(`${BASE}/people/${personId}/additional-info`)
+    ]);
+    if (pResp.ok) { const pd = await pResp.json(); person = pd.data || pd; }
+    if (aResp.ok) { const ad = await aResp.json(); additionalInfo = ad.data || ad || []; }
+  } catch (e) { /* best-effort */ }
+
+  const notesField = additionalInfo.find(f => f.hashId === 'bmwO');
+  const positions  = (person.profile && person.profile.positions) || [];
+  const currentPos = positions[0] || {};
+  const addresses  = person.addresses || [];
+  const city       = (addresses[0] || {}).city || '';
+  const country    = (addresses[0] || {}).country || '';
+
+  return {
+    id: personId,
+    name: person.fullName || `${_bc.firstName || ''} ${_bc.lastName || ''}`.trim(),
+    status: _bc._resolvedPipelineTag || '',
+    stage: ((_bc.meta || {}).candidate || {}).stage || '',
+    current_title: currentPos.title || '',
+    current_company: (currentPos.organisation || {}).name || '',
+    location: [city, country].filter(Boolean).join(', '),
+    nationality: (person.profile || {}).nationality || '',
+    compensation: '',
+    currency: '',
+    type: ((_bc.meta || {}).candidate || {}).type || '',
+    consultant: ((_bc.meta || {}).candidate || {}).addedBy || '',
+    rating: ((_bc.meta || {}).candidate || {}).rating || '',
+    source: ((_bc.meta || {}).candidate || {}).source || '',
+    languages: ((person.profile || {}).languages || []).join(', '),
+    linkedin: (person.profile || {}).linkedIn || '',
+    email: ((person.emails || [])[0] || {}).email || '',
+    phone: ((person.phones || [])[0] || {}).number || '',
+    education: '',
+    previous_co: positions[1] && positions[1].organisation ? positions[1].organisation.name : '',
+    availability: ((_bc.meta || {}).candidate || {}).availability || '',
+    interview_date: '',
+    added_date: ((_bc.meta || {}).candidate || {}).addedAt ? (_bc.meta.candidate.addedAt || '').slice(0,10) : '',
+    last_updated: '',
+    notes: notesField ? (notesField.value || '') : '',
+    summary: ((_bc.meta || {}).candidate || {}).summary || '',
+    _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// PENDING CHANGES — DIRTY TRACKING
+// ══════════════════════════════════════════════════════
+function markPending(cid, field, newValue, candidateName) {
+  const key = `${cid}:${field}`;
+  const cand = ALL.find(c => c.id === cid);
+  const originalValue = cand ? cand[`_orig_${field}`] : undefined;
+
+  // Store original on first edit
+  if (cand && cand[`_orig_${field}`] === undefined) {
+    cand[`_orig_${field}`] = cand[field] || '';
+  }
+
+  if (newValue === (originalValue !== undefined ? originalValue : '')) {
+    // Value reverted back to original — remove from pending
+    PENDING.delete(key);
+  } else {
+    PENDING.set(key, { cid, field, newValue, candidateName: candidateName || (cand ? cand.name : '') });
+  }
+
+  // Update in-memory model
+  if (cand) cand[field] = newValue;
+
+  updateDirtyBadge();
+  markRowDirty(cid);
+}
+
+function updateDirtyBadge() {
+  const count = PENDING.size;
+  const badge = document.getElementById('dirtyBadge');
+  const btn   = document.getElementById('pushBtn');
+  if (!badge || !btn) return;
+  if (count > 0) {
+    badge.textContent = count;
+    badge.classList.add('visible');
+    btn.disabled = false;
+  } else {
+    badge.classList.remove('visible');
+    btn.disabled = true;
+  }
+}
+
+function markRowDirty(cid) {
+  // Add amber left-border to any cells in this row that are editable
+  const row = document.getElementById(`row-${cid}`);
+  if (!row) return;
+  const hasPending = [...PENDING.keys()].some(k => k.startsWith(`${cid}:`));
+  row.querySelectorAll('td').forEach(td => {
+    if (hasPending) td.classList.add('dirty-cell');
+    else td.classList.remove('dirty-cell');
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// PUSH TO EZEKIA
+// ══════════════════════════════════════════════════════
+function openPushModal() {
+  if (PENDING.size === 0) return;
+  const changes = [...PENDING.values()];
+
+  const fieldLabel = { notes: 'Progress Notes', summary: 'Summary', status: 'Pipeline Tag' };
+  const listHtml = changes.map(c => `
+    <div class="push-change-row">
+      <span class="push-change-name">${escHtml(c.candidateName)}</span>
+      <span class="push-change-field">${fieldLabel[c.field] || c.field}</span>
+    </div>`).join('');
+
+  document.getElementById('pushSummary').innerHTML = `
+    <strong>${changes.length} change${changes.length > 1 ? 's' : ''}</strong> across
+    <strong>${new Set(changes.map(c => c.cid)).size} candidate${new Set(changes.map(c => c.cid)).size > 1 ? 's' : ''}</strong>
+    will be written to the Ezekia project record <strong>${escHtml(CURRENT_PROJECT_NAME || CURRENT_PROJECT_ID || 'Demo')}</strong>.
+    These changes will replace the current values in Ezekia and cannot be undone from this tool.
+    <div class="push-change-list">${listHtml}</div>`;
+
+  document.getElementById('pushModal').classList.add('open');
+}
+
+async function executePush() {
+  const btn = document.getElementById('pushConfirmBtn');
+  btn.textContent = 'Pushing…';
+  btn.disabled = true;
+
+  const changes = [...PENDING.values()];
+  const errors = [];
+
+  for (const change of changes) {
+    try {
+      if (!CURRENT_PROJECT_ID) {
+        // Demo mode — simulate
+        await new Promise(r => setTimeout(r, 120));
+      } else {
+        if (change.field === 'notes') {
+          const resp = await fetch(`${BASE}/people/${change.cid}/additional-info`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify([{ hashId: 'bmwO', value: change.newValue }])
+          });
+          if (!resp.ok) throw new Error(`${resp.status}`);
+
+        } else if (change.field === 'summary') {
+          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'meta.candidate.summary': change.newValue })
+          });
+          if (!resp.ok) throw new Error(`${resp.status}`);
+
+        } else if (change.field === 'status') {
+          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              'meta.candidate.pipelineTags': [{ text: change.newValue, addedAt: new Date().toISOString() }]
+            })
+          });
+          if (!resp.ok) throw new Error(`${resp.status}`);
+        }
+
+        // Clear stored original so next edit tracks from the new value
+        const cand = ALL.find(c => c.id === change.cid);
+        if (cand) delete cand[`_orig_${change.field}`];
+      }
+
+      logUsage('push', `${change.candidateName} — ${change.field} updated`, CURRENT_PROJECT_NAME);
+    } catch (err) {
+      errors.push({ ...change, err: err.message });
+    }
+  }
+
+  closeModal('pushModal');
+  btn.textContent = 'Push to Ezekia';
+  btn.disabled = false;
+
+  if (errors.length === 0) {
+    // All good — clear pending
+    PENDING.clear();
+    updateDirtyBadge();
+    // Remove dirty indicators from all rows
+    document.querySelectorAll('.dirty-cell').forEach(td => td.classList.remove('dirty-cell'));
+    showToast(`${changes.length} change${changes.length > 1 ? 's' : ''} pushed to Ezekia successfully.`, 'success');
+  } else {
+    // Partial failure — keep failed items in PENDING
+    errors.forEach(e => {
+      // leave in PENDING so user can retry
+    });
+    const succeeded = changes.length - errors.length;
+    showToast(`${succeeded} pushed OK. ${errors.length} failed — check connection and retry.`, 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// INLINE EDITING — Notes & Summary (local only until push)
+// ══════════════════════════════════════════════════════
+const EDIT_STATE = new WeakMap();
+
+function onEditFocus(el) {
+  EDIT_STATE.set(el, { original: el.textContent });
+  if (el.dataset.field === 'notes') showNotesActions(+el.dataset.cid);
+}
+
+function onEditInput(el) {
+  // Nothing — we just wait for blur to mark pending
+}
+
+function onEditKeydown(e, el) {
+  if (e.key === 'Escape') {
+    const state = EDIT_STATE.get(el);
+    if (state) el.textContent = state.original;
+    el.blur();
+  }
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    el.blur();
+  }
+}
+
+function onEditBlur(el) {
+  const state = EDIT_STATE.get(el) || { original: '' };
+  const newValue = el.textContent.trim();
+  el.classList.toggle('is-empty', !newValue);
+
+  if (newValue === state.original.trim()) {
+    if (el.dataset.field === 'notes') hideNotesActions(+el.dataset.cid);
+    return; // no change
+  }
+
+  const cid   = +el.dataset.cid;
+  const field = el.dataset.field;
+  const cand  = ALL.find(c => c.id === cid);
+  markPending(cid, field, newValue, cand ? cand.name : '');
+  if (field === 'notes') hideNotesActions(cid);
+}
+
+function showNotesActions(cid) {
+  const el = document.getElementById(`notes-actions-${cid}`);
+  if (el) el.classList.add('show');
+}
+
+function hideNotesActions(cid) {
+  setTimeout(() => {
+    const el = document.getElementById(`notes-actions-${cid}`);
+    if (el) el.classList.remove('show');
+  }, 200);
+}
+
+function deleteNotes(cid) {
+  const cand = ALL.find(c => c.id === cid);
+  if (!cand) return;
+  const editEl = document.querySelector(`.editable[data-cid="${cid}"][data-field="notes"]`);
+  if (editEl) { editEl.textContent = ''; editEl.classList.add('is-empty'); }
+  markPending(cid, 'notes', '', cand.name);
+}
+
+// ══════════════════════════════════════════════════════
+// PIPELINE TAG INLINE EDITOR
+// ══════════════════════════════════════════════════════
+function tagColor(tag) {
+  const map = {
+    'Longlist':'#8ab4ff','Short List and/or CV Sent to Client':'#5de8d4',
+    'Carve out List':'#b9a4fa','Disqualified after Initial Search':'#9aa0b0',
+    'Approached':'#f7c05a','In Contact/Scheduling call':'#f5c168',
+    'On Hold':'#d6c280','In Discussion':'#e6a8d6',
+    'Reviewing Briefing Document':'#b0bccd','Consultant Interview':'#a8c8ee',
+    'Client Interview':'#7ed4ea','Offer Accepted':'#85e4b8',
+    'Offer Rejected / Rescinded':'#f58d8d','Rejected by Consultant':'#ef9e94',
+    'Rejected by Candidate':'#f095b1','Rejected by Candidate after Interview/Withdrew':'#ea96c8',
+    'Rejected by Client':'#c8a4f0','Rejected by Client after Interview':'#b4a0f0',
+    'Placed':'#95edc4','Source / Referral / Market Intel':'#aab0c0',
+    'Interview Feedback - Candidate':'#7fe0d0','Interview Feedback - Client':'#7fc2ee',
+    'Pipeline/Target List':'#f0b48a','Processed':'#c4d088','Identified':'#82c8b8',
+  };
+  return map[tag] || '#888';
+}
+
+function toggleTagDropdown(cid, event) {
+  event.stopPropagation();
+  const dd = document.getElementById(`tag-dd-${cid}`);
+  if (!dd) return;
+  const wasOpen = dd.classList.contains('open');
+  document.querySelectorAll('.tag-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) dd.classList.add('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.tag-edit-wrap')) {
+    document.querySelectorAll('.tag-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function selectPipelineTag(cid, newTag, event) {
+  event.stopPropagation();
+  const dd = document.getElementById(`tag-dd-${cid}`);
+  if (dd) dd.classList.remove('open');
+
+  const cand = ALL.find(c => c.id === cid);
+  if (!cand || cand.status === newTag) return;
+
+  const oldTag = cand.status;
+  markPending(cid, 'status', newTag, cand.name);
+
+  // Re-render badge optimistically
+  const btn = document.querySelector(`#tag-wrap-${cid} .tag-edit-btn`);
+  if (btn) {
+    btn.innerHTML = newTag
+      ? `<span class="badge ${statusBadgeClass(newTag)}">${escHtml(newTag)}</span>`
+      : `<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set tag</span>`;
+  }
+  // Update active state in dropdown
+  document.querySelectorAll(`#tag-dd-${cid} .tag-dropdown-item`).forEach(item => {
+    item.classList.toggle('active', item.textContent.trim() === newTag);
+  });
+
+  buildFilterOptions();
+  updateStats();
+}
+
+// ══════════════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════════════
+function toggleTheme() {
+  const next = (document.documentElement.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+  setTheme(next);
+}
+function setTheme(mode) {
+  document.documentElement.setAttribute('data-theme', mode);
+  const icon  = document.getElementById('themeToggleIcon');
+  const label = document.getElementById('themeToggleLabel');
+  if (icon)  icon.textContent  = mode === 'dark' ? '🌙' : '☀';
+  if (label) label.textContent = mode === 'dark' ? 'Night' : 'Day';
+  try { localStorage.setItem('ezekia.theme', mode); } catch(e) {}
+}
+(function initTheme(){
+  let saved = 'dark';
+  try { saved = localStorage.getItem('ezekia.theme') || 'dark'; } catch(e) {}
+  setTheme(saved);
+})();
+
+// ══════════════════════════════════════════════════════
+// COLUMN MANAGER — toggle visibility + drag to reorder
+// ══════════════════════════════════════════════════════
+// COLUMN_ORDER holds keys in current display order (always col first, rest draggable)
+let COLUMN_ORDER = COLUMNS.map(c => c.key);
+let _dragSrcKey = null;
+
+function buildColToggles() {
+  const list = document.getElementById('colReorderList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  COLUMN_ORDER.forEach(key => {
+    const col = COLUMNS.find(c => c.key === key);
+    if (!col) return;
+    const isAlways  = col.always;
+    const isVisible = isAlways || VISIBLE.has(key);
+
+    const item = document.createElement('div');
+    item.className = 'col-reorder-item'
+      + (isAlways  ? ' col-always'  : '')
+      + (isVisible ? ' col-visible' : '');
+    item.dataset.key = key;
+    item.draggable = !isAlways;
+
+    item.innerHTML = `
+      <span class="drag-handle">⠿</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis">${col.label}</span>
+      <span class="col-vis-toggle" title="${isAlways ? 'Always shown' : (isVisible ? 'Hide column' : 'Show column')}">
+        ${isVisible ? '✓' : ''}
+      </span>`;
+
+    // Visibility toggle (click on the tick box)
+    if (!isAlways) {
+      item.querySelector('.col-vis-toggle').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (VISIBLE.has(key)) VISIBLE.delete(key);
+        else VISIBLE.add(key);
+        buildColToggles();
+        renderTable();
+      });
+    }
+
+    // Drag events
+    if (!isAlways) {
+      item.addEventListener('dragstart', (e) => {
+        _dragSrcKey = key;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        list.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (_dragSrcKey && _dragSrcKey !== key) {
+          list.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+          item.classList.add('drag-over');
+        }
+      });
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (!_dragSrcKey || _dragSrcKey === key) return;
+        const fromIdx = COLUMN_ORDER.indexOf(_dragSrcKey);
+        const toIdx   = COLUMN_ORDER.indexOf(key);
+        if (fromIdx < 0 || toIdx < 0) return;
+        // Don't allow dragging before "always" columns
+        const alwaysCount = COLUMNS.filter(c => c.always).length;
+        if (toIdx < alwaysCount) return;
+        COLUMN_ORDER.splice(fromIdx, 1);
+        COLUMN_ORDER.splice(toIdx, 0, _dragSrcKey);
+        _dragSrcKey = null;
+        buildColToggles();
+        renderTable();
+      });
+    }
+
+    list.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// FILTER OPTIONS
+// ══════════════════════════════════════════════════════
+function buildFilterOptions() {
+  const fill = (id, key, fixedList) => {
+    const el = document.getElementById(id);
+    const cur = el.value;
+    const vals = fixedList
+      ? [...fixedList]
+      : [...new Set(ALL.map(c => c[key]).filter(v => v && v !== '—'))].sort();
+    el.innerHTML = `<option value="">All</option>` + vals.map(v => `<option${v===cur?' selected':''}>${escHtml(v)}</option>`).join('');
+  };
+  fill('fStatus', 'status', PIPELINE_TAGS);
+  fill('fStage', 'stage');
+  fill('fType', 'type');
+  fill('fConsultant', 'consultant');
+  fill('fLocation', 'location');
+}
+
+// ══════════════════════════════════════════════════════
+// FILTER / SORT / STATS
+// ══════════════════════════════════════════════════════
+function applyFilters() {
+  const q       = (document.getElementById('globalSearch').value || '').toLowerCase();
+  const fStatus = document.getElementById('fStatus').value;
+  const fStage  = document.getElementById('fStage').value;
+  const fType   = document.getElementById('fType').value;
+  const fCons   = document.getElementById('fConsultant').value;
+  const fRating = document.getElementById('fRating').value;
+  const fLoc    = document.getElementById('fLocation').value;
+
+  FILTERED = ALL.filter(c => {
+    if (fStatus && c.status !== fStatus) return false;
+    if (fStage  && c.stage  !== fStage)  return false;
+    if (fType   && c.type   !== fType)   return false;
+    if (fCons   && c.consultant !== fCons) return false;
+    if (fRating && c.rating !== fRating) return false;
+    if (fLoc    && c.location !== fLoc)  return false;
+    if (q) {
+      const blob = Object.values(c).join(' ').toLowerCase();
+      if (!blob.includes(q)) return false;
+    }
+    return true;
+  });
+
+  FILTERED.sort((a, b) => {
+    const av = String(a[SORT_COL] || '').toLowerCase();
+    const bv = String(b[SORT_COL] || '').toLowerCase();
+    return av < bv ? -SORT_DIR : av > bv ? SORT_DIR : 0;
+  });
+
+  PAGE = 1;
+  updateStats();
+  renderActiveTags();
+  renderTable();
+}
+
+function clearFilters() {
+  ['fStatus','fStage','fType','fConsultant','fRating','fLocation'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('globalSearch').value = '';
+  applyFilters();
+}
+
+function setSort(col) {
+  if (SORT_COL === col) SORT_DIR *= -1;
+  else { SORT_COL = col; SORT_DIR = 1; }
+  applyFilters();
+}
+
+function changePerPage() {
+  PER_PAGE = parseInt(document.getElementById('perPageSel').value);
+  PAGE = 1;
+  renderTable();
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = ALL.length;
+  document.getElementById('statFiltered').textContent = FILTERED.length;
+  const TERMINAL_TAGS = new Set([
+    'Placed','On Hold','Disqualified after Initial Search',
+    'Offer Rejected / Rescinded','Rejected by Consultant','Rejected by Candidate',
+    'Rejected by Candidate after Interview/Withdrew','Rejected by Client',
+    'Rejected by Client after Interview','Processed'
+  ]);
+  document.getElementById('statActive').textContent  = ALL.filter(c => !TERMINAL_TAGS.has(c.status)).length;
+  document.getElementById('statPlaced').textContent  = ALL.filter(c => c.status === 'Placed' || c.stage === 'Placed').length;
+}
+
+function renderActiveTags() {
+  const tags = document.getElementById('activeTags');
+  tags.innerHTML = '';
+  const filters = [
+    { id: 'fStatus', label: 'Pipeline Tag' }, { id: 'fStage', label: 'Stage' },
+    { id: 'fType', label: 'Type' }, { id: 'fConsultant', label: 'Consultant' },
+    { id: 'fRating', label: 'Rating' }, { id: 'fLocation', label: 'Location' },
+  ];
+  const q = document.getElementById('globalSearch').value;
+  if (q) {
+    const tag = document.createElement('div');
+    tag.className = 'filter-tag';
+    tag.innerHTML = `Search: "${q}" <span class="filter-tag-x" onclick="document.getElementById('globalSearch').value='';applyFilters()">×</span>`;
+    tags.appendChild(tag);
+  }
+  filters.forEach(f => {
+    const val = document.getElementById(f.id).value;
+    if (val) {
+      const tag = document.createElement('div');
+      tag.className = 'filter-tag';
+      tag.innerHTML = `${f.label}: ${val} <span class="filter-tag-x" onclick="document.getElementById('${f.id}').value='';applyFilters()">×</span>`;
+      tags.appendChild(tag);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER TABLE
+// ══════════════════════════════════════════════════════
+const AVATAR_COLORS = [
+  ['#4f8ef7','#0a1f3e'],['#3ecf8e','#0a2e1f'],['#a78bfa','#1e1040'],
+  ['#f5a623','#3d2800'],['#2dd4bf','#062924'],['#f56565','#3d0a0a'],
+];
+
+function avatarColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = ((h << 5) - h) + name.charCodeAt(i);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+function initials(name) {
+  return name.split(' ').filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase();
+}
+
+function stageBadgeClass(s) {
+  if (!s) return 'badge-default';
+  const sl = s.toLowerCase();
+  if (sl.includes('longlist'))  return 'badge-longlist';
+  if (sl.includes('shortlist')) return 'badge-shortlist';
+  if (sl.includes('1st'))       return 'badge-1st';
+  if (sl.includes('2nd'))       return 'badge-2nd';
+  if (sl.includes('final'))     return 'badge-final';
+  if (sl.includes('offer'))     return 'badge-offer';
+  if (sl.includes('placed'))    return 'badge-placed';
+  if (sl.includes('hold'))      return 'badge-onhold';
+  if (sl.includes('reject'))    return 'badge-rejected';
+  return 'badge-default';
+}
+
+function statusBadgeClass(s) {
+  const map = {
+    'Longlist':'tag-pipe-longlist',
+    'Short List and/or CV Sent to Client':'tag-pipe-shortlist',
+    'Carve out List':'tag-pipe-carveout',
+    'Disqualified after Initial Search':'tag-pipe-disqualified',
+    'Approached':'tag-pipe-approached',
+    'In Contact/Scheduling call':'tag-pipe-incontact',
+    'On Hold':'tag-pipe-onhold',
+    'In Discussion':'tag-pipe-discussion',
+    'Reviewing Briefing Document':'tag-pipe-briefing',
+    'Consultant Interview':'tag-pipe-consultantint',
+    'Client Interview':'tag-pipe-clientint',
+    'Offer Accepted':'tag-pipe-offerac',
+    'Offer Rejected / Rescinded':'tag-pipe-offerrej',
+    'Rejected by Consultant':'tag-pipe-rejcons',
+    'Rejected by Candidate':'tag-pipe-rejcand',
+    'Rejected by Candidate after Interview/Withdrew':'tag-pipe-rejcandint',
+    'Rejected by Client':'tag-pipe-rejclient',
+    'Rejected by Client after Interview':'tag-pipe-rejclientint',
+    'Placed':'tag-pipe-placed',
+    'Source / Referral / Market Intel':'tag-pipe-source',
+    'Interview Feedback - Candidate':'tag-pipe-fbcand',
+    'Interview Feedback - Client':'tag-pipe-fbclient',
+    'Pipeline/Target List':'tag-pipe-pipeline',
+    'Processed':'tag-pipe-processed',
+    'Identified':'tag-pipe-identified',
+  };
+  return map[s] || 'badge-default';
+}
+
+function escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function renderCell(key, c) {
+  const v = c[key] || '';
+  const isPending = PENDING.has(`${c.id}:${key}`);
+
+  // ── PIPELINE TAG dropdown ──
+  if (key === 'status') {
+    const cls = statusBadgeClass(v);
+    const badgeHtml = v
+      ? `<span class="badge ${cls}">${escHtml(v)}</span>`
+      : `<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set tag</span>`;
+    return `
+      <div class="tag-edit-wrap" id="tag-wrap-${c.id}">
+        <div class="tag-edit-btn" onclick="toggleTagDropdown(${c.id}, event)">${badgeHtml}</div>
+        <div class="tag-dropdown" id="tag-dd-${c.id}">
+          ${PIPELINE_TAGS.map(t => `
+            <div class="tag-dropdown-item${t === v ? ' active' : ''}"
+                 onclick="selectPipelineTag(${c.id}, '${t.replace(/'/g,"\\'")}', event)">
+              <span class="tag-dot" style="background:${tagColor(t)}"></span>${escHtml(t)}
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  // ── PROGRESS NOTES ──
+  if (key === 'notes') {
+    const isEmpty = !v;
+    const cls = 'editable' + (isEmpty ? ' is-empty' : '') + (isPending ? ' is-pending' : '');
+    return `
+      <div class="notes-wrap">
+        <div class="${cls}"
+             contenteditable="true" spellcheck="true"
+             data-cid="${c.id}" data-field="notes"
+             onfocus="onEditFocus(this)"
+             onblur="onEditBlur(this)"
+             oninput="onEditInput(this)"
+             onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>
+        <div class="notes-actions" id="notes-actions-${c.id}">
+          <button class="notes-action-btn del"
+                  onmousedown="event.preventDefault()"
+                  onclick="deleteNotes(${c.id})">✕ Delete note</button>
+        </div>
+      </div>`;
+  }
+
+  // ── SUMMARY ──
+  if (key === 'summary') {
+    const isEmpty = !v;
+    const cls = 'editable' + (isEmpty ? ' is-empty summary-cell' : '') + (isPending ? ' is-pending' : '');
+    return `
+      <div class="${cls}"
+           contenteditable="true" spellcheck="true"
+           data-cid="${c.id}" data-field="summary"
+           onfocus="onEditFocus(this)"
+           onblur="onEditBlur(this)"
+           oninput="onEditInput(this)"
+           onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
+  }
+
+  if (!v) return '<span style="color:var(--text3)">—</span>';
+  if (key === 'stage')  return `<span class="badge ${stageBadgeClass(v)}">${escHtml(v)}</span>`;
+  if (key === 'rating') {
+    const cls = v==='A'?'rating-a':v==='B'?'rating-b':'rating-c';
+    return `<span class="${cls}">${v==='A'?'★ ':''}${escHtml(v)}</span>`;
+  }
+  if (key === 'linkedin')   return `<a href="https://${escHtml(v)}" style="color:var(--accent);text-decoration:none;font-size:11px" onclick="event.preventDefault()">View ↗</a>`;
+  if (key === 'email')      return `<span style="font-family:var(--mono);font-size:11px;color:var(--text2)">${escHtml(v)}</span>`;
+  if (key === 'interview_date') return `<span style="color:var(--amber);font-family:var(--mono);font-size:11px">${escHtml(v)}</span>`;
+  if (key === 'added_date' || key === 'last_updated') return `<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">${escHtml(v)}</span>`;
+  return `<span>${escHtml(v)}</span>`;
+}
+
+function renderTable() {
+  // Build ordered column list from COLUMN_ORDER, filtered by visibility
+  const cols = COLUMN_ORDER
+    .map(key => COLUMNS.find(c => c.key === key))
+    .filter(c => c && (c.always || VISIBLE.has(c.key)));
+  const perPage    = PER_PAGE;
+  const totalPages = perPage >= 99999 ? 1 : Math.ceil(FILTERED.length / perPage);
+  const page       = Math.min(PAGE, Math.max(totalPages, 1));
+  PAGE = page;
+  const start    = perPage >= 99999 ? 0 : (page - 1) * perPage;
+  const end      = perPage >= 99999 ? FILTERED.length : start + perPage;
+  const pageData = FILTERED.slice(start, end);
+
+  document.getElementById('tableHead').innerHTML = `<tr>
+    <th style="width:36px"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" style="cursor:pointer"></th>
+    ${cols.map(c => `
+      <th onclick="setSort('${c.key}')" class="${SORT_COL===c.key?'active':''}">
+        <div class="th-inner">${c.label}<span class="sort-icon">${SORT_COL===c.key?(SORT_DIR===1?'▲':'▼'):'⇅'}</span></div>
+      </th>`).join('')}
+    <th style="width:120px">Actions</th>
+  </tr>`;
+
+  if (pageData.length === 0) {
+    document.getElementById('tableBody').innerHTML = '';
+    document.getElementById('emptyState').style.display = 'block';
+  } else {
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('tableBody').innerHTML = pageData.map(c => {
+      const [bg, fg] = avatarColor(c.name);
+      const rowHasPending = [...PENDING.keys()].some(k => k.startsWith(`${c.id}:`));
+      return `<tr id="row-${c.id}">
+        <td style="text-align:center"><input type="checkbox" class="row-chk" data-id="${c.id}" onchange="updateSelection()" style="cursor:pointer"></td>
+        ${cols.map(col => {
+          if (col.key === 'name') return `<td class="td-name${rowHasPending?' dirty-cell':''}"><div class="name-cell"><div class="td-avatar" style="background:${bg};color:${fg}">${initials(c.name)}</div>${c.name}${rowHasPending?'<span title="Pending changes" style="margin-left:6px;color:var(--amber);font-size:9px">●</span>':''}</div></td>`;
+          return `<td class="${PENDING.has(c.id+':'+col.key)?'dirty-cell':''}">${renderCell(col.key, c)}</td>`;
+        }).join('')}
+        <td><div class="row-actions">
+          <button class="row-btn ai" onclick="openAI(${c.id})">✦ AI</button>
+          <button class="row-btn" onclick="viewProfile(${c.id})">Profile</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  const showing = perPage >= 99999 ? FILTERED.length : Math.min(end, FILTERED.length) - start;
+  document.getElementById('footerInfo').textContent =
+    `Showing ${perPage >= 99999 ? 'all' : `${start+1}–${Math.min(end,FILTERED.length)}`} of ${FILTERED.length} candidates`;
+
+  renderPagination(page, totalPages);
+}
+
+function renderPagination(page, total) {
+  const area = document.getElementById('paginationArea');
+  if (total <= 1) { area.innerHTML = ''; return; }
+  let html = `<button class="pg-btn" onclick="goPage(1)" ${page===1?'disabled':''}>«</button>`;
+  html += `<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>‹</button>`;
+  const pages = [];
+  if (total <= 7) { for (let p=1;p<=total;p++) pages.push(p); }
+  else {
+    pages.push(1);
+    if (page > 3) pages.push('…');
+    for (let p=Math.max(2,page-1); p<=Math.min(total-1,page+1); p++) pages.push(p);
+    if (page < total-2) pages.push('…');
+    pages.push(total);
+  }
+  html += '<div class="pg-nums">' + pages.map(p =>
+    p==='…' ? `<span style="color:var(--text3);padding:4px 4px">…</span>` :
+    `<button class="pg-btn${p===page?' active':''}" onclick="goPage(${p})">${p}</button>`
+  ).join('') + '</div>';
+  html += `<button class="pg-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}>›</button>`;
+  html += `<button class="pg-btn" onclick="goPage(${total})" ${page===total?'disabled':''}>»</button>`;
+  area.innerHTML = html;
+}
+
+function goPage(p) { PAGE = p; renderTable(); }
+
+// ══════════════════════════════════════════════════════
+// SELECTION
+// ══════════════════════════════════════════════════════
+function toggleSelectAll(checked) {
+  document.querySelectorAll('.row-chk').forEach(chk => chk.checked = checked);
+  updateSelection();
+}
+
+function updateSelection() {
+  const sel = [...document.querySelectorAll('.row-chk:checked')].map(c => parseInt(c.dataset.id));
+  const info = document.getElementById('selectionInfo');
+  if (sel.length > 0) {
+    info.textContent = `${sel.length} selected`;
+    info.style.display = '';
+  } else {
+    info.style.display = 'none';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// AI MODAL
+// ══════════════════════════════════════════════════════
+const AI_PROMPTS = [
+  'Summarise this candidate','Why suitable for this role?','Red flags to consider?',
+  'Draft an approach email','Key strengths & weaknesses','Compare to shortlist',
+  'Interview questions','Reference check points',
+];
+
+function openAI(id) {
+  const c = ALL.find(x => x.id === id);
+  if (!c) return;
+  AI_CAND = c;
+  document.getElementById('aiModalTitle').textContent = `AI · ${c.name}`;
+  document.getElementById('aiCandSnapshot').innerHTML = [
+    ['Title',c.current_title],['Company',c.current_company],
+    ['Location',c.location],['Stage',c.stage],
+    ['Rating',c.rating],['Compensation',c.compensation],
+    ['Source',c.source],['Consultant',c.consultant],
+  ].map(([k,v]) => `<div class="snap-row"><div class="snap-key">${k}</div><div class="snap-val">${v||'—'}</div></div>`).join('');
+  document.getElementById('aiPrompts').innerHTML = AI_PROMPTS.map(p =>
+    `<button class="ai-prompt-btn" onclick="setAIPrompt('${p}')">${p}</button>`
+  ).join('');
+  document.getElementById('aiInput').value = '';
+  document.getElementById('aiResponse').className = 'ai-response';
+  document.getElementById('aiModal').classList.add('open');
+}
+
+function openBulkAI() {
+  AI_CAND = null;
+  document.getElementById('aiModalTitle').textContent = `AI Insights · ${FILTERED.length} candidates`;
+  document.getElementById('aiCandSnapshot').innerHTML = `<div style="grid-column:span 2;color:var(--text2);font-size:12px">Working with <strong style="color:var(--text)">${FILTERED.length} filtered candidates</strong></div>`;
+  document.getElementById('aiPrompts').innerHTML = [
+    'Summarise the shortlist','Which candidates are strongest?','Pipeline overview','Stage distribution','Compensation benchmarking'
+  ].map(p => `<button class="ai-prompt-btn" onclick="setAIPrompt('${p}')">${p}</button>`).join('');
+  document.getElementById('aiInput').value = '';
+  document.getElementById('aiResponse').className = 'ai-response';
+  document.getElementById('aiModal').classList.add('open');
+}
+
+function setAIPrompt(p) {
+  document.getElementById('aiInput').value = p;
+  document.getElementById('aiInput').focus();
+}
+
+async function sendAI() {
+  const q = document.getElementById('aiInput').value.trim();
+  if (!q) return;
+  const resp = document.getElementById('aiResponse');
+  resp.className = 'ai-response visible';
+  resp.innerHTML = '<span class="ai-thinking">✦ Thinking…</span>';
+  const context = AI_CAND
+    ? `You are an executive search assistant at Sheffield Haworth. Here is a candidate record:\n${JSON.stringify(AI_CAND,null,2)}\n\nAnswer this: ${q}`
+    : `You are an executive search assistant at Sheffield Haworth. Here is a summary of ${FILTERED.length} candidates in the pipeline:\n${FILTERED.slice(0,20).map(c=>`- ${c.name} | ${c.status} | ${c.current_title} @ ${c.current_company}`).join('\n')}\n\nAnswer: ${q}`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:context}] })
+    });
+    const data = await res.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    resp.innerHTML = text.replace(/\n/g,'<br>') || '<em>No response.</em>';
+  } catch (e) {
+    resp.innerHTML = `<em style="color:var(--red)">Could not reach AI. In a deployed version this uses the Anthropic API key configured in Admin.</em>`;
+  }
+}
+
+function viewProfile(id) { openAI(id); }
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ══════════════════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════════════════
+function openExport() {
+  const visCount = COLUMN_ORDER.map(k => COLUMNS.find(c=>c.key===k)).filter(c => c && (c.always || VISIBLE.has(c.key))).length;
+  document.getElementById('exportScopeInfo').textContent =
+    `${FILTERED.length} filtered candidates · ${visCount} visible columns`;
+  document.getElementById('exportModal').classList.add('open');
+}
+
+function selectExport(fmt) {
+  EXPORT_FMT = fmt;
+  ['xlsx','csv','json'].forEach(f => {
+    document.getElementById('expOpt'+f.charAt(0).toUpperCase()+f.slice(1)).classList.toggle('selected', f===fmt);
+  });
+}
+
+function runExport() {
+  const useFiltered = document.getElementById('expFiltered').checked;
+  const data = useFiltered ? FILTERED : ALL;
+  const cols = COLUMN_ORDER.map(k => COLUMNS.find(c=>c.key===k)).filter(c => c && (c.always || VISIBLE.has(c.key)));
+  const date = new Date().toISOString().slice(0,10);
+  if (EXPORT_FMT === 'xlsx') {
+    const header = cols.map(c => c.label);
+    const rows   = data.map(c => cols.map(col => c[col.key] || ''));
+    const ws = XLSX.utils.aoa_to_sheet([header,...rows]);
+    ws['!cols'] = header.map((h,i) => {
+      const max = Math.max(h.length,...rows.map(r => String(r[i]||'').length));
+      return { wch: Math.min(Math.max(max+2,10),45) };
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Candidates');
+    XLSX.writeFile(wb, `sh_ezekia_lense_${date}.xlsx`);
+  } else if (EXPORT_FMT === 'csv') {
+    const header = cols.map(c => `"${c.label}"`).join(',');
+    const rows   = data.map(c => cols.map(col => `"${(c[col.key]||'').toString().replace(/"/g,'""')}"`).join(','));
+    const blob = new Blob([header+'\n'+rows.join('\n')],{type:'text/csv'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `sh_ezekia_lense_${date}.csv`; a.click();
+  } else {
+    const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `sh_ezekia_lense_${date}.json`; a.click();
+  }
+  closeModal('exportModal');
+}
+
+// ══════════════════════════════════════════════════════
+// ADMIN PAGE
+// ══════════════════════════════════════════════════════
+function openAdmin() {
+  // Pre-fill saved config
+  try {
+    const cfg = JSON.parse(localStorage.getItem('sh.ezekia.config') || '{}');
+    if (cfg.proxyUrl) document.getElementById('adminProxyUrl').value = cfg.proxyUrl;
+    if (cfg.env)      document.getElementById('adminEnv').value = cfg.env;
+    const displayName = localStorage.getItem('sh.ezekia.user') || '';
+    if (displayName)  document.getElementById('adminDisplayName').value = displayName;
+  } catch(e) {}
+  renderUsageLogTable();
+  document.getElementById('adminOverlay').classList.add('open');
+}
+
+function closeAdmin() {
+  document.getElementById('adminOverlay').classList.remove('open');
+}
+
+function saveAdminConfig() {
+  try {
+    const cfg = {
+      proxyUrl: document.getElementById('adminProxyUrl').value.trim(),
+      env: document.getElementById('adminEnv').value,
+    };
+    localStorage.setItem('sh.ezekia.config', JSON.stringify(cfg));
+    showToast('Configuration saved.', 'success');
+  } catch(e) {
+    showToast('Could not save — localStorage may be restricted.', 'error');
+  }
+}
+
+function saveDisplayName() {
+  const name = document.getElementById('adminDisplayName').value.trim();
+  try {
+    if (name) localStorage.setItem('sh.ezekia.user', name);
+    showToast(`Display name set to "${name}".`, 'success');
+  } catch(e) {}
+}
+
+function getDisplayName() {
+  try { return localStorage.getItem('sh.ezekia.user') || 'Anonymous'; } catch(e) { return 'Anonymous'; }
+}
+
+// ══════════════════════════════════════════════════════
+// USAGE LOG
+// ══════════════════════════════════════════════════════
+function logUsage(action, detail, project) {
+  USAGE_LOG.push({
+    timestamp: new Date().toISOString(),
+    user: getDisplayName(),
+    action,
+    project: project || CURRENT_PROJECT_NAME || '—',
+    detail,
+  });
+}
+
+function renderUsageLogTable() {
+  const container = document.getElementById('usageLogContainer');
+  if (USAGE_LOG.length === 0) {
+    container.innerHTML = '<div class="log-empty">No activity logged yet in this session.</div>';
+    return;
+  }
+  const actionClass = { load:'log-action-push', push:'log-action-push', notes:'log-action-notes', summary:'log-action-summary', tag:'log-action-tag' };
+  container.innerHTML = `
+    <table class="log-table">
+      <thead><tr>
+        <th>Time</th><th>User</th><th>Project</th><th>Action</th><th>Detail</th>
+      </tr></thead>
+      <tbody>
+        ${[...USAGE_LOG].reverse().map(r => `
+          <tr>
+            <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${r.timestamp.replace('T',' ').slice(0,19)}</td>
+            <td>${escHtml(r.user)}</td>
+            <td>${escHtml(r.project)}</td>
+            <td><span class="log-action-badge ${actionClass[r.action]||''}">${escHtml(r.action)}</span></td>
+            <td title="${escHtml(r.detail)}">${escHtml(r.detail)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function clearUsageLog() {
+  if (!confirm('Clear the usage log for this session?')) return;
+  USAGE_LOG.length = 0;
+  renderUsageLogTable();
+}
+
+function exportUsageLog() {
+  if (USAGE_LOG.length === 0) { showToast('No log entries to export.', 'info'); return; }
+  const header = '"Timestamp","User","Project","Action","Detail"';
+  const rows   = USAGE_LOG.map(r =>
+    [r.timestamp, r.user, r.project, r.action, r.detail]
+      .map(v => `"${String(v).replace(/"/g,'""')}"`)
+      .join(',')
+  );
+  const blob = new Blob([header+'\n'+rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sh_ezekia_lense_log_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('Usage log exported.', 'success');
+}
+
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+function showToast(msg, type = 'info') {
+  let toast = document.getElementById('sh-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'sh-toast';
+    toast.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;
+      padding:10px 16px;border-radius:8px;font-size:12.5px;font-family:var(--font);
+      max-width:380px;line-height:1.5;box-shadow:0 4px 16px rgba(0,0,0,0.3);
+      transition:opacity 0.35s;pointer-events:none;`;
+    document.body.appendChild(toast);
+  }
+  const c = { success:{bg:'rgba(62,207,142,0.18)',border:'rgba(62,207,142,0.5)',color:'#3ecf8e'},
+               error:  {bg:'rgba(245,101,101,0.18)',border:'rgba(245,101,101,0.5)',color:'#f56565'},
+               info:   {bg:'rgba(90,153,255,0.15)',border:'rgba(90,153,255,0.4)',color:'#87CEEB'} }[type] || {};
+  toast.style.background = c.bg; toast.style.border = `1px solid ${c.border}`; toast.style.color = c.color;
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3500);
+}
+
+// ══════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════
+window.onload = () => {
+  buildColToggles();
+};
+</script>
+</body>
+</html>
