@@ -1668,7 +1668,7 @@ async function enrichOne(_bc) {
   try {
     const [pResp, aResp] = await Promise.all([
       fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate`),
-      fetch(`${BASE}/people/${personId}/additional-info`)
+      fetch(`${BASE}/v4/people/${personId}/additional-info`)
     ]);
     if (pResp.ok) { const pd = await pResp.json(); person = pd.data || pd; }
     if (aResp.ok) { const ad = await aResp.json(); additionalInfo = ad.data || ad || []; }
@@ -1701,7 +1701,7 @@ async function enrichOne(_bc) {
     email: ((person.emails || [])[0] || {}).email || '',
     phone: ((person.phones || [])[0] || {}).number || '',
     education: '',
-    previous_co: positions[1] && positions[1].organisation ? positions[1].company.name : '',
+    previous_co: positions[1] && positions[1].company ? positions[1].company.name : '',
     availability: ((_bc.meta || {}).candidate || {}).availability || '',
     interview_date: '',
     added_date: ((_bc.meta || {}).candidate || {}).addedAt ? (_bc.meta.candidate.addedAt || '').slice(0,10) : '',
