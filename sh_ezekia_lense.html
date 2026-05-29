@@ -1674,7 +1674,7 @@ async function enrichOne(_bc) {
     if (aResp.ok) { const ad = await aResp.json(); additionalInfo = ad.data || ad || []; }
   } catch (e) { /* best-effort */ }
 
-  const notesField = additionalInfo.find(f => f.hashId === 'bmwO');
+  const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
   const positions  = (person.profile && person.profile.positions) || [];
   const currentPos = positions[0] || {};
   const addresses  = person.addresses || [];
@@ -1687,9 +1687,9 @@ async function enrichOne(_bc) {
     status: _bc._resolvedPipelineTag || '',
     stage: ((_bc.meta || {}).candidate || {}).stage || '',
     current_title: currentPos.title || '',
-    current_company: (currentPos.organisation || {}).name || '',
+    current_company: (currentPos.company || {}).name || '',
     location: [city, country].filter(Boolean).join(', '),
-    nationality: (person.profile || {}).nationality || '',    gender: (person.profile || {}).gender || '',
+    nationality: (person.profile || {}).nationality || '',    gender: (additionalInfo.find(f => f.field && f.field.hashId === 'boYK') || {}).value || '',
     compensation: '',
     currency: '',
     type: ((_bc.meta || {}).candidate || {}).type || '',
@@ -1701,13 +1701,13 @@ async function enrichOne(_bc) {
     email: ((person.emails || [])[0] || {}).email || '',
     phone: ((person.phones || [])[0] || {}).number || '',
     education: '',
-    previous_co: positions[1] && positions[1].organisation ? positions[1].organisation.name : '',
+    previous_co: positions[1] && positions[1].organisation ? positions[1].company.name : '',
     availability: ((_bc.meta || {}).candidate || {}).availability || '',
     interview_date: '',
     added_date: ((_bc.meta || {}).candidate || {}).addedAt ? (_bc.meta.candidate.addedAt || '').slice(0,10) : '',
     last_updated: '',
     notes: notesField ? (notesField.value || '') : '',
-    summary: ((_bc.meta || {}).candidate || {}).summary || '',
+    summary: person.summary || _bc.summary || '',
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
   };
 }
