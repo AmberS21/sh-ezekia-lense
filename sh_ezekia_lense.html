@@ -1115,6 +1115,78 @@ tr.selected td { background: var(--accent-glow); }
 .filter-tag-x { cursor: pointer; opacity: 0.7; }
 .filter-tag-x:hover { opacity: 1; }
 
+/* ── Industry coding tags ── */
+.ind-cell {
+  display: flex; flex-wrap: wrap; gap: 3px;
+  cursor: pointer; padding: 2px 0;
+  min-height: 22px;
+}
+.ind-cell:hover { opacity: 0.85; }
+.ind-cell-pending .ind-tag { border-color: var(--amber); }
+.ind-tag {
+  display: inline-flex; align-items: center;
+  font-size: 10px; padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(54,169,225,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(54,169,225,0.30);
+  white-space: nowrap; max-width: 180px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.ind-tag-empty { color: var(--text3); background: transparent; border-style: dashed; }
+
+/* ── Industry editor modal ── */
+.ind-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55); z-index: 20000;
+  align-items: center; justify-content: center;
+}
+.ind-modal-overlay.open { display: flex; }
+.ind-modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 1.25rem 1.5rem;
+  width: 480px; max-width: 95vw;
+  box-shadow: var(--shadow);
+}
+.ind-modal h3 {
+  margin: 0 0 0.75rem; font-size: 14px; font-weight: 600;
+  color: var(--text);
+}
+.ind-modal-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 0.75rem; min-height: 30px;
+}
+.ind-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; padding: 3px 8px; border-radius: 12px;
+  background: rgba(54,169,225,0.14); color: var(--accent);
+  border: 1px solid rgba(54,169,225,0.35);
+}
+.ind-chip-x {
+  cursor: pointer; opacity: 0.7; font-size: 12px; line-height: 1;
+}
+.ind-chip-x:hover { opacity: 1; }
+.ind-modal-search {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text); font-family: var(--font); font-size: 12px;
+  padding: 6px 10px; border-radius: 6px; outline: none; margin-bottom: 6px;
+}
+.ind-modal-search:focus { border-color: var(--accent); }
+.ind-modal-list {
+  max-height: 200px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: 6px;
+}
+.ind-modal-item {
+  padding: 7px 10px; cursor: pointer; font-size: 12px; color: var(--text);
+  transition: background 0.12s; border-bottom: 1px solid var(--border);
+}
+.ind-modal-item:last-child { border-bottom: none; }
+.ind-modal-item:hover { background: var(--bg3); }
+.ind-modal-item.selected { color: var(--accent); background: var(--accent-glow); }
+.ind-modal-footer {
+  display: flex; justify-content: flex-end; gap: 8px; margin-top: 0.75rem;
+}
+
 /* ---- SCROLLBAR ---- */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -1534,6 +1606,7 @@ const COLUMNS = [
   { key: 'last_updated',    label: 'Last Updated'                   },
   { key: 'notes',           label: 'Progress Notes',   editable: true },
   { key: 'summary',         label: 'Summary',          editable: true },
+  { key: 'industry_codes', label: 'Industry'                        },
 ];
 
 let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender']);
@@ -1754,7 +1827,7 @@ async function enrichOne(_bc) {
 
   try {
     const [pResp, aResp] = await Promise.all([
-      fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate`),
+      fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`),
       fetch(`${BASE}/v4/people/${personId}/additional-info`)
     ]);
     if (pResp.ok) { const pd = await pResp.json(); person = pd.data || pd; }
@@ -1796,6 +1869,9 @@ async function enrichOne(_bc) {
     notes: notesField ? (notesField.value || '') : '',
     summary: person.summary || _bc.summary || '',
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
+    // Current Status coding fields from profile.currentStatus
+    industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
+    function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],
   };
 }
 
@@ -1912,6 +1988,18 @@ async function executePush() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               'meta.candidate.pipelineTags': [{ text: change.newValue, addedAt: new Date().toISOString() }]
+            })
+          });
+          if (!resp.ok) throw new Error(`${resp.status}`);
+
+        } else if (change.field === 'industry_codes') {
+          // PATCH /v4/people/{id} with profile.currentStatus.industries (array of {id})
+          const industryIds = (change.newValue || []).map(ind => ({ id: ind.id }));
+          const resp = await fetch(`${BASE}/v4/people/${change.cid}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              'profile.currentStatus': { industries: industryIds }
             })
           });
           if (!resp.ok) throw new Error(`${resp.status}`);
@@ -2518,6 +2606,17 @@ function renderCell(key, c) {
   if (key === 'email')      return `<span style="font-family:var(--mono);font-size:11px;color:var(--text2)">${escHtml(v)}</span>`;
   if (key === 'interview_date') return `<span style="color:var(--amber);font-family:var(--mono);font-size:11px">${escHtml(v)}</span>`;
   if (key === 'added_date' || key === 'last_updated') return `<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">${escHtml(v)}</span>`;
+
+  // ── INDUSTRY (currentStatus.industries) — display all codes + edit on click ──
+  if (key === 'industry_codes') {
+    const codes = Array.isArray(c.industry_codes) ? c.industry_codes : [];
+    const isPendingInd = PENDING.has(`${c.id}:industry_codes`);
+    const tagsHtml = codes.length
+      ? codes.map(ind => `<span class="ind-tag">${escHtml(ind.name || ind.value || '')}</span>`).join('')
+      : `<span class="ind-tag ind-tag-empty">+ Code</span>`;
+    return `<div class="ind-cell${isPendingInd?' ind-cell-pending':''}" id="ind-cell-${c.id}" onclick="openIndustryEditor(${c.id}, event)">${tagsHtml}</div>`;
+  }
+
   return `<span>${escHtml(v)}</span>`;
 }
 
@@ -2872,6 +2971,140 @@ function showToast(msg, type = 'info') {
 window.onload = () => {
   buildColToggles();
 };
+
+// ══════════════════════════════════════════════════════
+// INDUSTRY CODING EDITOR — read+write currentStatus.industries
+// ══════════════════════════════════════════════════════
+
+// Cache of all available industry options loaded from the first candidate
+let INDUSTRY_OPTIONS_CACHE = [];
+
+function openIndustryEditor(cid, event) {
+  event && event.stopPropagation && event.stopPropagation();
+  const cand = ALL.find(c => c.id === cid);
+  if (!cand) return;
+
+  // Build list of currently selected industries
+  let selected = JSON.parse(JSON.stringify(Array.isArray(cand.industry_codes) ? cand.industry_codes : []));
+
+  // Gather all known industry options from loaded candidates (deduplicated by id)
+  const seenIds = new Set();
+  const allOptions = [];
+  ALL.forEach(c => {
+    if (Array.isArray(c.industry_codes)) {
+      c.industry_codes.forEach(ind => {
+        if (ind && ind.id && !seenIds.has(ind.id)) {
+          seenIds.add(ind.id);
+          allOptions.push(ind);
+        }
+      });
+    }
+  });
+  // Sort alphabetically
+  allOptions.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  INDUSTRY_OPTIONS_CACHE = allOptions;
+
+  const modal = document.getElementById('indModal');
+  const candidateName = cand.name;
+
+  function render(searchTerm) {
+    const chips = document.getElementById('indChips');
+    chips.innerHTML = selected.map(ind =>
+      `<span class="ind-chip">${escHtml(ind.name || ind.value || '')}
+        <span class="ind-chip-x" onclick="window._indRemove(${ind.id})">×</span>
+      </span>`
+    ).join('') || '<span style="color:var(--text3);font-size:11px">No industries selected</span>';
+
+    const list = document.getElementById('indList');
+    const term = (searchTerm || '').toLowerCase();
+    const filtered = allOptions.filter(opt =>
+      !term || (opt.name || '').toLowerCase().includes(term)
+    );
+    const selectedIds = new Set(selected.map(s => s.id));
+    list.innerHTML = filtered.map(opt =>
+      `<div class="ind-modal-item${selectedIds.has(opt.id) ? ' selected' : ''}"
+           onclick="window._indToggle(${opt.id})">${escHtml(opt.name || opt.value || '')}</div>`
+    ).join('') || '<div style="padding:8px;color:var(--text3);font-size:12px">No matches</div>';
+  }
+
+  window._indRemove = (id) => {
+    selected = selected.filter(s => s.id !== id);
+    render(document.getElementById('indSearch').value);
+  };
+  window._indToggle = (id) => {
+    const opt = allOptions.find(o => o.id === id);
+    if (!opt) return;
+    if (selected.some(s => s.id === id)) {
+      selected = selected.filter(s => s.id !== id);
+    } else {
+      selected.push(opt);
+    }
+    render(document.getElementById('indSearch').value);
+  };
+  window._indSearch = (term) => render(term);
+  window._indSave = () => {
+    // Store in PENDING as the full array (will write back via people PATCH)
+    markPendingIndustry(cid, selected, candidateName);
+    document.getElementById('indModal').classList.remove('open');
+  };
+  window._indCancel = () => {
+    document.getElementById('indModal').classList.remove('open');
+  };
+
+  document.getElementById('indModalTitle').textContent = 'Edit Industries — ' + candidateName;
+  document.getElementById('indSearch').value = '';
+  render('');
+  modal.classList.add('open');
+}
+
+function markPendingIndustry(cid, newCodes, candidateName) {
+  const key = `${cid}:industry_codes`;
+  const cand = ALL.find(c => c.id === cid);
+
+  // Store original on first edit
+  if (cand && cand._orig_industry_codes === undefined) {
+    cand._orig_industry_codes = JSON.parse(JSON.stringify(cand.industry_codes || []));
+  }
+
+  const originalCodes = cand ? (cand._orig_industry_codes || []) : [];
+  const origIds = originalCodes.map(c => c.id).sort().join(',');
+  const newIds  = newCodes.map(c => c.id).sort().join(',');
+
+  if (newIds === origIds) {
+    PENDING.delete(key);
+  } else {
+    PENDING.set(key, {
+      cid,
+      field: 'industry_codes',
+      newValue: newCodes,
+      candidateName: candidateName || (cand ? cand.name : '')
+    });
+  }
+  if (cand) cand.industry_codes = newCodes;
+
+  updateDirtyBadge();
+  markRowDirty(cid);
+  applyFilters(); // re-render table
+}
+
 </script>
+
+<!-- ═══════════════════════════════════════════════
+     INDUSTRY EDITOR MODAL
+════════════════════════════════════════════════ -->
+<div class="ind-modal-overlay" id="indModal" onclick="window._indCancel()">
+  <div class="ind-modal" onclick="event.stopPropagation()">
+    <h3 id="indModalTitle">Edit Industries</h3>
+    <div class="ind-modal-chips" id="indChips"></div>
+    <input class="ind-modal-search" id="indSearch" placeholder="Search industries…"
+           oninput="window._indSearch(this.value)">
+    <div class="ind-modal-list" id="indList"></div>
+    <div class="ind-modal-footer">
+      <button class="sb-btn secondary" onclick="window._indCancel()">Cancel</button>
+      <button class="sb-btn" onclick="window._indSave()">Save</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
