@@ -56,7 +56,7 @@
   --mono: 'DM Mono', monospace;
 }
 
-body, .sidebar, .topbar, .footer, .filter-select, .badge, .row-btn,
+body, .sidebar, .topbar, .footer, .filter-select, .ms-filter-btn, .badge, .row-btn,
 .top-btn, .sb-btn, .table-area, table, td, th, input, select, button {
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
@@ -207,6 +207,74 @@ body {
 }
 .filter-select:focus { border-color: var(--accent); }
 .filter-select option { background: var(--bg3); }
+
+/* ── Multi-select filter dropdown ── */
+.ms-filter { position: relative; width: 100%; }
+.ms-filter-btn {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 6px 28px 6px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+.ms-filter-btn::after {
+  content: '▾';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.ms-filter-btn.has-selection {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.ms-filter-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  background: var(--bg3);
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  z-index: 9999;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
+.ms-filter-dropdown.open { display: block; }
+.ms-filter-opt {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.ms-filter-opt:hover { background: var(--bg2); }
+.ms-filter-opt input[type=checkbox] {
+  accent-color: var(--accent);
+  width: 13px; height: 13px;
+  flex-shrink: 0;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+.ms-filter-opt span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* column toggles */
 .col-toggle-grid {
@@ -1114,40 +1182,45 @@ tr.selected td { background: var(--accent-glow); }
       <div class="sb-label">Filters</div>
       <div class="filter-group">
         <label class="filter-label">Pipeline Tag</label>
-        <select class="filter-select" id="fStatus" onchange="applyFilters()">
-          <option value="">All pipeline tags</option>
-        </select>
+        <div class="ms-filter" id="ms-fStatus">
+          <button class="ms-filter-btn" onclick="toggleMsDropdown('fStatus')" id="fStatusBtn">All pipeline tags</button>
+          <div class="ms-filter-dropdown" id="fStatusDrop"></div>
+        </div>
       </div>
       <div class="filter-group">
         <label class="filter-label">Stage</label>
-        <select class="filter-select" id="fStage" onchange="applyFilters()">
-          <option value="">All stages</option>
-        </select>
+        <div class="ms-filter" id="ms-fStage">
+          <button class="ms-filter-btn" onclick="toggleMsDropdown('fStage')" id="fStageBtn">All stages</button>
+          <div class="ms-filter-dropdown" id="fStageDrop"></div>
+        </div>
       </div>
       <div class="filter-group">
         <label class="filter-label">Type</label>
-        <select class="filter-select" id="fType" onchange="applyFilters()">
-          <option value="">All types</option>
-        </select>
+        <div class="ms-filter" id="ms-fType">
+          <button class="ms-filter-btn" onclick="toggleMsDropdown('fType')" id="fTypeBtn">All types</button>
+          <div class="ms-filter-dropdown" id="fTypeDrop"></div>
+        </div>
       </div>
       <div class="filter-group">
         <label class="filter-label">Consultant</label>
-        <select class="filter-select" id="fConsultant" onchange="applyFilters()">
-          <option value="">All consultants</option>
-        </select>
+        <div class="ms-filter" id="ms-fConsultant">
+          <button class="ms-filter-btn" onclick="toggleMsDropdown('fConsultant')" id="fConsultantBtn">All consultants</button>
+          <div class="ms-filter-dropdown" id="fConsultantDrop"></div>
+        </div>
       </div>
       <div class="filter-group">
         <label class="filter-label">Rating</label>
-        <select class="filter-select" id="fRating" onchange="applyFilters()">
-          <option value="">All ratings</option>
-          <option>A</option><option>B</option><option>C</option>
-        </select>
+        <div class="ms-filter" id="ms-fRating">
+          <button class="ms-filter-btn" onclick="toggleMsDropdown('fRating')" id="fRatingBtn">All ratings</button>
+          <div class="ms-filter-dropdown" id="fRatingDrop"></div>
+        </div>
       </div>
       <div class="filter-group">
         <label class="filter-label">Location</label>
-        <select class="filter-select" id="fLocation" onchange="applyFilters()">
-          <option value="">All locations</option>
-        </select>
+        <div class="ms-filter" id="ms-fLocation">
+          <button class="ms-filter-btn" onclick="toggleMsDropdown('fLocation')" id="fLocationBtn">All locations</button>
+          <div class="ms-filter-dropdown" id="fLocationDrop"></div>
+        </div>
       </div>
       <button class="sb-btn secondary" onclick="clearFilters()" style="margin-top:4px">Clear all filters</button>
     </div>
@@ -2107,41 +2180,104 @@ function buildColToggles() {
 // ══════════════════════════════════════════════════════
 // FILTER OPTIONS
 // ══════════════════════════════════════════════════════
+// ── Multi-select filter state: each key → Set of selected values ──
+const FILTER_SETS = {
+  fStatus:     new Set(),
+  fStage:      new Set(),
+  fType:       new Set(),
+  fConsultant: new Set(),
+  fRating:     new Set(),
+  fLocation:   new Set(),
+};
+
+// Default labels shown when nothing is selected
+const FILTER_DEFAULTS = {
+  fStatus:     'All pipeline tags',
+  fStage:      'All stages',
+  fType:       'All types',
+  fConsultant: 'All consultants',
+  fRating:     'All ratings',
+  fLocation:   'All locations',
+};
+
 function buildFilterOptions() {
   const fill = (id, key, fixedList) => {
-    const el = document.getElementById(id);
-    const cur = el.value;
     const vals = fixedList
       ? [...fixedList]
       : [...new Set(ALL.map(c => c[key]).filter(v => v && v !== '—'))].sort();
-    el.innerHTML = `<option value="">All</option>` + vals.map(v => `<option${v===cur?' selected':''}>${escHtml(v)}</option>`).join('');
+    const drop = document.getElementById(id + 'Drop');
+    if (!drop) return;
+    drop.innerHTML = vals.map(v => {
+      const checked = FILTER_SETS[id].has(v) ? ' checked' : '';
+      const esc = escHtml(v);
+      return `<label class="ms-filter-opt"><input type="checkbox" value="${esc}"${checked} onchange="toggleMsOption('${id}',this)"><span>${esc}</span></label>`;
+    }).join('');
+    updateMsBtn(id);
   };
   fill('fStatus', 'status', PIPELINE_TAGS);
   fill('fStage', 'stage');
   fill('fType', 'type');
   fill('fConsultant', 'consultant');
+  fill('fRating', 'rating', ['A','B','C']);
   fill('fLocation', 'location');
+}
+
+function toggleMsDropdown(id) {
+  const drop = document.getElementById(id + 'Drop');
+  const isOpen = drop.classList.contains('open');
+  // Close all open dropdowns first
+  document.querySelectorAll('.ms-filter-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!isOpen) drop.classList.add('open');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.ms-filter')) {
+    document.querySelectorAll('.ms-filter-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function toggleMsOption(id, checkbox) {
+  const val = checkbox.value;
+  if (checkbox.checked) {
+    FILTER_SETS[id].add(val);
+  } else {
+    FILTER_SETS[id].delete(val);
+  }
+  updateMsBtn(id);
+  applyFilters();
+}
+
+function updateMsBtn(id) {
+  const btn = document.getElementById(id + 'Btn');
+  if (!btn) return;
+  const set = FILTER_SETS[id];
+  if (set.size === 0) {
+    btn.textContent = FILTER_DEFAULTS[id];
+    btn.classList.remove('has-selection');
+  } else if (set.size === 1) {
+    btn.textContent = [...set][0];
+    btn.classList.add('has-selection');
+  } else {
+    btn.textContent = set.size + ' selected';
+    btn.classList.add('has-selection');
+  }
 }
 
 // ══════════════════════════════════════════════════════
 // FILTER / SORT / STATS
 // ══════════════════════════════════════════════════════
 function applyFilters() {
-  const q       = (document.getElementById('globalSearch').value || '').toLowerCase();
-  const fStatus = document.getElementById('fStatus').value;
-  const fStage  = document.getElementById('fStage').value;
-  const fType   = document.getElementById('fType').value;
-  const fCons   = document.getElementById('fConsultant').value;
-  const fRating = document.getElementById('fRating').value;
-  const fLoc    = document.getElementById('fLocation').value;
+  const q = (document.getElementById('globalSearch').value || '').toLowerCase();
 
   FILTERED = ALL.filter(c => {
-    if (fStatus && c.status !== fStatus) return false;
-    if (fStage  && c.stage  !== fStage)  return false;
-    if (fType   && c.type   !== fType)   return false;
-    if (fCons   && c.consultant !== fCons) return false;
-    if (fRating && c.rating !== fRating) return false;
-    if (fLoc    && c.location !== fLoc)  return false;
+    // For each filter: if any values are selected, candidate must match at least one (OR within filter)
+    if (FILTER_SETS.fStatus.size     && !FILTER_SETS.fStatus.has(c.status))       return false;
+    if (FILTER_SETS.fStage.size      && !FILTER_SETS.fStage.has(c.stage))         return false;
+    if (FILTER_SETS.fType.size       && !FILTER_SETS.fType.has(c.type))           return false;
+    if (FILTER_SETS.fConsultant.size && !FILTER_SETS.fConsultant.has(c.consultant)) return false;
+    if (FILTER_SETS.fRating.size     && !FILTER_SETS.fRating.has(c.rating))       return false;
+    if (FILTER_SETS.fLocation.size   && !FILTER_SETS.fLocation.has(c.location))   return false;
     if (q) {
       const blob = Object.values(c).join(' ').toLowerCase();
       if (!blob.includes(q)) return false;
@@ -2162,8 +2298,15 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  ['fStatus','fStage','fType','fConsultant','fRating','fLocation'].forEach(id => {
-    document.getElementById(id).value = '';
+  Object.keys(FILTER_SETS).forEach(id => {
+    FILTER_SETS[id].clear();
+    // Uncheck all checkboxes in this dropdown
+    const drop = document.getElementById(id + 'Drop');
+    if (drop) drop.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    updateMsBtn(id);
+    // Close any open dropdowns
+    const d = document.getElementById(id + 'Drop');
+    if (d) d.classList.remove('open');
   });
   document.getElementById('globalSearch').value = '';
   applyFilters();
@@ -2210,14 +2353,30 @@ function renderActiveTags() {
     tags.appendChild(tag);
   }
   filters.forEach(f => {
-    const val = document.getElementById(f.id).value;
-    if (val) {
+    const set = FILTER_SETS[f.id];
+    if (!set || set.size === 0) return;
+    // Create one tag per selected value so each can be individually removed
+    set.forEach(val => {
       const tag = document.createElement('div');
       tag.className = 'filter-tag';
-      tag.innerHTML = `${f.label}: ${val} <span class="filter-tag-x" onclick="document.getElementById('${f.id}').value='';applyFilters()">×</span>`;
+      const dispVal = val.length > 22 ? val.slice(0,20) + '…' : val;
+      tag.innerHTML = `${f.label}: ${dispVal} <span class="filter-tag-x" onclick="removeMsFilter('${f.id}',${JSON.stringify(val)})">×</span>`;
       tags.appendChild(tag);
-    }
+    });
   });
+}
+
+function removeMsFilter(id, val) {
+  FILTER_SETS[id].delete(val);
+  // Uncheck the checkbox
+  const drop = document.getElementById(id + 'Drop');
+  if (drop) {
+    drop.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      if (cb.value === val) cb.checked = false;
+    });
+  }
+  updateMsBtn(id);
+  applyFilters();
 }
 
 // ══════════════════════════════════════════════════════
