@@ -1587,7 +1587,15 @@ function loadDemo() {
 function parseEzekiaUrl(url) {
   const match = url.match(/\/(assignments?|projects?|opportunities?|lists?)\/(\d+)/i);
   if (!match) return null;
-  return { entityType: match[1].toLowerCase().replace(/s$/, ''), entityId: match[2] };
+  // Map plural URL segment → singular entity type
+  const typeMap = {
+    'assignments':  'assignment',  'assignment':   'assignment',
+    'opportunities':'opportunity', 'opportunity':  'opportunity',
+    'lists':        'list',        'list':         'list',
+    'projects':     'project',     'project':      'project',
+  };
+  const entityType = typeMap[match[1].toLowerCase()] || match[1].toLowerCase().replace(/s$/, '');
+  return { entityType, entityId: match[2] };
 }
 
 async function connectFromUrl() {
