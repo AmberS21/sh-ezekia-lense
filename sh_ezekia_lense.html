@@ -1619,32 +1619,21 @@ async function connectFromUrl() {
   if (loadBtn) { loadBtn.textContent = 'Loading…'; loadBtn.disabled = true; }
   showToast(`Connecting to Ezekia — ${parsed.entityType} ${parsed.entityId}…`, 'info');
 
-  // Build the correct API base path based on entity type
-  // assignment → /v4/assignments/{id}
-  // opportunity → /v4/opportunities/{id}
-  // list → /v4/lists/{id}
-  // project (legacy) → /v4/projects/{id}
-  function getEntityBasePath(entityType, entityId) {
-    switch (entityType) {
-      case 'assignment':  return `${BASE}/v4/assignments/${entityId}`;
-      case 'opportunity': return `${BASE}/v4/opportunities/${entityId}`;
-      case 'list':        return `${BASE}/v4/lists/${entityId}`;
-      default:            return `${BASE}/v4/projects/${entityId}`;
-    }
-  }
-  const entityBasePath = getEntityBasePath(parsed.entityType, parsed.entityId);
+  // Ezekia's API uses /v4/projects/{id} for ALL entity types
+  // (assignments, opportunities, and lists are all "projects" in the API)
+  // CURRENT_ENTITY_TYPE tracks the real type for display and PATCH routing
 
   try {
-    // 1. Entity details (assignment / opportunity / list / project)
-    const projResp = await fetch(entityBasePath);
+    // 1. Project details (works for assignments, opportunities, and lists)
+    const projResp = await fetch(`${BASE}/v4/projects/${parsed.entityId}`);
     if (!projResp.ok) throw new Error(`Project fetch failed (${projResp.status})`);
     const projData = await projResp.json();
     const proj = projData.data || projData;
     CURRENT_PROJECT_NAME = proj.name || proj.title || `${parsed.entityType} ${parsed.entityId}`;
     document.getElementById('sidebarSub').textContent = CURRENT_PROJECT_NAME;
 
-    // 2. Candidates — use entity-specific endpoint
-    const candResp = await fetch(`${entityBasePath}/candidates?fields[]=meta.candidate`);
+    // 2. Candidates
+    const candResp = await fetch(`${BASE}/v4/projects/${parsed.entityId}/candidates?fields[]=meta.candidate`);
     if (!candResp.ok) throw new Error(`Candidates fetch failed (${candResp.status})`);
     const candData = await candResp.json();
     const rawCandidates = candData.data || [];
@@ -1836,7 +1825,7 @@ async function executePush() {
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'summary') {
-          const resp = await fetch(`${BASE}/v4/${CURRENT_ENTITY_TYPE === 'opportunity' ? 'opportunities' : CURRENT_ENTITY_TYPE === 'list' ? 'lists' : CURRENT_ENTITY_TYPE === 'assignment' ? 'assignments' : 'projects'}/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'meta.candidate.summary': change.newValue })
@@ -1844,7 +1833,7 @@ async function executePush() {
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'status') {
-          const resp = await fetch(`${BASE}/v4/${CURRENT_ENTITY_TYPE === 'opportunity' ? 'opportunities' : CURRENT_ENTITY_TYPE === 'list' ? 'lists' : CURRENT_ENTITY_TYPE === 'assignment' ? 'assignments' : 'projects'}/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
