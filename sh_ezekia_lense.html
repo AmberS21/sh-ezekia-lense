@@ -8,50 +8,51 @@
 <style>
 :root,
 [data-theme="dark"] {
-  /* lighter than the original near-black; easier on the eyes during a long session */
-  --bg: #14171c;
-  --bg2: #1a1e25;
-  --bg3: #232831
-  --bg4: #2c323d;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #e8eaf0;
-  --text2: #9aa0b0;
-  --text3: #6a7185;
-  --accent: #5a99ff;
-  --accent2: #3a6fd8;
-  --accent-glow: rgba(90,153,255,0.18);
-  --green: #3ecf8e;
-  --amber: #f5a623;
-  --red: #f56565;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --row-hover: rgba(255,255,255,0.03);
-  --shadow: 0 8px 28px rgba(0,0,0,0.35);
+  /* Sheffield Haworth brand theme — navy dark + #36a9e1 sky blue accent */
+  --bg: #0d1120;       /* deep SH navy-black — main background */
+  --bg2: #131929;      /* slightly lighter navy — sidebar / topbar panels */
+  --bg3: #1c2336;      /* card/input background — clearly distinct from bg2 */
+  --bg4: #243049;      /* hover / elevated surfaces */
+  --border: rgba(54,169,225,0.12);   /* subtle SH-blue border tint */
+  --border2: rgba(54,169,225,0.22);  /* slightly more visible border */
+  --text: #eef2f8;     /* near-white — primary text, maximum legibility */
+  --text2: #8daabf;    /* medium blue-grey — secondary text */
+  --text3: #4e6a84;    /* muted — hints, placeholders */
+  --accent: #36a9e1;   /* SH signature sky blue — buttons, links, active states */
+  --accent2: #1e8cc4;  /* darker SH blue — hover states */
+  --accent-glow: rgba(54,169,225,0.18); /* SH blue glow for tags/badges */
+  --green: #2ec48a;    /* success / placed */
+  --amber: #f5a623;    /* warning / on hold */
+  --red: #f06565;      /* rejection / negative */
+  --purple: #a07cf0;   /* interview track */
+  --teal: #2dd4bf;     /* teal accents */
+  --row-hover: rgba(54,169,225,0.05); /* SH-tinted row hover */
+  --shadow: 0 8px 28px rgba(0,0,0,0.45);
   --font: 'DM Sans', sans-serif;
   --mono: 'DM Mono', monospace;
 } 
 
 [data-theme="light"] {
-  --bg: #f6f7fa;
-  --bg2: #ffffff;
-  --bg3: #f0f2f6;
-  --bg4: #e6e9ef;
-  --border: rgba(15,23,42,0.08);
-  --border2: rgba(15,23,42,0.14);
-  --text: #1a1f2e;
-  --text2: #5a6478;
-  --text3: #8b92a3;
-  --accent: #3a6fd8;
-  --accent2: #2954b0;
-  --accent-glow: rgba(58,111,216,0.12);
-  --green: #16a673;
-  --amber: #d68910;
-  --red: #d04848;
-  --purple: #7c5cf0;
-  --teal: #0fb5a0;
-  --row-hover: rgba(15,23,42,0.03);
-  --shadow: 0 4px 16px rgba(15,23,42,0.08);
+  /* Sheffield Haworth brand light theme — clean white with SH navy + sky blue */
+  --bg: #f2f6fa;       /* cool light grey-blue — clean main background */
+  --bg2: #ffffff;      /* pure white — sidebar / topbar panels */
+  --bg3: #e8eef5;      /* light blue-grey — inputs / cards */
+  --bg4: #d6e2ed;      /* slightly deeper — hover / elevated surfaces */
+  --border: rgba(16,6,61,0.10);   /* SH navy border tint */
+  --border2: rgba(16,6,61,0.18);  /* slightly more visible border */
+  --text: #10063d;     /* SH deep navy — primary text for max brand alignment */
+  --text2: #2e4a6e;    /* medium navy-blue — secondary text */
+  --text3: #6b87a0;    /* muted — hints, placeholders */
+  --accent: #36a9e1;   /* SH signature sky blue */
+  --accent2: #1e8cc4;  /* darker SH blue — hover states */
+  --accent-glow: rgba(54,169,225,0.14); /* SH blue glow */
+  --green: #0fa86a;    /* success / placed */
+  --amber: #c47d10;    /* warning / on hold */
+  --red: #c93f3f;      /* rejection / negative */
+  --purple: #6b44d4;   /* interview track */
+  --teal: #0aa896;     /* teal accents */
+  --row-hover: rgba(54,169,225,0.06); /* SH-tinted row hover */
+  --shadow: 0 4px 16px rgba(16,6,61,0.10);
   --font: 'DM Sans', sans-serif;
   --mono: 'DM Mono', monospace;
 }
@@ -414,15 +415,15 @@ body {
 
 /* Update Ezekia Project button */
 .top-btn.push-btn {
-  border-color: rgba(135,206,235,0.45);
-  color: #87CEEB;
-  background: rgba(135,206,235,0.08);
+  border-color: rgba(54,169,225,0.45);
+  color: #36a9e1;
+  background: rgba(54,169,225,0.08);
   position: relative;
 }
-.top-btn.push-btn:hover { background: rgba(135,206,235,0.16); color: #b0dff5; }
+.top-btn.push-btn:hover { background: rgba(54,169,225,0.16); color: #7dcfef; }
 .top-btn.push-btn:disabled { opacity: 0.4; cursor: default; }
-[data-theme="light"] .top-btn.push-btn { color: #1a7aad; border-color: rgba(26,122,173,0.4); background: rgba(26,122,173,0.07); }
-[data-theme="light"] .top-btn.push-btn:hover { background: rgba(26,122,173,0.13); }
+[data-theme="light"] .top-btn.push-btn { color: #1e8cc4; border-color: rgba(54,169,225,0.4); background: rgba(54,169,225,0.07); }
+[data-theme="light"] .top-btn.push-btn:hover { background: rgba(54,169,225,0.13); }
 
 /* Dirty change badge on push button */
 .dirty-badge {
@@ -723,8 +724,8 @@ table {
 }
 thead { position: sticky; top: 0; z-index: 10; }
 thead tr {
-  background: #1a5f7a;
-  border-bottom: 1px solid #0e4560;
+  background: #10063d;
+  border-bottom: 2px solid #36a9e1;
 }
 th {
   padding: 10px 14px;
@@ -733,7 +734,7 @@ th {
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #e8f4f8;
+  color: #eef2f8;
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
