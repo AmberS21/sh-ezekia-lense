@@ -2993,7 +2993,7 @@ function openIndustryEditor(cid, event) {
   async function getIndustryOptions() {
     if (window._industryOptionsGlobalCache) return window._industryOptionsGlobalCache;
     try {
-      const r = await fetch(PROXY + '/v4/categories/industries');
+      const r = await fetch(BASE + '/v4/categories/industries');
       const cats = await r.json();
       const opts = cats.filter(c => c.parent_id !== null).map(c => ({
         id: c.id, name: c.name, value: c.value || c.name, parentId: c.parent_id,
