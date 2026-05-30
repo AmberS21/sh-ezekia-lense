@@ -2980,7 +2980,7 @@ window.onload = () => {
 // Cache of all available industry options loaded from the first candidate
 let INDUSTRY_OPTIONS_CACHE = [];
 
-async function openIndustryEditor(cid, event) {
+function openIndustryEditor(cid, event) {
   event && event.stopPropagation && event.stopPropagation();
   const cand = ALL.find(c => c.id === cid);
   if (!cand) return;
@@ -3010,7 +3010,16 @@ async function openIndustryEditor(cid, event) {
       return Array.from(seen.values());
     }
   }
-  const allOptions = await getIndustryOptions();
+  // Get options immediately (from cache or fallback), then async-update if needed
+  const _getCacheOrFallback = () => {
+    if (window._industryOptionsGlobalCache) return window._industryOptionsGlobalCache;
+    const seen = new Map();
+    ALL.forEach(c => (c.industry_codes || []).forEach(ind => {
+      if (!seen.has(ind.id)) seen.set(ind.id, {id: ind.id, name: ind.name, value: ind.value || ind.name, parentId: null, parentName: ''});
+    }));
+    return Array.from(seen.values());
+  };
+  let allOptions = _getCacheOrFallback();
 
   const modal = document.getElementById('indModal');
   const candidateName = cand.name;
@@ -3061,6 +3070,14 @@ async function openIndustryEditor(cid, event) {
   document.getElementById('indModalTitle').textContent = 'Edit Industries — ' + candidateName;
   document.getElementById('indSearch').value = '';
   render('');
+  // Async-refresh options from full Ezekia catalogue if not yet cached
+  if (!window._industryOptionsGlobalCache) {
+    getIndustryOptions().then(opts => {
+      allOptions = opts;
+      const srch = document.getElementById('indSearch');
+      render(srch ? srch.value : '');
+    });
+  }
   modal.classList.add('open');
 }
 
