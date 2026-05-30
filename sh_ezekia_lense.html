@@ -1182,6 +1182,7 @@ tr.selected td { background: var(--accent-glow); }
 }
 .ind-modal-item:last-child { border-bottom: none; }
 .ind-modal-item:hover { background: var(--bg3); }
+.ind-cat-label { color: var(--text3); font-size: 10px; margin-left: 4px; opacity: 0.75; }
 .ind-modal-item.selected { color: var(--accent); background: var(--accent-glow); }
 .ind-modal-footer {
   display: flex; justify-content: flex-end; gap: 8px; margin-top: 0.75rem;
@@ -2979,7 +2980,7 @@ window.onload = () => {
 // Cache of all available industry options loaded from the first candidate
 let INDUSTRY_OPTIONS_CACHE = [];
 
-function openIndustryEditor(cid, event) {
+async function openIndustryEditor(cid, event) {
   event && event.stopPropagation && event.stopPropagation();
   const cand = ALL.find(c => c.id === cid);
   if (!cand) return;
@@ -2988,21 +2989,28 @@ function openIndustryEditor(cid, event) {
   let selected = JSON.parse(JSON.stringify(Array.isArray(cand.industry_codes) ? cand.industry_codes : []));
 
   // Gather all known industry options from loaded candidates (deduplicated by id)
-  const seenIds = new Set();
-  const allOptions = [];
-  ALL.forEach(c => {
-    if (Array.isArray(c.industry_codes)) {
-      c.industry_codes.forEach(ind => {
-        if (ind && ind.id && !seenIds.has(ind.id)) {
-          seenIds.add(ind.id);
-          allOptions.push(ind);
-        }
-      });
+  // Build options list from full Ezekia industry catalogue
+  async function getIndustryOptions() {
+    if (window._industryOptionsGlobalCache) return window._industryOptionsGlobalCache;
+    try {
+      const r = await fetch(PROXY + '/v4/categories/industries');
+      const cats = await r.json();
+      const opts = cats.filter(c => c.parent_id !== null).map(c => ({
+        id: c.id, name: c.name, value: c.value || c.name, parentId: c.parent_id,
+        parentName: (cats.find(p => p.id === c.parent_id) || {}).name || ''
+      }));
+      opts.sort((a, b) => a.parentName.localeCompare(b.parentName) || a.name.localeCompare(b.name));
+      window._industryOptionsGlobalCache = opts;
+      return opts;
+    } catch(e) {
+      const seen = new Map();
+      ALL.forEach(c => (c.industry_codes || []).forEach(ind => {
+        if (!seen.has(ind.id)) seen.set(ind.id, {id: ind.id, name: ind.name, value: ind.value || ind.name, parentName: ''});
+      }));
+      return Array.from(seen.values());
     }
-  });
-  // Sort alphabetically
-  allOptions.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-  INDUSTRY_OPTIONS_CACHE = allOptions;
+  }
+  const allOptions = await getIndustryOptions();
 
   const modal = document.getElementById('indModal');
   const candidateName = cand.name;
@@ -3022,8 +3030,7 @@ function openIndustryEditor(cid, event) {
     );
     const selectedIds = new Set(selected.map(s => s.id));
     list.innerHTML = filtered.map(opt =>
-      `<div class="ind-modal-item${selectedIds.has(opt.id) ? ' selected' : ''}"
-           onclick="window._indToggle(${opt.id})">${escHtml(opt.name || opt.value || '')}</div>`
+      `<div class="ind-modal-item${selectedIds.has(opt.id) ? ' selected' : ''}" onclick="window._indToggle(${opt.id})">${escHtml(opt.name || opt.value || '')}<small class="ind-cat-label"> — ${escHtml(opt.parentName || '')}</small></div>`
     ).join('') || '<div style="padding:8px;color:var(--text3);font-size:12px">No matches</div>';
   }
 
