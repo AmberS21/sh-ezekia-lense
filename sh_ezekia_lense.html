@@ -108,6 +108,28 @@ body {
   flex-shrink: 0;
 }
 .table-area { flex: 1; overflow: auto; padding: 0; }
+/* ---- BACK TO TOP ---- */
+#backToTop {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+#backToTop:hover { background: var(--accent2, #0d1120); }
+#backToTop.visible { display: flex; }
 .footer {
   background: var(--bg2);
   border-top: 1px solid var(--border);
@@ -1350,7 +1372,8 @@ tr.selected td { background: var(--accent-glow); }
     <div class="active-filters" id="activeTags"></div>
 
     <!-- TABLE -->
-    <div class="table-area">
+    <div class="table-area" id="tableArea">
+      <button id="backToTop" title="Back to top">&#8679;</button>
       <table id="mainTable">
         <thead id="tableHead"></thead>
         <tbody id="tableBody"></tbody>
@@ -3121,6 +3144,23 @@ function markPendingIndustry(cid, newCodes, candidateName) {
   applyFilters(); // re-render table
 }
 
+
+  // ---- BACK TO TOP ----
+  (function(){
+    const area = document.getElementById('tableArea');
+    const btn  = document.getElementById('backToTop');
+    if (!area || !btn) return;
+    area.addEventListener('scroll', function() {
+      if (area.scrollTop > 300) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    });
+    btn.addEventListener('click', function() {
+      area.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
 </script>
 
 <!-- ═══════════════════════════════════════════════
