@@ -1781,10 +1781,20 @@ async function connectFromUrl() {
     document.getElementById('sidebarSub').textContent = CURRENT_PROJECT_NAME;
 
     // 2. Candidates
-    const candResp = await fetch(`${BASE}/v4/projects/${parsed.entityId}/candidates?fields[]=meta.candidate`);
-    if (!candResp.ok) throw new Error(`Candidates fetch failed (${candResp.status})`);
-    const candData = await candResp.json();
-    const rawCandidates = candData.data || [];
+          // Paginated fetch — loop all pages (Ezekia returns max 100 per page)
+      const _candBaseUrl = `${BASE}/v4/projects/${parsed.entityId}/candidates?fields[]=meta.candidate&per_page=100`;
+      const _page1Resp = await fetch(_candBaseUrl + '&page=1');
+      if (!_page1Resp.ok) throw new Error('Candidates fetch failed: ' + _page1Resp.status);
+      const _page1Data = await _page1Resp.json();
+      const _totalPages = (_page1Data.meta || {}).lastPage || 1;
+      const rawCandidates = [...(_page1Data.data || [])];
+      for (let _p = 2; _p <= _totalPages; _p++) {
+        if (_p % 5 === 0 || _p === 2) { const _sub = document.getElementById('sidebarSub'); if (_sub) _sub.textContent = `Loading page ${_p} of ${_totalPages}…`; }
+        const _pr = await fetch(_candBaseUrl + '&page=' + _p);
+        if (!_pr.ok) break; // skip failed pages but keep what we have
+        const _pd = await _pr.json();
+        rawCandidates.push(...(_pd.data || []));
+      }
 
     // 3. Enrich in batches of 5
     ALL = await enrichCandidates(rawCandidates);
