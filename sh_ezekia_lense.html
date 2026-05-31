@@ -8,18 +8,18 @@
 <style>
 :root,
 [data-theme="dark"] {
-  /* Sheffield Haworth brand theme â navy dark + #36a9e1 sky blue accent */
-  --bg: #0d1120;       /* deep SH navy-black â main background */
-  --bg2: #131929;      /* slightly lighter navy â sidebar / topbar panels */
-  --bg3: #1c2336;      /* card/input background â clearly distinct from bg2 */
+  /* Sheffield Haworth brand theme \2014  navy dark + #36a9e1 sky blue accent */
+  --bg: #0d1120;       /* deep SH navy-black \2014  main background */
+  --bg2: #131929;      /* slightly lighter navy \2014  sidebar / topbar panels */
+  --bg3: #1c2336;      /* card/input background \2014  clearly distinct from bg2 */
   --bg4: #243049;      /* hover / elevated surfaces */
   --border: rgba(54,169,225,0.12);   /* subtle SH-blue border tint */
   --border2: rgba(54,169,225,0.22);  /* slightly more visible border */
-  --text: #eef2f8;     /* near-white â primary text, maximum legibility */
-  --text2: #8daabf;    /* medium blue-grey â secondary text */
-  --text3: #4e6a84;    /* muted â hints, placeholders */
-  --accent: #36a9e1;   /* SH signature sky blue â buttons, links, active states */
-  --accent2: #1e8cc4;  /* darker SH blue â hover states */
+  --text: #eef2f8;     /* near-white \2014  primary text, maximum legibility */
+  --text2: #8daabf;    /* medium blue-grey \2014  secondary text */
+  --text3: #4e6a84;    /* muted \2014  hints, placeholders */
+  --accent: #36a9e1;   /* SH signature sky blue \2014  buttons, links, active states */
+  --accent2: #1e8cc4;  /* darker SH blue \2014  hover states */
   --accent-glow: rgba(54,169,225,0.18); /* SH blue glow for tags/badges */
   --green: #2ec48a;    /* success / placed */
   --amber: #f5a623;    /* warning / on hold */
@@ -33,18 +33,18 @@
 } 
 
 [data-theme="light"] {
-  /* Sheffield Haworth brand light theme â clean white with SH navy + sky blue */
-  --bg: #f2f6fa;       /* cool light grey-blue â clean main background */
-  --bg2: #ffffff;      /* pure white â sidebar / topbar panels */
-  --bg3: #e8eef5;      /* light blue-grey â inputs / cards */
-  --bg4: #d6e2ed;      /* slightly deeper â hover / elevated surfaces */
+  /* Sheffield Haworth brand light theme \2014  clean white with SH navy + sky blue */
+  --bg: #f2f6fa;       /* cool light grey-blue \2014  clean main background */
+  --bg2: #ffffff;      /* pure white \2014  sidebar / topbar panels */
+  --bg3: #e8eef5;      /* light blue-grey \2014  inputs / cards */
+  --bg4: #d6e2ed;      /* slightly deeper \2014  hover / elevated surfaces */
   --border: rgba(16,6,61,0.10);   /* SH navy border tint */
   --border2: rgba(16,6,61,0.18);  /* slightly more visible border */
-  --text: #10063d;     /* SH deep navy â primary text for max brand alignment */
-  --text2: #2e4a6e;    /* medium navy-blue â secondary text */
-  --text3: #6b87a0;    /* muted â hints, placeholders */
+  --text: #10063d;     /* SH deep navy \2014  primary text for max brand alignment */
+  --text2: #2e4a6e;    /* medium navy-blue \2014  secondary text */
+  --text3: #6b87a0;    /* muted \2014  hints, placeholders */
   --accent: #36a9e1;   /* SH signature sky blue */
-  --accent2: #1e8cc4;  /* darker SH blue â hover states */
+  --accent2: #1e8cc4;  /* darker SH blue \2014  hover states */
   --accent-glow: rgba(54,169,225,0.14); /* SH blue glow */
   --green: #0fa86a;    /* success / placed */
   --amber: #c47d10;    /* warning / on hold */
@@ -231,7 +231,7 @@ body {
 .filter-select:focus { border-color: var(--accent); }
 .filter-select option { background: var(--bg3); }
 
-/* ââ Multi-select filter dropdown ââ */
+/* \2500 \2500  Multi-select filter dropdown \2500 \2500  */
 .ms-filter { position: relative; width: 100%; }
 .ms-filter-btn {
   width: 100%;
@@ -250,7 +250,7 @@ body {
   position: relative;
 }
 .ms-filter-btn::after {
-  content: 'â¾';
+  content: '\25be ';
   position: absolute;
   right: 8px;
   top: 50%;
@@ -472,7 +472,7 @@ td.dirty-cell::after {
   border-radius: 0 1px 1px 0;
 }
 
-/* ââ PIPELINE TAG INLINE EDITOR ââ */
+/* \2500 \2500  PIPELINE TAG INLINE EDITOR \2500 \2500  */
 .tag-edit-wrap { position: relative; display: block; width: 100%; }.tag-edit-btn { max-width: 100%; overflow: hidden; min-width: 0; }.tag-edit-btn .badge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .tag-edit-btn {
   cursor: pointer;
@@ -481,7 +481,7 @@ td.dirty-cell::after {
   gap: 4px;
 }
 .tag-edit-btn::after {
-  content: 'â¾';
+  content: '\25be ';
   font-size: 9px;
   opacity: 0.55;
   margin-left: 2px;
@@ -520,7 +520,7 @@ td.dirty-cell::after {
 .tag-dropdown-item.active { color: var(--accent); font-weight: 500; }
 .tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-/* ââ PROGRESS NOTES actions ââ */
+/* \2500 \2500  PROGRESS NOTES actions \2500 \2500  */
 .notes-wrap { position: relative; } td:has(.tag-edit-wrap) { overflow: visible !important; } td:has(.notes-wrap), td:has(.editable):not(:has(.notes-wrap)) { position: relative; } td:has(.notes-wrap) .editable, td:has(.editable):not(:has(.notes-wrap)) .editable { overflow: hidden; white-space: nowrap !important; max-height: 38px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; } td:has(.notes-wrap):hover, td:has(.editable):not(:has(.notes-wrap)):hover { overflow: visible; z-index: 200; } td:has(.notes-wrap):hover .editable, td:has(.editable):not(:has(.notes-wrap)):hover .editable { position: relative; display: block; max-height: 200px; overflow-y: auto; white-space: pre-wrap !important; -webkit-line-clamp: unset; }
 .notes-actions { display: none; gap: 4px; margin-top: 4px; }
 .notes-actions.show { display: flex; }
@@ -534,7 +534,7 @@ td.dirty-cell::after {
 .notes-action-btn.del { color: var(--red); border-color: rgba(245,101,101,0.3); }
 .notes-action-btn.del:hover { background: rgba(245,101,101,0.1); }
 
-/* ââ ADMIN PAGE ââ */
+/* \2500 \2500  ADMIN PAGE \2500 \2500  */
 .admin-overlay {
   display: none;
   position: fixed;
@@ -689,7 +689,7 @@ td.dirty-cell::after {
   justify-content: flex-end;
 }
 
-/* ââ PUSH CONFIRM MODAL ââ */
+/* \2500 \2500  PUSH CONFIRM MODAL \2500 \2500  */
 #pushModal .modal { max-width: 460px; }
 .push-summary {
   background: var(--bg3);
@@ -820,7 +820,7 @@ tr.selected td { background: var(--accent-glow); }
 .badge-active    { background: rgba(45,212,191,0.14);  color: #5de8d4; border: 1px solid rgba(45,212,191,0.28); }
 .badge-default   { background: var(--bg4); color: var(--text2); border: 1px solid var(--border); }
 
-/* Pipeline-tag badges (the new "Status" column â "Pipeline Tag")
+/* Pipeline-tag badges (the new "Status" column \2192  "Pipeline Tag")
    colour-coded to make a long table scannable at a glance:
    - blues  = sourcing/pipeline
    - ambers = engagement
@@ -854,7 +854,7 @@ tr.selected td { background: var(--accent-glow); }
 .tag-pipe-processed       { background: rgba(160,176,90,0.16);  color: #c4d088; border: 1px solid rgba(160,176,90,0.30); }
 .tag-pipe-identified      { background: rgba(74,164,148,0.16);  color: #82c8b8; border: 1px solid rgba(74,164,148,0.30); }
 
-/* Light-theme adjustments for pipeline tags â increase contrast against light bg */
+/* Light-theme adjustments for pipeline tags \2014  increase contrast against light bg */
 [data-theme="light"] .tag-pipe-longlist        { background: rgba(58,111,216,0.10); color: #2b5fbf; border-color: rgba(58,111,216,0.30); }
 [data-theme="light"] .tag-pipe-shortlist       { background: rgba(15,181,160,0.10); color: #0a7d70; border-color: rgba(15,181,160,0.30); }
 [data-theme="light"] .tag-pipe-carveout        { background: rgba(124,92,240,0.10); color: #5b3fc7; border-color: rgba(124,92,240,0.30); }
@@ -881,9 +881,9 @@ tr.selected td { background: var(--accent-glow); }
 [data-theme="light"] .tag-pipe-processed       { background: rgba(132,148,60,0.14); color: #565e1e; border-color: rgba(132,148,60,0.30); }
 [data-theme="light"] .tag-pipe-identified      { background: rgba(50,134,118,0.12); color: #195045; border-color: rgba(50,134,118,0.30); }
 
-/* ââââââââââââââââââââââââââââââââââââââââââââââ
+/* \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 
    INLINE-EDITABLE CELLS (Progress Notes, Summary)
-   ââââââââââââââââââââââââââââââââââââââââââââââ */
+   \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500  */
 .editable {
   display: block;
   min-width: 180px;
@@ -1137,7 +1137,7 @@ tr.selected td { background: var(--accent-glow); }
 .filter-tag-x { cursor: pointer; opacity: 0.7; }
 .filter-tag-x:hover { opacity: 1; }
 
-/* ââ Industry coding tags ââ */
+/* \2500 \2500  Industry coding tags \2500 \2500  */
 .ind-cell {
   display: flex; flex-wrap: wrap; gap: 3px;
   cursor: pointer; padding: 2px 0;
@@ -1157,7 +1157,7 @@ tr.selected td { background: var(--accent-glow); }
 }
 .ind-tag-empty { color: var(--text3); background: transparent; border-style: dashed; }
 
-/* ââ Industry editor modal ââ */
+/* \2500 \2500  Industry editor modal \2500 \2500  */
 .ind-modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.55); z-index: 20000;
@@ -1274,7 +1274,7 @@ tr.selected td { background: var(--accent-glow); }
         <div class="logo-dot"></div>
         SH Ezekia Lense
       </div>
-      <div class="logo-sub" id="sidebarSub">Sheffield Haworth Â· candidate pipeline Â· v2.0</div>
+      <div class="logo-sub" id="sidebarSub">Sheffield Haworth &#183; candidate pipeline &#183; v2.0</div>
     </div>
 
     <div class="sidebar-scroll">
@@ -1282,7 +1282,7 @@ tr.selected td { background: var(--accent-glow); }
     <!-- CONNECTION -->
     <div class="sb-section">
       <div class="sb-label">Load Project</div>
-      <input class="sb-input" id="projectUrl" type="text" placeholder="Paste Ezekia project URLâ¦" />
+      <input class="sb-input" id="projectUrl" type="text" placeholder="Paste Ezekia project URL&#8230;" />
       <button class="sb-btn" onclick="connectFromUrl()">Load Project</button>
       <button class="sb-btn secondary" onclick="loadDemo()">Load Demo Data</button>
       <div class="info-note">Paste an Ezekia assignment or project URL. Credentials are managed in Admin settings.</div>
@@ -1292,10 +1292,10 @@ tr.selected td { background: var(--accent-glow); }
     <div class="sb-section">
       <div class="sb-label">Overview</div>
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-num" id="statTotal">â</div><div class="stat-lbl">Total</div></div>
-        <div class="stat-box"><div class="stat-num" id="statFiltered">â</div><div class="stat-lbl">Shown</div></div>
-        <div class="stat-box"><div class="stat-num" id="statActive">â</div><div class="stat-lbl">Active</div></div>
-        <div class="stat-box"><div class="stat-num" id="statPlaced">â</div><div class="stat-lbl">Placed</div></div>
+        <div class="stat-box"><div class="stat-num" id="statTotal">&#8212;</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-box"><div class="stat-num" id="statFiltered">&#8212;</div><div class="stat-lbl">Shown</div></div>
+        <div class="stat-box"><div class="stat-num" id="statActive">&#8212;</div><div class="stat-lbl">Active</div></div>
+        <div class="stat-box"><div class="stat-num" id="statPlaced">&#8212;</div><div class="stat-lbl">Placed</div></div>
       </div>
     </div>
 
@@ -1355,7 +1355,7 @@ tr.selected td { background: var(--accent-glow); }
 
     </div><!-- end sidebar-scroll -->
 
-    <!-- ADMIN FOOTER â always visible -->
+    <!-- ADMIN FOOTER &#8212; always visible -->
     <div class="sidebar-footer">
       <button class="sb-btn secondary" onclick="openAdmin()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
@@ -1370,12 +1370,12 @@ tr.selected td { background: var(--accent-glow); }
     <div class="topbar">
       <div class="search-wrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-       <input class="topbar-search" id="globalSearch" autocomplete="off" placeholder="Search name, company, title, location, progress notes, summaryâ¦" oninput="applyFilters()" />
+       <input class="topbar-search" id="globalSearch" autocomplete="off" placeholder="Search name, company, title, location, progress notes, summary&#8230;" oninput="applyFilters()" />
       </div>
       <div class="topbar-right">
         <span id="selectionInfo" style="font-size:12px;color:var(--text3);display:none"></span>
         <button class="top-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle day / night mode" aria-label="Toggle theme">
-          <span id="themeToggleIcon">â</span>
+          <span id="themeToggleIcon">&#9728;</span>
           <span id="themeToggleLabel">Day</span>
         </button>
         <button class="top-btn ai-btn" onclick="openBulkAI()">
@@ -1405,7 +1405,7 @@ tr.selected td { background: var(--accent-glow); }
         <tbody id="tableBody"></tbody>
       </table>
       <div id="emptyState" class="empty-state" style="display:none">
-        <div class="empty-icon">â</div>
+        <div class="empty-icon">&#9678;</div>
         <div class="empty-msg">No candidates match your current filters.</div>
       </div>
     </div>
@@ -1437,17 +1437,17 @@ tr.selected td { background: var(--accent-glow); }
   </div>
 </div>
 
-<!-- âââââââââââââââââââââââââââââââââââââââââââââââ
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;
      ADMIN PAGE
-ââââââââââââââââââââââââââââââââââââââââââââââââ -->
+&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
 <div class="admin-overlay" id="adminOverlay">
   <div class="admin-topbar">
     <div class="admin-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
-      SH Ezekia Lense â Admin &amp; Settings
+      SH Ezekia Lense &#8212; Admin &amp; Settings
     </div>
     <button class="top-btn" onclick="closeAdmin()" style="margin-left:auto">
-      â Back to Dashboard
+      &#8592; Back to Dashboard
     </button>
   </div>
 
@@ -1462,7 +1462,7 @@ tr.selected td { background: var(--accent-glow); }
       </div>
       <div class="admin-row">
         <span class="admin-label">API Key</span>
-        <input class="admin-input" id="adminApiKey" type="password" placeholder="Stored securely â not exposed to browser" />
+        <input class="admin-input" id="adminApiKey" type="password" placeholder="Stored securely &#8212; not exposed to browser" />
       </div>
       <div class="admin-row">
         <span class="admin-label">Environment</span>
@@ -1472,7 +1472,7 @@ tr.selected td { background: var(--accent-glow); }
         </select>
       </div>
       <div class="admin-note">
-        The API key is passed server-side via the Azure Functions proxy â it is never sent to or stored in the browser. Changes here update the proxy configuration endpoint.
+        The API key is passed server-side via the Azure Functions proxy &#8212; it is never sent to or stored in the browser. Changes here update the proxy configuration endpoint.
       </div>
       <div class="admin-action-row">
         <button class="admin-save-btn" onclick="saveAdminConfig()">Save Configuration</button>
@@ -1481,14 +1481,14 @@ tr.selected td { background: var(--accent-glow); }
 
     <!-- MS 365 IDENTITY (PLACEHOLDER) -->
     <div class="admin-section">
-      <div class="admin-section-title">User Identity â Microsoft 365</div>
+      <div class="admin-section-title">User Identity &#8212; Microsoft 365</div>
       <div class="admin-row">
         <span class="admin-label">Identity Source</span>
-        <span style="font-size:13px;color:var(--text3);font-style:italic">MS 365 SSO â coming in next release</span>
+        <span style="font-size:13px;color:var(--text3);font-style:italic">MS 365 SSO &#8212; coming in next release</span>
       </div>
       <div class="admin-row">
         <span class="admin-label">Current Session User</span>
-        <input class="admin-input" id="adminDisplayName" type="text" placeholder="Enter your name (temporary â until MS 365 SSO)" style="max-width:240px" />
+        <input class="admin-input" id="adminDisplayName" type="text" placeholder="Enter your name (temporary &#8212; until MS 365 SSO)" style="max-width:240px" />
       </div>
       <div class="admin-note">
         Once MS 365 integration is live, the tool will automatically identify the logged-in user from the SHGlobalHub session. For now, enter your name above for usage log attribution.
@@ -1502,7 +1502,7 @@ tr.selected td { background: var(--accent-glow); }
     <div class="admin-section">
       <div class="admin-section-title">Usage Log</div>
       <div style="font-size:12px;color:var(--text3);margin-bottom:12px">
-        Records every push made from SH Ezekia Lense â session, project, field changed, and timestamp. Stored locally in this browser session.
+        Records every push made from SH Ezekia Lense &#8212; session, project, field changed, and timestamp. Stored locally in this browser session.
       </div>
       <div id="usageLogContainer">
         <div class="log-empty">No activity logged yet in this session.</div>
@@ -1519,9 +1519,9 @@ tr.selected td { background: var(--accent-glow); }
   </div>
 </div>
 
-<!-- âââââââââââââââââââââââââââââââââââââââââââââââ
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;
      PUSH CONFIRM MODAL
-ââââââââââââââââââââââââââââââââââââââââââââââââ -->
+&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
 <div class="modal-overlay" id="pushModal" onclick="closeModal('pushModal')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -1529,7 +1529,7 @@ tr.selected td { background: var(--accent-glow); }
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#87CEEB" stroke-width="2"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/><path d="M3 20h18"/></svg>
         Update Ezekia Project
       </div>
-      <button class="modal-close" onclick="closeModal('pushModal')">Ã</button>
+      <button class="modal-close" onclick="closeModal('pushModal')">&#215;</button>
     </div>
     <div class="modal-body">
       <div class="push-summary" id="pushSummary"></div>
@@ -1547,15 +1547,15 @@ tr.selected td { background: var(--accent-glow); }
 <div class="modal-overlay" id="aiModal" onclick="closeModal('aiModal')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <div class="modal-title"><span class="modal-title-icon">â¦</span> <span id="aiModalTitle">AI Assistant</span></div>
-      <button class="modal-close" onclick="closeModal('aiModal')">Ã</button>
+      <div class="modal-title"><span class="modal-title-icon">&#10022;</span> <span id="aiModalTitle">AI Assistant</span></div>
+      <button class="modal-close" onclick="closeModal('aiModal')">&#215;</button>
     </div>
     <div class="modal-body">
       <div class="cand-snapshot" id="aiCandSnapshot"></div>
       <div class="ai-prompts" id="aiPrompts"></div>
       <div class="ai-input-row">
-        <input class="ai-input" id="aiInput" placeholder="Ask anything about this candidateâ¦" onkeydown="if(event.key==='Enter')sendAI()" />
-        <button class="ai-send-btn" onclick="sendAI()">Ask â</button>
+        <input class="ai-input" id="aiInput" placeholder="Ask anything about this candidate&#8230;" onkeydown="if(event.key==='Enter')sendAI()" />
+        <button class="ai-send-btn" onclick="sendAI()">Ask &#8594;</button>
       </div>
       <div class="ai-response" id="aiResponse"></div>
     </div>
@@ -1567,20 +1567,20 @@ tr.selected td { background: var(--accent-glow); }
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">Export Candidates</div>
-      <button class="modal-close" onclick="closeModal('exportModal')">Ã</button>
+      <button class="modal-close" onclick="closeModal('exportModal')">&#215;</button>
     </div>
     <div class="modal-body">
       <div style="font-size:12px;color:var(--text3);margin-bottom:12px" id="exportScopeInfo"></div>
       <div class="export-options">
         <div class="export-option selected" id="expOptXlsx" onclick="selectExport('xlsx')">
-          <div class="export-icon">ð</div>
+          <div class="export-icon">&#128202;</div>
           <div class="export-info">
             <div class="export-name">Excel (.xlsx)</div>
             <div class="export-desc">All visible columns, formatted with headers</div>
           </div>
         </div>
         <div class="export-option" id="expOptCsv" onclick="selectExport('csv')">
-          <div class="export-icon">ð</div>
+          <div class="export-icon">&#128196;</div>
           <div class="export-info">
             <div class="export-name">CSV</div>
             <div class="export-desc">Comma-separated, compatible with all tools</div>
@@ -1609,12 +1609,12 @@ tr.selected td { background: var(--accent-glow); }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// âââââââââââââââââââââââââââââââââââââââââââââââ
-// SH EZEKIA LENSE â v2.0
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// SH EZEKIA LENSE \u2014 v2.0
 // Sheffield Haworth internal CRM view + write tool
-// âââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 
-// ââ STATE ââ
+// \u2500\u2500 STATE \u2500\u2500
 let ALL = [];
 let FILTERED = [];
 let SORT_COL = 'name';
@@ -1633,10 +1633,10 @@ let CURRENT_PROJECT_ID = null;
 let CURRENT_PROJECT_NAME = '';
 let CURRENT_ENTITY_TYPE = null;
 
-// Usage log array â persists for the browser session
+// Usage log array \u2014 persists for the browser session
 const USAGE_LOG = [];
 
-// ââ COLUMNS ââ
+// \u2500\u2500 COLUMNS \u2500\u2500
 const COLUMNS = [
   { key: 'name',            label: 'Name',             always: true },
   { key: 'status',          label: 'Pipeline Tag',     badge: true  },
@@ -1668,7 +1668,7 @@ const COLUMNS = [
 
 let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender']);
 
-// ââ PIPELINE TAGS ââ
+// \u2500\u2500 PIPELINE TAGS \u2500\u2500
 const PIPELINE_TAGS = [
   'Longlist',
   'Short List and/or CV Sent to Client',
@@ -1697,12 +1697,12 @@ const PIPELINE_TAGS = [
   'Identified'
 ];
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // DEMO DATA
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function generateDemo() {
-  const first = ['Sarah','James','Priya','Thomas','Li','Amara','Carlos','Emma','Rajiv','Nina','David','Fatima','Marco','Yuki','Sophie','Ahmed','Claire','Kwame','Elena','Patrick','Aiko','Ibrahim','Natasha','Oliver','Mei','Tariq','Rebecca','Sven','Zanele','FranÃ§ois','Ingrid','Kofi','Leila','Michael','Nadia','Oscar','Pita','Qian','Rosa','Sanjay','Talia','Ugo','Vera','Walter','Xiu','Yusuf','Zara','Anton','Brigitte','Chioma'];
-  const last = ['Chen','Okafor','MÃ¼ller','Andersen','Nakamura','Patel','GarcÃ­a','Svensson','Dubois','Kowalski','Al-Rashid','Kim','FernÃ¡ndez','Johansson','Mensah','Tanaka','Rossi','Olawale','BergstrÃ¶m','Nkosi','Hassan','Lindqvist','Yamamoto','Boateng','Eriksson','Souza','Delacroix','Fischer','Onyeka','Tran'];
+  const first = ['Sarah','James','Priya','Thomas','Li','Amara','Carlos','Emma','Rajiv','Nina','David','Fatima','Marco','Yuki','Sophie','Ahmed','Claire','Kwame','Elena','Patrick','Aiko','Ibrahim','Natasha','Oliver','Mei','Tariq','Rebecca','Sven','Zanele','Fran\u00e7ois','Ingrid','Kofi','Leila','Michael','Nadia','Oscar','Pita','Qian','Rosa','Sanjay','Talia','Ugo','Vera','Walter','Xiu','Yusuf','Zara','Anton','Brigitte','Chioma'];
+  const last = ['Chen','Okafor','M\u00fcller','Andersen','Nakamura','Patel','Garc\u00eda','Svensson','Dubois','Kowalski','Al-Rashid','Kim','Fern\u00e1ndez','Johansson','Mensah','Tanaka','Rossi','Olawale','Bergstr\u00f6m','Nkosi','Hassan','Lindqvist','Yamamoto','Boateng','Eriksson','Souza','Delacroix','Fischer','Onyeka','Tran'];
   const titles = ['Chief Financial Officer','Chief Operating Officer','Chief Revenue Officer','VP Strategy','VP Operations','Managing Director','Head of Finance','Head of Marketing','Group FD','CEO','President EMEA','General Manager','SVP Commercial','Director of Transformation'];
   const companies = ['HSBC','Goldman Sachs','Unilever','BP','Vodafone','AstraZeneca','Barclays','Shell','Rio Tinto','Standard Chartered','Diageo','GlaxoSmithKline','BHP','Prudential','Reckitt','National Grid','Pearson','Imperial Brands','BAE Systems','Rolls-Royce'];
   const stages = ['Longlist','Shortlist','1st Interview','2nd Interview','Final Interview','Offer','Placed','On Hold','Rejected'];
@@ -1714,10 +1714,10 @@ function generateDemo() {
   const educations = ['MBA, INSEAD','BA Economics, Oxford','MSc Finance, LSE','MBA, Wharton','BEng, Imperial College','MA, Cambridge'];
   const avail = ['Immediate','1 month','3 months','Notice period: 6 months','Gardening leave'];
   const sampleNotes = [
-    'Strong first call â very interested in the mandate. Follow-up scheduled for Thursday.',
-    'On gardening leave; available from mid-Q3. Compensation gap of ~12% â to be discussed.',
+    'Strong first call \u2014 very interested in the mandate. Follow-up scheduled for Thursday.',
+    'On gardening leave; available from mid-Q3. Compensation gap of ~12% \u2014 to be discussed.',
     '',
-    'Compensation gap of ~12% â to be discussed with client.',
+    'Compensation gap of ~12% \u2014 to be discussed with client.',
     '',
   ];
   const sampleSummaries = [
@@ -1726,7 +1726,7 @@ function generateDemo() {
     'CFO with two IPO exits; strong investor relations background.',
     'Strategy leader; ex-MBB, then operator at scale-up.',
     '',
-    'Quiet candidate â strong on substance, light on profile. Worth pursuing.',
+    'Quiet candidate \u2014 strong on substance, light on profile. Worth pursuing.',
     '',
   ];
 
@@ -1781,17 +1781,17 @@ function loadDemo() {
   buildColToggles();
   buildFilterOptions();    document.getElementById('globalSearch').value = '';
   applyFilters();
-  document.getElementById('sidebarSub').textContent = 'Demo Â· 60 sample candidates';
-  showToast('Demo data loaded â 60 candidates.', 'info');
+  document.getElementById('sidebarSub').textContent = 'Demo \u00b7 60 sample candidates';
+  showToast('Demo data loaded \u2014 60 candidates.', 'info');
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // URL PARSING & LIVE PROJECT LOAD
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function parseEzekiaUrl(url) {
   const match = url.match(/\/(assignments?|projects?|opportunities?|lists?)\/(\d+)/i);
   if (!match) return null;
-  // Map plural URL segment â singular entity type
+  // Map plural URL segment \u2192 singular entity type
   const typeMap = {
     'assignments':  'assignment',  'assignment':   'assignment',
     'opportunities':'opportunity', 'opportunity':  'opportunity',
@@ -1807,7 +1807,7 @@ async function connectFromUrl() {
   if (!raw) { showToast('Please paste an Ezekia project or assignment URL.', 'error'); return; }
 
   const parsed = parseEzekiaUrl(raw);
-  if (!parsed) { showToast('Could not read that URL. Expected:\nâ¢ https://ezekia.com/#/assignments/{id}/pipeline\nâ¢ https://ezekia.com/#/opportunities/{id}/pipeline\nâ¢ https://ezekia.com/#/lists/{id}', 'error'); return; }
+  if (!parsed) { showToast('Could not read that URL. Expected:\n\u2022 https://ezekia.com/#/assignments/{id}/pipeline\n\u2022 https://ezekia.com/#/opportunities/{id}/pipeline\n\u2022 https://ezekia.com/#/lists/{id}', 'error'); return; }
 
   // Clear any pending changes before loading fresh data
   if (PENDING.size > 0) {
@@ -1820,8 +1820,8 @@ async function connectFromUrl() {
   CURRENT_ENTITY_TYPE = parsed.entityType;
 
   const loadBtn = document.querySelector('.sb-btn:not(.secondary)');
-  if (loadBtn) { loadBtn.textContent = 'Loadingâ¦'; loadBtn.disabled = true; }
-  showToast(`Connecting to Ezekia â ${parsed.entityType} ${parsed.entityId}â¦`, 'info');
+  if (loadBtn) { loadBtn.textContent = 'Loading\u2026'; loadBtn.disabled = true; }
+  showToast(`Connecting to Ezekia \u2014 ${parsed.entityType} ${parsed.entityId}\u2026`, 'info');
 
   // Ezekia's API uses /v4/projects/{id} for ALL entity types
   // (assignments, opportunities, and lists are all "projects" in the API)
@@ -1837,7 +1837,7 @@ async function connectFromUrl() {
     document.getElementById('sidebarSub').textContent = CURRENT_PROJECT_NAME;
 
     // 2. Candidates
-          // Paginated fetch â loop all pages (Ezekia returns max 100 per page)
+          // Paginated fetch \u2014 loop all pages (Ezekia returns max 100 per page)
       const _candBaseUrl = `${BASE}/v4/projects/${parsed.entityId}/candidates?fields[]=meta.candidate&per_page=100`;
       const _page1Resp = await fetch(_candBaseUrl + '&page=1');
       if (!_page1Resp.ok) throw new Error('Candidates fetch failed: ' + _page1Resp.status);
@@ -1845,7 +1845,7 @@ async function connectFromUrl() {
       const _totalPages = (_page1Data.meta || {}).lastPage || 1;
       const rawCandidates = [...(_page1Data.data || [])];
       for (let _p = 2; _p <= _totalPages; _p++) {
-        if (_p % 5 === 0 || _p === 2) { const _sub = document.getElementById('sidebarSub'); if (_sub) _sub.textContent = `Loading page ${_p} of ${_totalPages}â¦`; }
+        if (_p % 5 === 0 || _p === 2) { const _sub = document.getElementById('sidebarSub'); if (_sub) _sub.textContent = `Loading page ${_p} of ${_totalPages}\u2026`; }
         const _pr = await fetch(_candBaseUrl + '&page=' + _p);
         if (!_pr.ok) break; // skip failed pages but keep what we have
         const _pd = await _pr.json();
@@ -1942,9 +1942,9 @@ async function enrichOne(_bc) {
   };
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// PENDING CHANGES â DIRTY TRACKING
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// PENDING CHANGES \u2014 DIRTY TRACKING
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function markPending(cid, field, newValue, candidateName) {
   const key = `${cid}:${field}`;
   const cand = ALL.find(c => c.id === cid);
@@ -1956,7 +1956,7 @@ function markPending(cid, field, newValue, candidateName) {
   }
 
   if (newValue === (originalValue !== undefined ? originalValue : '')) {
-    // Value reverted back to original â remove from pending
+    // Value reverted back to original \u2014 remove from pending
     PENDING.delete(key);
   } else {
     PENDING.set(key, { cid, field, newValue, candidateName: candidateName || (cand ? cand.name : '') });
@@ -1995,9 +1995,9 @@ function markRowDirty(cid) {
   });
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // PUSH TO EZEKIA
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function openPushModal() {
   if (PENDING.size === 0) return;
   const changes = [...PENDING.values()];
@@ -2021,7 +2021,7 @@ function openPushModal() {
 
 async function executePush() {
   const btn = document.getElementById('pushConfirmBtn');
-  btn.textContent = 'Pushingâ¦';
+  btn.textContent = 'Pushing\u2026';
   btn.disabled = true;
 
   const changes = [...PENDING.values()];
@@ -2030,7 +2030,7 @@ async function executePush() {
   for (const change of changes) {
     try {
       if (!CURRENT_PROJECT_ID) {
-        // Demo mode â simulate
+        // Demo mode \u2014 simulate
         await new Promise(r => setTimeout(r, 120));
       } else {
         if (change.field === 'notes') {
@@ -2077,7 +2077,7 @@ async function executePush() {
         if (cand) delete cand[`_orig_${change.field}`];
       }
 
-      logUsage('push', `${change.candidateName} â ${change.field} updated`, CURRENT_PROJECT_NAME);
+      logUsage('push', `${change.candidateName} \u2014 ${change.field} updated`, CURRENT_PROJECT_NAME);
     } catch (err) {
       errors.push({ ...change, err: err.message });
     }
@@ -2088,25 +2088,25 @@ async function executePush() {
   btn.disabled = false;
 
   if (errors.length === 0) {
-    // All good â clear pending
+    // All good \u2014 clear pending
     PENDING.clear();
     updateDirtyBadge();
     // Remove dirty indicators from all rows
     document.querySelectorAll('.dirty-cell').forEach(td => td.classList.remove('dirty-cell'));
     showToast(`${changes.length} change${changes.length > 1 ? 's' : ''} pushed to Ezekia successfully.`, 'success');
   } else {
-    // Partial failure â keep failed items in PENDING
+    // Partial failure \u2014 keep failed items in PENDING
     errors.forEach(e => {
       // leave in PENDING so user can retry
     });
     const succeeded = changes.length - errors.length;
-    showToast(`${succeeded} pushed OK. ${errors.length} failed â check connection and retry.`, 'error');
+    showToast(`${succeeded} pushed OK. ${errors.length} failed \u2014 check connection and retry.`, 'error');
   }
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// INLINE EDITING â Notes & Summary (local only until push)
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// INLINE EDITING \u2014 Notes & Summary (local only until push)
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 const EDIT_STATE = new WeakMap();
 
 function onEditFocus(el) {
@@ -2115,7 +2115,7 @@ function onEditFocus(el) {
 }
 
 function onEditInput(el) {
-  // Nothing â we just wait for blur to mark pending
+  // Nothing \u2014 we just wait for blur to mark pending
 }
 
 function onEditKeydown(e, el) {
@@ -2167,9 +2167,9 @@ function deleteNotes(cid) {
   markPending(cid, 'notes', '', cand.name);
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // PIPELINE TAG INLINE EDITOR
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function tagColor(tag) {
   const map = {
     'Longlist':'#8ab4ff','Short List and/or CV Sent to Client':'#5de8d4',
@@ -2230,9 +2230,9 @@ function selectPipelineTag(cid, newTag, event) {
   updateStats();
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // THEME
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function toggleTheme() {
   const next = (document.documentElement.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
   setTheme(next);
@@ -2241,7 +2241,7 @@ function setTheme(mode) {
   document.documentElement.setAttribute('data-theme', mode);
   const icon  = document.getElementById('themeToggleIcon');
   const label = document.getElementById('themeToggleLabel');
-  if (icon)  icon.textContent  = mode === 'dark' ? 'ð' : 'â';
+  if (icon)  icon.textContent  = mode === 'dark' ? '\u{1f319}' : '\u2600';
   if (label) label.textContent = mode === 'dark' ? 'Night' : 'Day';
   try { localStorage.setItem('ezekia.theme', mode); } catch(e) {}
 }
@@ -2251,9 +2251,9 @@ function setTheme(mode) {
   setTheme(saved);
 })();
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// COLUMN MANAGER â toggle visibility + drag to reorder
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// COLUMN MANAGER \u2014 toggle visibility + drag to reorder
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // COLUMN_ORDER holds keys in current display order (always col first, rest draggable)
 let COLUMN_ORDER = COLUMNS.map(c => c.key);
 let _dragSrcKey = null;
@@ -2277,10 +2277,10 @@ function buildColToggles() {
     item.draggable = !isAlways;
 
     item.innerHTML = `
-      <span class="drag-handle">â ¿</span>
+      <span class="drag-handle">\u283f</span>
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis">${col.label}</span>
       <span class="col-vis-toggle" title="${isAlways ? 'Always shown' : (isVisible ? 'Hide column' : 'Show column')}">
-        ${isVisible ? 'â' : ''}
+        ${isVisible ? '\u2713' : ''}
       </span>`;
 
     // Visibility toggle (click on the tick box)
@@ -2333,10 +2333,10 @@ function buildColToggles() {
   });
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // FILTER OPTIONS
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// ââ Multi-select filter state: each key â Set of selected values ââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// \u2500\u2500 Multi-select filter state: each key \u2192 Set of selected values \u2500\u2500
 const FILTER_SETS = {
   fStatus:     new Set(),
   fStage:      new Set(),
@@ -2360,7 +2360,7 @@ function buildFilterOptions() {
   const fill = (id, key, fixedList) => {
     const vals = fixedList
       ? [...fixedList]
-      : [...new Set(ALL.map(c => c[key]).filter(v => v && v !== 'â'))].sort();
+      : [...new Set(ALL.map(c => c[key]).filter(v => v && v !== '\u2014'))].sort();
     const drop = document.getElementById(id + 'Drop');
     if (!drop) return;
     drop.innerHTML = vals.map(v => {
@@ -2420,9 +2420,9 @@ function updateMsBtn(id) {
   }
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // FILTER / SORT / STATS
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function applyFilters() {
   const q = (document.getElementById('globalSearch').value || '').toLowerCase();
 
@@ -2505,7 +2505,7 @@ function renderActiveTags() {
   if (q) {
     const tag = document.createElement('div');
     tag.className = 'filter-tag';
-    tag.innerHTML = `Search: "${q}" <span class="filter-tag-x" onclick="document.getElementById('globalSearch').value='';applyFilters()">Ã</span>`;
+    tag.innerHTML = `Search: "${q}" <span class="filter-tag-x" onclick="document.getElementById('globalSearch').value='';applyFilters()">\u00d7</span>`;
     tags.appendChild(tag);
   }
   filters.forEach(f => {
@@ -2515,8 +2515,8 @@ function renderActiveTags() {
     set.forEach(val => {
       const tag = document.createElement('div');
       tag.className = 'filter-tag';
-      const dispVal = val.length > 22 ? val.slice(0,20) + 'â¦' : val;
-      tag.innerHTML = `${f.label}: ${dispVal} <span class="filter-tag-x" onclick="removeMsFilter('${f.id}',${JSON.stringify(val)})">Ã</span>`;
+      const dispVal = val.length > 22 ? val.slice(0,20) + '\u2026' : val;
+      tag.innerHTML = `${f.label}: ${dispVal} <span class="filter-tag-x" onclick="removeMsFilter('${f.id}',${JSON.stringify(val)})">\u00d7</span>`;
       tags.appendChild(tag);
     });
   });
@@ -2535,9 +2535,9 @@ function removeMsFilter(id, val) {
   applyFilters();
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // RENDER TABLE
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 const AVATAR_COLORS = [
   ['#4f8ef7','#0a1f3e'],['#3ecf8e','#0a2e1f'],['#a78bfa','#1e1040'],
   ['#f5a623','#3d2800'],['#2dd4bf','#062924'],['#f56565','#3d0a0a'],
@@ -2609,7 +2609,7 @@ function renderCell(key, c) {
   const v = c[key] || '';
   const isPending = PENDING.has(`${c.id}:${key}`);
 
-  // ââ PIPELINE TAG dropdown ââ
+  // \u2500\u2500 PIPELINE TAG dropdown \u2500\u2500
   if (key === 'status') {
     const cls = statusBadgeClass(v);
     const badgeHtml = v
@@ -2628,7 +2628,7 @@ function renderCell(key, c) {
       </div>`;
   }
 
-  // ââ PROGRESS NOTES ââ
+  // \u2500\u2500 PROGRESS NOTES \u2500\u2500
   if (key === 'notes') {
     const isEmpty = !v;
     const cls = 'editable' + (isEmpty ? ' is-empty' : '') + (isPending ? ' is-pending' : '');
@@ -2644,12 +2644,12 @@ function renderCell(key, c) {
         <div class="notes-actions" id="notes-actions-${c.id}">
           <button class="notes-action-btn del"
                   onmousedown="event.preventDefault()"
-                  onclick="deleteNotes(${c.id})">â Delete note</button>
+                  onclick="deleteNotes(${c.id})">\u2715 Delete note</button>
         </div>
       </div>`;
   }
 
-  // ââ SUMMARY ââ
+  // \u2500\u2500 SUMMARY \u2500\u2500
   if (key === 'summary') {
     const isEmpty = !v;
     const cls = 'editable' + (isEmpty ? ' is-empty summary-cell' : '') + (isPending ? ' is-pending' : '');
@@ -2663,18 +2663,18 @@ function renderCell(key, c) {
            onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
   }
 
-  if (!v) return '<span style="color:var(--text3)">â</span>';
+  if (!v) return '<span style="color:var(--text3)">\u2014</span>';
   if (key === 'stage')  return `<span class="badge ${stageBadgeClass(v)}">${escHtml(v)}</span>`;
   if (key === 'rating') {
     const cls = v==='A'?'rating-a':v==='B'?'rating-b':'rating-c';
-    return `<span class="${cls}">${v==='A'?'â ':''}${escHtml(v)}</span>`;
+    return `<span class="${cls}">${v==='A'?'\u2605 ':''}${escHtml(v)}</span>`;
   }
-  if (key === 'linkedin')   return `<a href="https://${escHtml(v)}" style="color:var(--accent);text-decoration:none;font-size:11px" onclick="event.preventDefault()">View â</a>`;
+  if (key === 'linkedin')   return `<a href="https://${escHtml(v)}" style="color:var(--accent);text-decoration:none;font-size:11px" onclick="event.preventDefault()">View \u2197</a>`;
   if (key === 'email')      return `<span style="font-family:var(--mono);font-size:11px;color:var(--text2)">${escHtml(v)}</span>`;
   if (key === 'interview_date') return `<span style="color:var(--amber);font-family:var(--mono);font-size:11px">${escHtml(v)}</span>`;
   if (key === 'added_date' || key === 'last_updated') return `<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">${escHtml(v)}</span>`;
 
-  // ââ INDUSTRY (currentStatus.industries) â display all codes + edit on click ââ
+  // \u2500\u2500 INDUSTRY (currentStatus.industries) \u2014 display all codes + edit on click \u2500\u2500
   if (key === 'industry_codes') {
     const codes = Array.isArray(c.industry_codes) ? c.industry_codes : [];
     const isPendingInd = PENDING.has(`${c.id}:industry_codes`);
@@ -2704,7 +2704,7 @@ function renderTable() {
     <th style="width:36px"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" style="cursor:pointer"></th>
     ${cols.map(c => `
       <th onclick="setSort('${c.key}')" class="${SORT_COL===c.key?'active':''}">
-        <div class="th-inner">${c.label}<span class="sort-icon">${SORT_COL===c.key?(SORT_DIR===1?'â²':'â¼'):'â'}</span></div>
+        <div class="th-inner">${c.label}<span class="sort-icon">${SORT_COL===c.key?(SORT_DIR===1?'\u25b2':'\u25bc'):'\u21c5'}</span></div>
       </th>`).join('')}
     <th style="width:120px">Actions</th>
   </tr>`;
@@ -2720,11 +2720,11 @@ function renderTable() {
       return `<tr id="row-${c.id}">
         <td style="text-align:center"><input type="checkbox" class="row-chk" data-id="${c.id}" onchange="updateSelection()" style="cursor:pointer"></td>
         ${cols.map(col => {
-          if (col.key === 'name') return `<td class="td-name${rowHasPending?' dirty-cell':''}"><div class="name-cell"><div class="td-avatar" style="background:${bg};color:${fg}">${initials(c.name)}</div>${c.name}${rowHasPending?'<span title="Pending changes" style="margin-left:6px;color:var(--amber);font-size:9px">â</span>':''}</div></td>`;
+          if (col.key === 'name') return `<td class="td-name${rowHasPending?' dirty-cell':''}"><div class="name-cell"><div class="td-avatar" style="background:${bg};color:${fg}">${initials(c.name)}</div>${c.name}${rowHasPending?'<span title="Pending changes" style="margin-left:6px;color:var(--amber);font-size:9px">\u25cf</span>':''}</div></td>`;
           return `<td class="${PENDING.has(c.id+':'+col.key)?'dirty-cell':''}">${renderCell(col.key, c)}</td>`;
         }).join('')}
         <td><div class="row-actions">
-          <button class="row-btn ai" onclick="openAI(${c.id})">â¦ AI</button>
+          <button class="row-btn ai" onclick="openAI(${c.id})">\u2726 AI</button>
           <button class="row-btn" onclick="viewProfile(${c.id})">Profile</button>
         </div></td>
       </tr>`;
@@ -2733,7 +2733,7 @@ function renderTable() {
 
   const showing = perPage >= 99999 ? FILTERED.length : Math.min(end, FILTERED.length) - start;
   document.getElementById('footerInfo').textContent =
-    `Showing ${perPage >= 99999 ? 'all' : `${start+1}â${Math.min(end,FILTERED.length)}`} of ${FILTERED.length} candidates`;
+    `Showing ${perPage >= 99999 ? 'all' : `${start+1}\u2013${Math.min(end,FILTERED.length)}`} of ${FILTERED.length} candidates`;
 
   renderPagination(page, totalPages);
 }
@@ -2741,31 +2741,31 @@ function renderTable() {
 function renderPagination(page, total) {
   const area = document.getElementById('paginationArea');
   if (total <= 1) { area.innerHTML = ''; return; }
-  let html = `<button class="pg-btn" onclick="goPage(1)" ${page===1?'disabled':''}>Â«</button>`;
-  html += `<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>â¹</button>`;
+  let html = `<button class="pg-btn" onclick="goPage(1)" ${page===1?'disabled':''}>\u00ab</button>`;
+  html += `<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>\u2039</button>`;
   const pages = [];
   if (total <= 7) { for (let p=1;p<=total;p++) pages.push(p); }
   else {
     pages.push(1);
-    if (page > 3) pages.push('â¦');
+    if (page > 3) pages.push('\u2026');
     for (let p=Math.max(2,page-1); p<=Math.min(total-1,page+1); p++) pages.push(p);
-    if (page < total-2) pages.push('â¦');
+    if (page < total-2) pages.push('\u2026');
     pages.push(total);
   }
   html += '<div class="pg-nums">' + pages.map(p =>
-    p==='â¦' ? `<span style="color:var(--text3);padding:4px 4px">â¦</span>` :
+    p==='\u2026' ? `<span style="color:var(--text3);padding:4px 4px">\u2026</span>` :
     `<button class="pg-btn${p===page?' active':''}" onclick="goPage(${p})">${p}</button>`
   ).join('') + '</div>';
-  html += `<button class="pg-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}>âº</button>`;
-  html += `<button class="pg-btn" onclick="goPage(${total})" ${page===total?'disabled':''}>Â»</button>`;
+  html += `<button class="pg-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}>\u203a</button>`;
+  html += `<button class="pg-btn" onclick="goPage(${total})" ${page===total?'disabled':''}>\u00bb</button>`;
   area.innerHTML = html;
 }
 
 function goPage(p) { PAGE = p; renderTable(); }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // SELECTION
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function toggleSelectAll(checked) {
   document.querySelectorAll('.row-chk').forEach(chk => chk.checked = checked);
   updateSelection();
@@ -2782,9 +2782,9 @@ function updateSelection() {
   }
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // AI MODAL
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 const AI_PROMPTS = [
   'Summarise this candidate','Why suitable for this role?','Red flags to consider?',
   'Draft an approach email','Key strengths & weaknesses','Compare to shortlist',
@@ -2795,13 +2795,13 @@ function openAI(id) {
   const c = ALL.find(x => x.id === id);
   if (!c) return;
   AI_CAND = c;
-  document.getElementById('aiModalTitle').textContent = `AI Â· ${c.name}`;
+  document.getElementById('aiModalTitle').textContent = `AI \u00b7 ${c.name}`;
   document.getElementById('aiCandSnapshot').innerHTML = [
     ['Title',c.current_title],['Company',c.current_company],
     ['Location',c.location],['Stage',c.stage],
     ['Rating',c.rating],['Compensation',c.compensation],
     ['Source',c.source],['Consultant',c.consultant],
-  ].map(([k,v]) => `<div class="snap-row"><div class="snap-key">${k}</div><div class="snap-val">${v||'â'}</div></div>`).join('');
+  ].map(([k,v]) => `<div class="snap-row"><div class="snap-key">${k}</div><div class="snap-val">${v||'\u2014'}</div></div>`).join('');
   document.getElementById('aiPrompts').innerHTML = AI_PROMPTS.map(p =>
     `<button class="ai-prompt-btn" onclick="setAIPrompt('${p}')">${p}</button>`
   ).join('');
@@ -2812,7 +2812,7 @@ function openAI(id) {
 
 function openBulkAI() {
   AI_CAND = null;
-  document.getElementById('aiModalTitle').textContent = `AI Insights Â· ${FILTERED.length} candidates`;
+  document.getElementById('aiModalTitle').textContent = `AI Insights \u00b7 ${FILTERED.length} candidates`;
   document.getElementById('aiCandSnapshot').innerHTML = `<div style="grid-column:span 2;color:var(--text2);font-size:12px">Working with <strong style="color:var(--text)">${FILTERED.length} filtered candidates</strong></div>`;
   document.getElementById('aiPrompts').innerHTML = [
     'Summarise the shortlist','Which candidates are strongest?','Pipeline overview','Stage distribution','Compensation benchmarking'
@@ -2832,7 +2832,7 @@ async function sendAI() {
   if (!q) return;
   const resp = document.getElementById('aiResponse');
   resp.className = 'ai-response visible';
-  resp.innerHTML = '<span class="ai-thinking">â¦ Thinkingâ¦</span>';
+  resp.innerHTML = '<span class="ai-thinking">\u2726 Thinking\u2026</span>';
   const context = AI_CAND
     ? `You are an executive search assistant at Sheffield Haworth. Here is a candidate record:\n${JSON.stringify(AI_CAND,null,2)}\n\nAnswer this: ${q}`
     : `You are an executive search assistant at Sheffield Haworth. Here is a summary of ${FILTERED.length} candidates in the pipeline:\n${FILTERED.slice(0,20).map(c=>`- ${c.name} | ${c.status} | ${c.current_title} @ ${c.current_company}`).join('\n')}\n\nAnswer: ${q}`;
@@ -2856,13 +2856,13 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // EXPORT
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function openExport() {
   const visCount = COLUMN_ORDER.map(k => COLUMNS.find(c=>c.key===k)).filter(c => c && (c.always || VISIBLE.has(c.key))).length;
   document.getElementById('exportScopeInfo').textContent =
-    `${FILTERED.length} filtered candidates Â· ${visCount} visible columns`;
+    `${FILTERED.length} filtered candidates \u00b7 ${visCount} visible columns`;
   document.getElementById('exportModal').classList.add('open');
 }
 
@@ -2903,9 +2903,9 @@ function runExport() {
   closeModal('exportModal');
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // ADMIN PAGE
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function openAdmin() {
   // Pre-fill saved config
   try {
@@ -2932,7 +2932,7 @@ function saveAdminConfig() {
     localStorage.setItem('sh.ezekia.config', JSON.stringify(cfg));
     showToast('Configuration saved.', 'success');
   } catch(e) {
-    showToast('Could not save â localStorage may be restricted.', 'error');
+    showToast('Could not save \u2014 localStorage may be restricted.', 'error');
   }
 }
 
@@ -2948,15 +2948,15 @@ function getDisplayName() {
   try { return localStorage.getItem('sh.ezekia.user') || 'Anonymous'; } catch(e) { return 'Anonymous'; }
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // USAGE LOG
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function logUsage(action, detail, project) {
   USAGE_LOG.push({
     timestamp: new Date().toISOString(),
     user: getDisplayName(),
     action,
-    project: project || CURRENT_PROJECT_NAME || 'â',
+    project: project || CURRENT_PROJECT_NAME || '\u2014',
     detail,
   });
 }
@@ -3008,9 +3008,9 @@ function exportUsageLog() {
   showToast('Usage log exported.', 'success');
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // TOAST
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function showToast(msg, type = 'info') {
   let toast = document.getElementById('sh-toast');
   if (!toast) {
@@ -3032,16 +3032,16 @@ function showToast(msg, type = 'info') {
   toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3500);
 }
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // BOOT
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 window.onload = () => {
   buildColToggles();
 };
 
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// INDUSTRY CODING EDITOR â read+write currentStatus.industries
-// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// INDUSTRY CODING EDITOR \u2014 read+write currentStatus.industries
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 
 // Cache of all available industry options loaded from the first candidate
 let INDUSTRY_OPTIONS_CACHE = [];
@@ -3094,7 +3094,7 @@ function openIndustryEditor(cid, event) {
     const chips = document.getElementById('indChips');
     chips.innerHTML = selected.map(ind =>
       `<span class="ind-chip">${escHtml(ind.name || ind.value || '')}
-        <span class="ind-chip-x" onclick="window._indRemove(${ind.id})">Ã</span>
+        <span class="ind-chip-x" onclick="window._indRemove(${ind.id})">\u00d7</span>
       </span>`
     ).join('') || '<span style="color:var(--text3);font-size:11px">No industries selected</span>';
 
@@ -3105,7 +3105,7 @@ function openIndustryEditor(cid, event) {
     );
     const selectedIds = new Set(selected.map(s => s.id));
     list.innerHTML = filtered.map(opt =>
-      `<div class="ind-modal-item${selectedIds.has(opt.id) ? ' selected' : ''}" onclick="window._indToggle(${opt.id})">${escHtml(opt.name || opt.value || '')}<small class="ind-cat-label"> â ${escHtml(opt.parentName || '')}</small></div>`
+      `<div class="ind-modal-item${selectedIds.has(opt.id) ? ' selected' : ''}" onclick="window._indToggle(${opt.id})">${escHtml(opt.name || opt.value || '')}<small class="ind-cat-label"> \u2014 ${escHtml(opt.parentName || '')}</small></div>`
     ).join('') || '<div style="padding:8px;color:var(--text3);font-size:12px">No matches</div>';
   }
 
@@ -3133,7 +3133,7 @@ function openIndustryEditor(cid, event) {
     document.getElementById('indModal').classList.remove('open');
   };
 
-  document.getElementById('indModalTitle').textContent = 'Edit Industries â ' + candidateName;
+  document.getElementById('indModalTitle').textContent = 'Edit Industries \u2014 ' + candidateName;
   document.getElementById('indSearch').value = '';
   render('');
   // Async-refresh options from full Ezekia catalogue if not yet cached
@@ -3195,7 +3195,7 @@ function markPendingIndustry(cid, newCodes, candidateName) {
     });
   })();
 
-// ── FAST SCROLL HELPERS ──
+// \u2500\u2500 FAST SCROLL HELPERS \u2500\u2500
 function tableScrollTo(direction) {
   const area = document.getElementById('tableArea');
   if (!area) return;
@@ -3214,14 +3214,14 @@ function tableScrollPage(direction) {
 }
 </script>
 
-<!-- âââââââââââââââââââââââââââââââââââââââââââââââ
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;
      INDUSTRY EDITOR MODAL
-ââââââââââââââââââââââââââââââââââââââââââââââââ -->
+&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
 <div class="ind-modal-overlay" id="indModal" onclick="window._indCancel()">
   <div class="ind-modal" onclick="event.stopPropagation()">
     <h3 id="indModalTitle">Edit Industries</h3>
     <div class="ind-modal-chips" id="indChips"></div>
-    <input class="ind-modal-search" id="indSearch" placeholder="Search industriesâ¦"
+    <input class="ind-modal-search" id="indSearch" placeholder="Search industries&#8230;"
            oninput="window._indSearch(this.value)">
     <div class="ind-modal-list" id="indList"></div>
     <div class="ind-modal-footer">
