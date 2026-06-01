@@ -2035,8 +2035,8 @@ async function executePush() {
         if (change.field === 'notes') {
           // Progress Notes: PATCH /people/{candidateId}/additional-info
           // Body: [{ "hashId": "bmwO", "value": "note text" }]
-          const resp = await fetch(`${BASE}/people/${change.cid}/additional-info`, {
-            method: 'PATCH',
+          const resp = await fetch(`${BASE}/v4/people/${change.cid}/additional-info`, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify([{ hashId: 'bmwO', value: change.newValue }])
           });
@@ -2046,7 +2046,7 @@ async function executePush() {
           // Summary: PATCH /v4/projects/{projectId}/candidates/{candidateId}
           // Body: { "meta.candidate.summary": "text" }
           const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'meta.candidate.summary': change.newValue })
           });
@@ -2060,7 +2060,7 @@ async function executePush() {
             ? [{ text: change.newValue, addedAt: new Date().toISOString() }]
             : [];
           const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'meta.candidate.pipelineTags': newTags })
           });
@@ -2070,7 +2070,7 @@ async function executePush() {
           // PATCH /v4/people/{id} with profile.currentStatus.industries (array of {id})
           const industryIds = (change.newValue || []).map(ind => ({ id: ind.id }));
           const resp = await fetch(`${BASE}/v4/people/${change.cid}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               'profile.currentStatus': { industries: industryIds }
