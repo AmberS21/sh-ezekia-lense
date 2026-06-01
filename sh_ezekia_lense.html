@@ -2020,7 +2020,7 @@ function openPushModal() {
 
 async function executePush() {
   const btn = document.getElementById('pushConfirmBtn');
-  btn.textContent = 'Pushing\u2026';
+  btn.textContent = 'Pushing…';
   btn.disabled = true;
 
   const changes = [...PENDING.values()];
@@ -2029,41 +2029,41 @@ async function executePush() {
   for (const change of changes) {
     try {
       if (!CURRENT_PROJECT_ID) {
-        // Demo mode \u2014 simulate
+        // Demo mode — simulate
         await new Promise(r => setTimeout(r, 120));
       } else {
         if (change.field === 'notes') {
-          const cfResp = await fetch(`${BASE}/custom-fields/people`, { headers: { 'Content-Type': 'application/json' } });
-          const cfData = await cfResp.json();
-          const notesCf = (cfData.data || []).find(f => f.hashId === 'bmwO');
-          const notesFieldId = notesCf ? notesCf.id : null;
+          // Progress Notes: PATCH /people/{candidateId}/additional-info
+          // Body: [{ "hashId": "bmwO", "value": "note text" }]
           const resp = await fetch(`${BASE}/people/${change.cid}/additional-info`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ customValues: [{ fieldId: notesFieldId, value: change.newValue }] })
-          })
+            body: JSON.stringify([{ hashId: 'bmwO', value: change.newValue }])
+          });
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'summary') {
-          const resp = await fetch(`${BASE}/v4/people/${change.cid}`, {
-            method: 'PUT',
+          // Summary: PATCH /v4/projects/{projectId}/candidates/{candidateId}
+          // Body: { "meta.candidate.summary": "text" }
+          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 'summary': change.newValue })
+            body: JSON.stringify({ 'meta.candidate.summary': change.newValue })
           });
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'status') {
-          const resp = await (async () => {
-            const sr = await fetch(`${BASE}/statuses/people`, { headers: { 'Content-Type': 'application/json' } });
-            const sd = await sr.json();
-            const tag = (sd.data || []).find(s => s.name === change.newValue);
-            if (!tag) throw new Error('Pipeline tag not found: ' + change.newValue);
-            return fetch(`${BASE}/v3/projects/${CURRENT_PROJECT_ID}/candidates/statuses`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ candidates: [change.cid], tags: [tag.id] })
-            });
-          })();
+          // Pipeline Tags: PATCH /v4/projects/{projectId}/candidates/{candidateId}
+          // Body: { "meta.candidate.pipelineTags": [{ "text": "Tag Name", "addedAt": "ISO timestamp" }] }
+          const cand = ALL.find(c => c.id === change.cid);
+          const newTags = change.newValue
+            ? [{ text: change.newValue, addedAt: new Date().toISOString() }]
+            : [];
+          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'meta.candidate.pipelineTags': newTags })
+          });
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'industry_codes') {
@@ -2084,7 +2084,7 @@ async function executePush() {
         if (cand) delete cand[`_orig_${change.field}`];
       }
 
-      logUsage('push', `${change.candidateName} \u2014 ${change.field} updated`, CURRENT_PROJECT_NAME);
+      logUsage('push', `${change.candidateName} — ${change.field} updated`, CURRENT_PROJECT_NAME);
     } catch (err) {
       errors.push({ ...change, err: err.message });
     }
@@ -2095,19 +2095,25 @@ async function executePush() {
   btn.disabled = false;
 
   if (errors.length === 0) {
-    // All good \u2014 clear pending
+    // All good — clear pending
     PENDING.clear();
     updateDirtyBadge();
     // Remove dirty indicators from all rows
     document.querySelectorAll('.dirty-cell').forEach(td => td.classList.remove('dirty-cell'));
     showToast(`${changes.length} change${changes.length > 1 ? 's' : ''} pushed to Ezekia successfully.`, 'success');
   } else {
-    // Partial failure \u2014 keep failed items in PENDING
-    errors.forEach(e => {
-      // leave in PENDING so user can retry
-    });
+    // Partial failure — remove succeeded items from PENDING, keep failed ones for retry
+    const failedKeys = new Set(errors.map(e => `${e.cid}:${e.field}`));
+    for (const change of changes) {
+      const key = `${change.cid}:${change.field}`;
+      if (!failedKeys.has(key)) PENDING.delete(key);
+    }
+    updateDirtyBadge();
+    const allCids = [...new Set(changes.map(c => c.cid))];
+    allCids.forEach(cid => markRowDirty(cid));
     const succeeded = changes.length - errors.length;
-    showToast(`${succeeded} pushed OK. ${errors.length} failed \u2014 check connection and retry.`, 'error');
+    const errMsgs = errors.map(e => `${e.candidateName} (${e.field}): ${e.err}`).join('; ');
+    showToast(`${succeeded > 0 ? succeeded + ' pushed OK. ' : ''}${errors.length} failed: ${errMsgs}`, 'error');
   }
 }
 
