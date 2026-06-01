@@ -2034,26 +2034,26 @@ async function executePush() {
       } else {
         if (change.field === 'notes') {
           const resp = await fetch(`${BASE}/people/${change.cid}/additional-info`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify([{ hashId: 'bmwO', value: change.newValue }])
           });
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'summary') {
-          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+          const resp = await fetch(`${BASE}/v4/people/${change.cid}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 'meta.candidate.summary': change.newValue })
+            body: JSON.stringify({ 'summary': change.newValue })
           });
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'status') {
-          const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
+          const resp = await fetch(`${BASE}/v4/people/${change.cid}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              'meta.candidate.pipelineTags': [{ text: change.newValue, addedAt: new Date().toISOString() }]
+              'pipelineTags': [{ text: change.newValue, addedAt: new Date().toISOString() }]
             })
           });
           if (!resp.ok) throw new Error(`${resp.status}`);
