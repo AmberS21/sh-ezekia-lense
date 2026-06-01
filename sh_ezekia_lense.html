@@ -2042,20 +2042,24 @@ async function executePush() {
 
         } else if (change.field === 'summary') {
           const resp = await fetch(`${BASE}/v4/people/${change.cid}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'summary': change.newValue })
           });
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'status') {
-          const resp = await fetch(`${BASE}/v4/people/${change.cid}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              'pipelineTags': [{ text: change.newValue, addedAt: new Date().toISOString() }]
-            })
-          });
+          const resp = await (async () => {
+              const sr = await fetch(`${BASE}/statuses/people`, { headers: { 'Content-Type': 'application/json' } });
+              const sd = await sr.json();
+              const tag = (sd.data || []).find(s => s.name === change.newValue);
+              if (!tag) throw new Error('Pipeline tag not found: ' + change.newValue);
+              return fetch(`${BASE}/v3/projects/${CURRENT_PROJECT_ID}/candidates/statuses`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ candidates: [change.cid], tags: [tag.id] })
+              });
+            })()
           if (!resp.ok) throw new Error(`${resp.status}`);
 
         } else if (change.field === 'industry_codes') {
