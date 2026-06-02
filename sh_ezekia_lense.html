@@ -13,7 +13,7 @@
   --bg2: #131929;      /* slightly lighter navy \2014  sidebar / topbar panels */
   --bg3: #1c2336;      /* card/input background \2014  clearly distinct from bg2 */
   --bg4: #243049;      /* hover / elevated surfaces */
-  --border: rgba(54,169,225,0.12);   /* subtle SH-blue border tint */
+  --border: rgba(54,169,225,0.12);   /* subtle SH-blue border tint */hh
   --border2: rgba(54,169,225,0.22);  /* slightly more visible border */
   --text: #eef2f8;     /* near-white \2014  primary text, maximum legibility */
   --text2: #8daabf;    /* medium blue-grey \2014  secondary text */
@@ -1901,9 +1901,9 @@ async function enrichOne(_bc) {
   } catch (e) { /* best-effort */ }
 
   const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
-  const positions  = (person.profile && person.profile.positions) || [];
+    const positions  = (person.profile?.positions || _bc.profile?.positions || []);
   const currentPos = positions[0] || {};
-  const addresses  = person.addresses || [];
+    const addresses  = person.addresses || _bc.addresses || [];
   const city       = (addresses[0] || {}).city || '';
   const country    = (addresses[0] || {}).country || '';
 
@@ -1912,7 +1912,7 @@ async function enrichOne(_bc) {
     name: person.fullName || `${_bc.firstName || ''} ${_bc.lastName || ''}`.trim(),
     status: _bc._resolvedPipelineTag || '',
     stage: ((_bc.meta || {}).candidate || {}).stage || '',
-    current_title: currentPos.title || '',
+    current_title: currentPos.title || _bc.profile?.positions?.[0]?.title || '',
     current_company: (currentPos.company || {}).name || '',
     location: [city, country].filter(Boolean).join(', '),
     nationality: (person.profile || {}).nationality || '',    gender: (additionalInfo.find(f => f.field && f.field.hashId === 'boYK') || {}).value || '',
@@ -1924,14 +1924,14 @@ async function enrichOne(_bc) {
     source: ((_bc.meta || {}).candidate || {}).source || '',
     languages: ((person.profile || {}).languages || []).join(', '),
     linkedin: (person.profile || {}).linkedIn || '',
-    email: ((person.emails || [])[0] || {}).email || '',
-    phone: ((person.phones || [])[0] || {}).number || '',
+        email: (((person.emails || _bc.emails || [])[0]) || {}).email || '',
+        phone: (((person.phones || _bc.phones || [])[0]) || {}).number || '',
     education: '',
     previous_co: positions[1] && positions[1].company ? positions[1].company.name : '',
     availability: ((_bc.meta || {}).candidate || {}).availability || '',
     interview_date: '',
     added_date: ((_bc.meta || {}).candidate || {}).addedAt ? (_bc.meta.candidate.addedAt || '').slice(0,10) : '',
-    last_updated: (((_bc.meta || {}).candidate || {}).updatedAt || ((_bc.meta || {}).candidate || {}).lastModifiedAt || ((_bc.meta || {}).candidate || {}).modifiedAt || '') ? (((_bc.meta.candidate.updatedAt || _bc.meta.candidate.lastModifiedAt || _bc.meta.candidate.modifiedAt || '')).slice(0,10)) : '',
+        last_updated: (_bc.updatedAt || '').slice(0, 10),
     notes: notesField ? (notesField.value || '') : '',
     summary: person.summary || _bc.summary || '',
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
