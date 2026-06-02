@@ -1914,7 +1914,7 @@ async function enrichOne(_bc) {
     stage: ((_bc.meta || {}).candidate || {}).stage || '',
     current_title: currentPos.title || _bc.profile?.positions?.[0]?.title || '',
     current_company: (currentPos.company || {}).name || '',
-    location: [city, country].filter(Boolean).join(', ') || currentPos.location || '',
+    location: [city, country].filter(Boolean).join(', ') || currentPos.location?.name || '',
     nationality: (person.profile || {}).nationality || '',    gender: (additionalInfo.find(f => f.field && f.field.hashId === 'boYK') || {}).value || '',
     compensation: '',
     currency: '',
