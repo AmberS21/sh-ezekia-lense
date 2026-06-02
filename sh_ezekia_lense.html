@@ -1869,9 +1869,9 @@ async function connectFromUrl() {
 
 async function enrichCandidates(rawCandidates) {
   const results = [];
-  const BATCH = 5;
+  const BATCH = 2;
   for (let i = 0; i < rawCandidates.length; i += BATCH) {
-    const batch = rawCandidates.slice(i, i + BATCH);
+    if (i > 0) await new Promise(r => setTimeout(r, 350)); const batch = rawCandidates.slice(i, i + BATCH);
     const enriched = await Promise.all(batch.map(bc => enrichOne(bc)));
     results.push(...enriched);
   }
@@ -1896,8 +1896,8 @@ async function enrichOne(_bc) {
       fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`),
       fetch(`${BASE}/v4/people/${personId}/additional-info`)
     ]);
-    if (pResp.ok) { const pd = await pResp.json(); person = pd.data || pd; }
-    if (aResp.ok) { const ad = await aResp.json(); additionalInfo = ad.data || ad || []; }
+    let _pR = pResp; if (_pR.status === 429) { await new Promise(r => setTimeout(r, 600)); _pR = await fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`); } if (_pR.ok) { const pd = await _pR.json(); person = pd.data || pd; }
+    let _aR = aResp; if (_aR.status === 429) { await new Promise(r => setTimeout(r, 600)); _aR = await fetch(`${BASE}/v4/people/${personId}/additional-info`); } if (_aR.ok) { const ad = await _aR.json(); additionalInfo = ad.data || ad || []; }
   } catch (e) { /* best-effort */ }
 
   const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
