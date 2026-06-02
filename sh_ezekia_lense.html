@@ -1617,7 +1617,7 @@ tr.selected td { background: var(--accent-glow); }
 let ALL = [];
 let FILTERED = [];
 let SORT_COL = 'name';
-let SORT_DIR = 1;
+let SORT_DIR = 1;h
 let PAGE = 1;
 let PER_PAGE = 25;
 let AI_CAND = null;
@@ -2046,7 +2046,7 @@ async function executePush() {
           // Summary: PATCH /v4/projects/{projectId}/candidates/{candidateId}
           // Body: { "meta.candidate.summary": "text" }
           const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'meta.candidate.summary': change.newValue })
           });
@@ -2060,7 +2060,7 @@ async function executePush() {
             ? [{ text: change.newValue, addedAt: new Date().toISOString() }]
             : [];
           const resp = await fetch(`${BASE}/v4/projects/${CURRENT_PROJECT_ID}/candidates/${change.cid}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'meta.candidate.pipelineTags': newTags })
           });
