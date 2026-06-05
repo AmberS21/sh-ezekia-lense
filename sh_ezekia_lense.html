@@ -2033,14 +2033,23 @@ async function executePush() {
         await new Promise(r => setTimeout(r, 120));
       } else {
         if (change.field === 'notes') {
-          // Progress Notes: PUT /v4/people/{candidateId}/additional-info
-          // Body: [{ "hashId": "bmwO", "value": "note text" }]
-          const resp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info', {
+          // Progress Notes: GET existing record, then PUT /people/{id}/additional-info
+          // Body: { customValues: [{ id: <recordId>, fieldId: <fieldId>, value: '...' }] }
+          // Must use /people/ (no v4 prefix) for the write endpoint
+          const aiResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info');
+          if (!aiResp.ok) throw new Error('GET additional-info failed: ' + aiResp.status);
+          const aiData = await aiResp.json();
+          const aiFields = aiData.data || aiData || [];
+          const bmwORecord = aiFields.find(function(f) { return f.field && f.field.hashId === 'bmwO'; });
+          const customValueEntry = bmwORecord
+            ? { id: bmwORecord.id, fieldId: bmwORecord.field.id, value: change.newValue }
+            : { fieldId: 92, value: change.newValue };
+          const notesResp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify([{ hashId: 'bmwO', value: change.newValue }])
+            body: JSON.stringify({ customValues: [customValueEntry] })
           });
-          if (!resp.ok) throw new Error(resp.status + '');
+          if (!notesResp.ok) throw new Error('PUT additional-info failed: ' + notesResp.status);
 
         } else if (change.field === 'summary') {
           // Summary: must GET full profile first, then PUT with merged summary.
