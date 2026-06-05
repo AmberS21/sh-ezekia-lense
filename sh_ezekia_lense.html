@@ -2060,7 +2060,7 @@ async function executePush() {
           const fullProfile = profileData.data || profileData;
           if (!fullProfile.meta) fullProfile.meta = {};
           if (!fullProfile.meta.candidate) fullProfile.meta.candidate = {};
-          fullProfile.meta.candidate.summary = change.newValue;
+          fullProfile.summary = change.newValue;
           const putResp = await fetch(BASE + '/v4/people/' + change.cid, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -2075,22 +2075,26 @@ async function executePush() {
             console.warn('[executePush] status change has no newValue, skipping tag write for', change.cid);
           } else {
             // Build tag name → numeric ID map from available statuses
-            const statusesResp = await fetch(BASE + '/v3/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses');
-            if (!statusesResp.ok) throw new Error('GET statuses failed: ' + statusesResp.status);
-            const statusesData = await statusesResp.json();
-            const statusList = statusesData.data || statusesData || [];
-            // Build lookup: tag name (lowercase) → numeric id
-            const tagIdMap = {};
-            for (const s of statusList) {
-              const name = (s.name || s.label || s.text || '').trim();
-              if (name && (s.id || s.id === 0)) tagIdMap[name.toLowerCase()] = s.id;
+            // GET all candidates with tags to build tagIdMap (name -> numeric ID)
+            const statusResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates?fields[]=meta.candidate');
+            if (!statusResp.ok) throw new Error('GET candidates/tags failed: ' + statusResp.status);
+            const statusData = await statusResp.json();
+            const candList = statusData.data || [];
+            // Build tagIdMap from pipelineTags found on all candidates
+            const tagIdMap = new Map();
+            for (const c of candList) {
+              const tags = c.meta && c.meta.candidate && c.meta.candidate.pipelineTags || [];
+              for (const t of tags) {
+                if (t.text && t.id) tagIdMap.set(t.text, t.id);
+              }
+            }
             }
             const tagId = tagIdMap[change.newValue.trim().toLowerCase()];
             if (tagId == null) {
               console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', Object.keys(tagIdMap));
               throw new Error('Unknown tag: ' + change.newValue);
             }
-            const tagResp = await fetch(BASE + '/v3/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
+            const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
