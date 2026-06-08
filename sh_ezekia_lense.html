@@ -20,7 +20,7 @@
   --text3: #4e6a84;    /* muted \2014  hints, placeholders */
   --accent: #36a9e1;   /* SH signature sky blue \2014  buttons, links, active states */
   --accent2: #1e8cc4;  /* darker SH blue \2014  hover states */
-  --accent-glow: rgba(54,169,225,0.18); /* SH blue glow for tags/badges */
+  --accent-glow: rgba(54,169,225,0.18); /* SH blue glow for tags/badges */h
   --green: #2ec48a;    /* success / placed */
   --amber: #f5a623;    /* warning / on hold */
   --red: #f06565;      /* rejection / negative */
@@ -2088,10 +2088,9 @@ async function executePush() {
                 if (t.text && t.id) tagIdMap.set(t.text, t.id);
               }
             }
-            }
-            const tagId = tagIdMap[change.newValue.trim().toLowerCase()];
+            const tagId = tagIdMap.get(change.newValue.trim());
             if (tagId == null) {
-              console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', Object.keys(tagIdMap));
+              console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
               throw new Error('Unknown tag: ' + change.newValue);
             }
             const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
@@ -2100,6 +2099,7 @@ async function executePush() {
               body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
             });
             if (!tagResp.ok) throw new Error('POST status failed: ' + tagResp.status);
+            }
           }
 
         } else if (change.field === 'industry_codes') {
