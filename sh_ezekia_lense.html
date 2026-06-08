@@ -2099,7 +2099,6 @@ async function executePush() {
               body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
             });
             if (!tagResp.ok) throw new Error('POST status failed: ' + tagResp.status);
-            }
           }
 
         } else if (change.field === 'industry_codes') {
