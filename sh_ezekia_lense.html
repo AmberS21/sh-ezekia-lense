@@ -1457,7 +1457,7 @@ tr.selected td { background: var(--accent-glow); }
       <div class="admin-section-title">API &amp; Proxy Configuration</div>
       <div class="admin-row">
         <span class="admin-label">Proxy Base URL</span>
-        <input class="admin-input" id="adminProxyUrl" type="text" placeholder="/api/proxy/ezekia" />
+        <input class="admin-input" id="adminProxyUrl" type="text" placeholder="https://ambers21--shezekiaproxy.web.val.run" />
       </div>
       <div class="admin-row">
         <span class="admin-label">API Key</span>
@@ -1627,7 +1627,7 @@ let EXPORT_FMT = 'xlsx';
 const PENDING = new Map();
 
 // API / session state
-const BASE = (JSON.parse(localStorage.getItem('sh.ezekia.config') || '{}').proxyUrl) || '/api/proxy/ezekia';
+const BASE = 'https://ambers21--shezekiaproxy.web.val.run';
 let CURRENT_PROJECT_ID = null;
 let CURRENT_PROJECT_NAME = '';
 let CURRENT_ENTITY_TYPE = null;
@@ -1637,7 +1637,7 @@ const USAGE_LOG = [];
 
 // \u2500\u2500 COLUMNS \u2500\u2500
 const COLUMNS = [
-  { key: 'name',            label: 'Name',             always: true },
+  { key: 'name',            label: 'Name',             always: true },h
   { key: 'status',          label: 'Pipeline Tag',     badge: true,  editable: true },
   { key: 'stage',           label: 'Stage',            badge: true  },
   { key: 'current_title',   label: 'Current Title'                  },
