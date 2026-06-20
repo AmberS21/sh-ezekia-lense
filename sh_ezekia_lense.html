@@ -1947,7 +1947,7 @@ async function enrichOne(_bc) {
     // Current Status coding fields from profile.currentStatus
     industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
     function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],
-    _fitToProfileOptions: fitToProfile ? (fitToProfile.field && fitToProfile.field.options ? fitToProfile.field.options : []) : [],
+    _fitToProfileOptions: fitToProfile ? (fitToProfile.field && fitToProfile.field.labelData && fitToProfile.field.labelData.options ? fitToProfile.field.labelData.options : []) : [],
   };
 }
 
@@ -2752,7 +2752,7 @@ function renderCell(key, c) {
       // Render as inline select dropdown — same interaction style as Pipeline Tag
       const pendingStyle = isPending ? 'border-color:var(--amber);background:rgba(245,166,35,0.05);' : '';
       const optionsHtml = ['', ...opts].map(o => {
-        const lbl = o ? (o.label || o.name || o.value || '') : '';
+        const lbl = o ? (o.option || o.label || o.name || o.value || '') : '';
         const sel = lbl === v ? ' selected' : '';
         return '<option value="' + escHtml(lbl) + '"' + sel + '>' + (lbl ? escHtml(lbl) : '— select —') + '</option>';
       }).join('');
