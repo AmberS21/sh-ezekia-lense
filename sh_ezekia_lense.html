@@ -2140,6 +2140,7 @@ async function executePush() {
             body: JSON.stringify({ customValues: [ftpEntry] })
           });
           if (!resp.ok) throw new Error('PUT additional-info failed: ' + resp.status)
+        }
 
         // Clear stored original so next edit tracks from the new value
         const cand = ALL.find(function(c) { return c.id === change.cid; });
