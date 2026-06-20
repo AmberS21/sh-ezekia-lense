@@ -1662,10 +1662,11 @@ const COLUMNS = [
   { key: 'last_updated',    label: 'Last Updated'                   },
   { key: 'notes',           label: 'Progress Notes',   editable: true },
   { key: 'summary',         label: 'Summary',          editable: true },
+  { key: 'fit_to_profile', label: 'Fit to Profile',   editable: true },
   { key: 'industry_codes', label: 'Industry'                        },
 ];
 
-let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender']);
+let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','fit_to_profile','last_updated','gender']);
 
 // \u2500\u2500 PIPELINE TAGS \u2500\u2500
 const PIPELINE_TAGS = [
@@ -1901,6 +1902,10 @@ async function enrichOne(_bc) {
   } catch (e) { /* best-effort */ }
 
   const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
+  // Fit to Profile: custom additional-info field scoped to the assignment/project
+  // hashId is not yet known — matched by label containing 'fit' or 'profile'
+  const fitToProfile = additionalInfo.find(f => f.label && f.label.toLowerCase().includes('fit')) ||
+    additionalInfo.find(f => f.label && f.label.toLowerCase().includes('profile')) || null;
     const positions  = (person.profile?.positions || _bc.profile?.positions || []);
   const currentPos = positions[0] || {};
     const addresses  = person.addresses || _bc.addresses || [];
@@ -1934,6 +1939,8 @@ async function enrichOne(_bc) {
         last_updated: (_bc.updatedAt || '').slice(0, 10),
     notes: notesField ? (notesField.value || '') : '',
     summary: person.summary || _bc.summary || '',
+    fit_to_profile: fitToProfile ? (fitToProfile.value || '') : '',
+    _fitToProfileHashId: fitToProfile ? fitToProfile.hashId : null,
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
     // Current Status coding fields from profile.currentStatus
     industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
@@ -2108,6 +2115,18 @@ async function executePush() {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'profile.currentStatus': { industries: industryIds } })
+          });
+          if (!resp.ok) throw new Error(resp.status + '');
+        } else if (change.field === 'fit_to_profile') {
+          // Fit to Profile: custom additional-info field scoped to the assignment/project
+          // Uses the hashId stored on the candidate object during enrichOne
+          const cand = ALL.find(function(c) { return c.id === change.cid; });
+          const hashId = cand ? cand._fitToProfileHashId : null;
+          if (!hashId) throw new Error('Fit to Profile hashId not found for this candidate — the field may not exist in Ezekia yet for this assignment');
+          const resp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify([{ hashId: hashId, value: change.newValue }])
           });
           if (!resp.ok) throw new Error(resp.status + '');
         }
@@ -2706,7 +2725,21 @@ function renderCell(key, c) {
            onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
   }
 
-  if (!v) return '<span style="color:var(--text3)">\u2014</span>';
+  // ── FIT TO PROFILE — contenteditable, same as summary ──
+  if (key === 'fit_to_profile') {
+    const isEmpty = !v;
+    const cls = 'editable' + (isEmpty ? ' is-empty summary-cell' : '') + (isPending ? ' is-pending' : '');
+    return `
+<div class="${cls}"
+  contenteditable="true" spellcheck="true"
+  data-cid="${c.id}" data-field="fit_to_profile"
+  onfocus="onEditFocus(this)"
+  onblur="onEditBlur(this)"
+  oninput="onEditInput(this)"
+  onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
+  }
+
+    if (!v) return '<span style="color:var(--text3)">\u2014</span>';
   if (key === 'stage')  return `<span class="badge ${stageBadgeClass(v)}">${escHtml(v)}</span>`;
   if (key === 'rating') {
     const cls = v==='A'?'rating-a':v==='B'?'rating-b':'rating-c';
