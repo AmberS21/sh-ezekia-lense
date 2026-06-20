@@ -1895,10 +1895,10 @@ async function enrichOne(_bc) {
   try {
     const [pResp, aResp] = await Promise.all([
       fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`),
-      fetch(`${BASE}/v4/people/${personId}/additional-info`)
+      fetch(`${BASE}/people/${personId}/additional-info`)
     ]);
     let _pR = pResp; if (_pR.status === 429) { await new Promise(r => setTimeout(r, 600)); _pR = await fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`); } if (_pR.ok) { const pd = await _pR.json(); person = pd.data || pd; }
-    let _aR = aResp; if (_aR.status === 429) { await new Promise(r => setTimeout(r, 600)); _aR = await fetch(`${BASE}/v4/people/${personId}/additional-info`); } if (_aR.ok) { const ad = await _aR.json(); additionalInfo = ad.data || ad || []; }
+    let _aR = aResp; if (_aR.status === 429) { await new Promise(r => setTimeout(r, 600)); _aR = await fetch(`${BASE}/people/${personId}/additional-info`); } if (_aR.ok) { const ad = await _aR.json(); additionalInfo = ad.data || ad || []; }
   } catch (e) { /* best-effort */ }
 
   const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
@@ -2045,7 +2045,7 @@ async function executePush() {
           // Progress Notes: GET existing record, then PUT /people/{id}/additional-info
           // Body: { customValues: [{ id: <recordId>, fieldId: <fieldId>, value: '...' }] }
           // Must use /people/ (no v4 prefix) for the write endpoint
-          const aiResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info');
+          const aiResp = await fetch(BASE + '/people/' + change.cid + '/additional-info');
           if (!aiResp.ok) throw new Error('GET additional-info failed: ' + aiResp.status);
           const aiData = await aiResp.json();
           const aiFields = aiData.data || aiData || [];
@@ -2125,10 +2125,10 @@ async function executePush() {
           const cand = ALL.find(function(c) { return c.id === change.cid; });
           const hashId = cand ? cand._fitToProfileHashId : null;
           if (!hashId) throw new Error('Fit to Profile hashId not found for this candidate — the field may not exist in Ezekia yet for this assignment');
-          const resp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info', {
+          const resp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify([{ hashId: hashId, value: change.newValue }])
+            body: JSON.stringify({ customValues: [{ fieldId: hashId, value: change.newValue }] })
           });
           if (!resp.ok) throw new Error(resp.status + '');
         }
