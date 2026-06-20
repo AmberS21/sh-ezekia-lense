@@ -1948,6 +1948,7 @@ async function enrichOne(_bc) {
     industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
     function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],
   };
+      _fitToProfileOptions: fitToProfile ? (fitToProfile.field && fitToProfile.field.options ? fitToProfile.field.options : []) : [],
 }
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
@@ -2727,7 +2728,7 @@ function renderCell(key, c) {
            onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
   }
 
-  // ── FIT TO PROFILE — contenteditable, same as summary ──
+  // ── FIT TO PROFILE — dropdown if options available, else editable text ──
   if (key === 'fit_to_profile') {
     const isEmpty = !v;
     const cls = 'editable' + (isEmpty ? ' is-empty summary-cell' : '') + (isPending ? ' is-pending' : '');
