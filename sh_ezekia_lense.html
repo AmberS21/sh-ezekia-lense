@@ -1942,12 +1942,20 @@ async function enrichOne(_bc) {
     notes: notesField ? (notesField.value || '') : '',
     summary: person.summary || _bc.summary || '',
     fit_to_profile: fitToProfile ? _stripHtml(fitToProfile.value || '') : '',
-    _fitToProfileFieldId: fitToProfile ? (fitToProfile.field ? fitToProfile.field.id : null) : null,
+    _fitToProfileFieldId: (function() {
+      var fid = fitToProfile && fitToProfile.field ? fitToProfile.field.id : null;
+      if (fid) window._ftpFieldIdCache = fid;
+      return fid || window._ftpFieldIdCache || null;
+    })(),
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
     // Current Status coding fields from profile.currentStatus
     industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
     function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],
-    _fitToProfileOptions: fitToProfile ? (fitToProfile.field && fitToProfile.field.labelData && fitToProfile.field.labelData.options ? fitToProfile.field.labelData.options : []) : [],
+    _fitToProfileOptions: (function() {
+      var opts = fitToProfile && fitToProfile.field && fitToProfile.field.labelData && fitToProfile.field.labelData.options ? fitToProfile.field.labelData.options : [];
+      if (opts.length > 0) window._ftpOptsCache = opts;
+      return opts.length > 0 ? opts : (window._ftpOptsCache || []);
+    })(),
   };
 }
 
@@ -2121,25 +2129,34 @@ async function executePush() {
           });
           if (!resp.ok) throw new Error(resp.status + '');
         } else if (change.field === 'fit_to_profile') {
-          // Fit to Profile: uses numeric field.id (not hashId string)
-          // GET existing record first to include record id in PUT body
+          // Fit to Profile: custom additional-info field
+          // GET existing record first to find numeric field id and record id
           const ftpCand = ALL.find(function(c) { return c.id === change.cid; });
-          const fieldId = ftpCand ? ftpCand._fitToProfileFieldId : null;
+          const fieldId = (ftpCand && ftpCand._fitToProfileFieldId) || window._ftpFieldIdCache || null;
           if (!fieldId) throw new Error('Fit to Profile field ID not found for this candidate');
           const ftpGetResp = await fetch(BASE + '/people/' + change.cid + '/additional-info');
           if (!ftpGetResp.ok) throw new Error('GET additional-info failed: ' + ftpGetResp.status);
           const ftpData = await ftpGetResp.json();
           const ftpFields = ftpData.data || ftpData || [];
           const ftpRecord = ftpFields.find(function(f) { return f.field && f.field.id === fieldId; });
+          // Build the payload entry
           const ftpEntry = ftpRecord
             ? { id: ftpRecord.id, fieldId: fieldId, value: change.newValue }
             : { fieldId: fieldId, value: change.newValue };
-          const resp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
+          // Try PUT first; if no existing record and PUT returns 405, fall back to POST
+          let resp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ customValues: [ftpEntry] })
           });
-          if (!resp.ok) throw new Error('PUT additional-info failed: ' + resp.status)
+          if (!resp.ok && resp.status === 405 && !ftpRecord) {
+            resp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ customValues: [ftpEntry] })
+            });
+          }
+          if (!resp.ok) throw new Error('additional-info update failed: ' + resp.status)
         }
 
         // Clear stored original so next edit tracks from the new value
@@ -2748,7 +2765,7 @@ function renderCell(key, c) {
 
   // ── FIT TO PROFILE — dropdown like Pipeline Tag if field.options exist ──
   if (key === 'fit_to_profile') {
-    const opts = c._fitToProfileOptions || [];
+    const opts = c._fitToProfileOptions && c._fitToProfileOptions.length > 0 ? c._fitToProfileOptions : (window._ftpOptsCache || []);
     if (opts.length > 0) {
       // Render as inline select dropdown — same interaction style as Pipeline Tag
       const pendingStyle = isPending ? 'border-color:var(--amber);background:rgba(245,166,35,0.05);' : '';
