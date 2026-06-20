@@ -2088,22 +2088,31 @@ async function executePush() {
 
         } else if (change.field === 'status') {
           // Pipeline Tags: POST /v4/projects/{projectId}/candidates/statuses
-          // Build tagIdMap from _pipelineTagsMeta (all available tags, not just assigned ones)
-          if (!change.newValue) {
-            console.warn('[executePush] status change has no newValue, skipping tag write for', change.cid);
-          } else {
-            const tagIdMap = new Map();
-            // Use _pipelineTagsMeta from the loaded candidates — contains ALL project tags
-            for (const c of ALL) {
-              for (const t of (c._pipelineTagsMeta || [])) {
-                if (t.text && t.id) tagIdMap.set(t.text, t.id);
-              }
+          // Build tagIdMap from GET /v4/projects/{id}/candidates/statuses (ALL defined tags)
+          const tagDefsResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const tagIdMap = new Map();
+          if (tagDefsResp.ok) {
+            const tagDefsData = await tagDefsResp.json();
+            const tagDefs = (tagDefsData.data || tagDefsData || []);
+            for (const t of tagDefs) {
+              if (t.text && t.id) tagIdMap.set(t.text, t.id);
+              if (t.name && t.id) tagIdMap.set(t.name, t.id);
             }
-            const tagId = tagIdMap.get(change.newValue.trim());
-            if (tagId == null) {
-              console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
-              throw new Error('Unknown tag: ' + change.newValue);
+          }
+          // Fallback: also check _pipelineTagsMeta from loaded candidates
+          for (const c of ALL) {
+            for (const t of (c._pipelineTagsMeta || [])) {
+              if (t.text && t.id && !tagIdMap.has(t.text)) tagIdMap.set(t.text, t.id);
             }
+          }
+          const tagId = tagIdMap.get(change.newValue);
+          if (!tagId) {
+            console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
+            throw new Error('Unknown tag: ' + change.newValue);
+          }
             const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
