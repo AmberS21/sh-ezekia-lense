@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SH Ezekia Lense</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
+<style>h
 :root,
 [data-theme="dark"] {
   /* Sheffield Haworth brand theme \2014  navy dark + #36a9e1 sky blue accent */
@@ -1903,9 +1903,11 @@ async function enrichOne(_bc) {
 
   const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
   // Fit to Profile: custom additional-info field scoped to the assignment/project
-  // hashId is not yet known — matched by label containing 'fit' or 'profile'
-  const fitToProfile = additionalInfo.find(f => f.label && f.label.toLowerCase().includes('fit')) ||
-    additionalInfo.find(f => f.label && f.label.toLowerCase().includes('profile')) || null;
+// hashId is not yet known — matched by label (top-level or nested field.label) containing 'fit to profile', 'fit', or 'profile'
+    const _getLabel = f => f.label || (f.field && f.field.label) || '';
+    const fitToProfile = additionalInfo.find(f => _getLabel(f).toLowerCase().includes('fit to profile')) ||
+          additionalInfo.find(f => _getLabel(f).toLowerCase().includes('fit')) ||
+          additionalInfo.find(f => _getLabel(f).toLowerCase().includes('profile')) || null;
     const positions  = (person.profile?.positions || _bc.profile?.positions || []);
   const currentPos = positions[0] || {};
     const addresses  = person.addresses || _bc.addresses || [];
@@ -1940,7 +1942,7 @@ async function enrichOne(_bc) {
     notes: notesField ? (notesField.value || '') : '',
     summary: person.summary || _bc.summary || '',
     fit_to_profile: fitToProfile ? (fitToProfile.value || '') : '',
-    _fitToProfileHashId: fitToProfile ? fitToProfile.hashId : null,
+    _fitToProfileHashId: fitToProfile ? (fitToProfile.field && fitToProfile.field.hashId ? fitToProfile.field.hashId : fitToProfile.hashId) : null,
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
     // Current Status coding fields from profile.currentStatus
     industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
