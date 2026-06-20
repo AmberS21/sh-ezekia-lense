@@ -1942,7 +1942,7 @@ async function enrichOne(_bc) {
     notes: notesField ? (notesField.value || '') : '',
     summary: person.summary || _bc.summary || '',
     fit_to_profile: fitToProfile ? _stripHtml(fitToProfile.value || '') : '',
-    _fitToProfileHashId: fitToProfile ? (fitToProfile.field && fitToProfile.field.hashId ? fitToProfile.field.hashId : fitToProfile.hashId) : null,
+    _fitToProfileFieldId: fitToProfile ? (fitToProfile.field ? fitToProfile.field.id : null) : null,
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
     // Current Status coding fields from profile.currentStatus
     industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
@@ -2121,18 +2121,25 @@ async function executePush() {
           });
           if (!resp.ok) throw new Error(resp.status + '');
         } else if (change.field === 'fit_to_profile') {
-          // Fit to Profile: custom additional-info field scoped to the assignment/project
-          // Uses the hashId stored on the candidate object during enrichOne
-          const cand = ALL.find(function(c) { return c.id === change.cid; });
-          const hashId = cand ? cand._fitToProfileHashId : null;
-          if (!hashId) throw new Error('Fit to Profile hashId not found for this candidate — the field may not exist in Ezekia yet for this assignment');
+          // Fit to Profile: uses numeric field.id (not hashId string)
+          // GET existing record first to include record id in PUT body
+          const ftpCand = ALL.find(function(c) { return c.id === change.cid; });
+          const fieldId = ftpCand ? ftpCand._fitToProfileFieldId : null;
+          if (!fieldId) throw new Error('Fit to Profile field ID not found for this candidate');
+          const ftpGetResp = await fetch(BASE + '/people/' + change.cid + '/additional-info');
+          if (!ftpGetResp.ok) throw new Error('GET additional-info failed: ' + ftpGetResp.status);
+          const ftpData = await ftpGetResp.json();
+          const ftpFields = ftpData.data || ftpData || [];
+          const ftpRecord = ftpFields.find(function(f) { return f.field && f.field.id === fieldId; });
+          const ftpEntry = ftpRecord
+            ? { id: ftpRecord.id, fieldId: fieldId, value: change.newValue }
+            : { fieldId: fieldId, value: change.newValue };
           const resp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ customValues: [{ fieldId: hashId, value: change.newValue }] })
+            body: JSON.stringify({ customValues: [ftpEntry] })
           });
-          if (!resp.ok) throw new Error(resp.status + '');
-        }
+          if (!resp.ok) throw new Error('PUT additional-info failed: ' + resp.status)
 
         // Clear stored original so next edit tracks from the new value
         const cand = ALL.find(function(c) { return c.id === change.cid; });
