@@ -1905,9 +1905,9 @@ async function enrichOne(_bc) {
   // Fit to Profile: custom additional-info field scoped to the assignment/project
 // hashId is not yet known — matched by label (top-level or nested field.label) containing 'fit to profile', 'fit', or 'profile'
     const _getLabel = f => f.label || (f.field && f.field.label) || '';
+    const _stripHtml = (s) => { if (!s || !s.includes('<')) return s || ''; try { return new DOMParser().parseFromString(s, 'text/html').body.textContent.trim(); } catch(e) { return s.replace(/<[^>]*>/g,'').trim(); } };
     const fitToProfile = additionalInfo.find(f => _getLabel(f).toLowerCase().includes('fit to profile')) ||
-          additionalInfo.find(f => _getLabel(f).toLowerCase().includes('fit')) ||
-          additionalInfo.find(f => _getLabel(f).toLowerCase().includes('profile')) || null;
+          additionalInfo.find(f => _getLabel(f).toLowerCase().includes('fit profile')) || null;
     const positions  = (person.profile?.positions || _bc.profile?.positions || []);
   const currentPos = positions[0] || {};
     const addresses  = person.addresses || _bc.addresses || [];
@@ -1941,7 +1941,7 @@ async function enrichOne(_bc) {
         last_updated: (_bc.updatedAt || '').slice(0, 10),
     notes: notesField ? (notesField.value || '') : '',
     summary: person.summary || _bc.summary || '',
-    fit_to_profile: fitToProfile ? (fitToProfile.value || '') : '',
+    fit_to_profile: fitToProfile ? _stripHtml(fitToProfile.value || '') : '',
     _fitToProfileHashId: fitToProfile ? (fitToProfile.field && fitToProfile.field.hashId ? fitToProfile.field.hashId : fitToProfile.hashId) : null,
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
     // Current Status coding fields from profile.currentStatus
@@ -2267,6 +2267,16 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('.tag-dropdown.open').forEach(d => d.classList.remove('open'));
   }
 });
+
+function onFtpSelectChange(sel, cid) {
+  const cand = ALL.find(c => c.id === cid);
+  if (!cand) return;
+  const newValue = sel.value;
+  if (newValue === cand.fit_to_profile) return;
+  markPending(cid, 'fit_to_profile', newValue, cand.name);
+  sel.style.borderColor = 'var(--amber)';
+  sel.style.background = 'rgba(245,166,35,0.05)';
+}
 
 function selectPipelineTag(cid, newTag, event) {
   event.stopPropagation();
@@ -2728,18 +2738,23 @@ function renderCell(key, c) {
            onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
   }
 
-  // ── FIT TO PROFILE — dropdown if options available, else editable text ──
+  // ── FIT TO PROFILE — dropdown like Pipeline Tag if field.options exist ──
   if (key === 'fit_to_profile') {
+    const opts = c._fitToProfileOptions || [];
+    if (opts.length > 0) {
+      // Render as inline select dropdown — same interaction style as Pipeline Tag
+      const pendingStyle = isPending ? 'border-color:var(--amber);background:rgba(245,166,35,0.05);' : '';
+      const optionsHtml = ['', ...opts].map(o => {
+        const lbl = o ? (o.label || o.name || o.value || '') : '';
+        const sel = lbl === v ? ' selected' : '';
+        return '<option value="' + escHtml(lbl) + '"' + sel + '>' + (lbl ? escHtml(lbl) : '— select —') + '</option>';
+      }).join('');
+      return '<select class="filter-select" style="min-width:140px;font-size:12px;padding:4px 8px;' + pendingStyle + '" onchange="onFtpSelectChange(this,' + c.id + ')">' + optionsHtml + '</select>';
+    }
+    // No configured options — plain editable text fallback
     const isEmpty = !v;
     const cls = 'editable' + (isEmpty ? ' is-empty summary-cell' : '') + (isPending ? ' is-pending' : '');
-    return `
-<div class="${cls}"
-  contenteditable="true" spellcheck="true"
-  data-cid="${c.id}" data-field="fit_to_profile"
-  onfocus="onEditFocus(this)"
-  onblur="onEditBlur(this)"
-  oninput="onEditInput(this)"
-  onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
+    return `<div class="${cls}" contenteditable="true" spellcheck="true" data-cid="${c.id}" data-field="fit_to_profile" onfocus="onEditFocus(this)" onblur="onEditBlur(this)" oninput="onEditInput(this)" onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
   }
 
     if (!v) return '<span style="color:var(--text3)">\u2014</span>';
