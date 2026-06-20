@@ -2120,30 +2120,13 @@ async function executePush() {
           }
 
         } else if (change.field === 'industry_codes') {
-          // Industry codes: update profile.currentStatus.industries
-          // Ezekia supports PATCH /v4/people/{id} with nested body
-          const industryIds = (change.newValue || []).map(function(ind) { return { id: ind.id }; });
-          let resp = await fetch(BASE + '/v4/people/' + change.cid, {
-            method: 'PATCH',
+          // Industry codes: POST to /v4/people/{id}/current-status with plain integer IDs
+          const industryIds = (change.newValue || []).map(function(ind) { return ind.id; });
+          const resp = await fetch(BASE + '/v4/people/' + change.cid + '/current-status', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ profile: { currentStatus: { industries: industryIds } } })
+            body: JSON.stringify({ industries: industryIds })
           });
-          // Fallback 1: try PUT /v4/people/{id}/current-status
-          if (!resp.ok && (resp.status === 404 || resp.status === 405)) {
-            resp = await fetch(BASE + '/v4/people/' + change.cid + '/current-status', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ industries: industryIds })
-            });
-          }
-          // Fallback 2: try PATCH /v4/people/{id}/current-status
-          if (!resp.ok && (resp.status === 404 || resp.status === 405)) {
-            resp = await fetch(BASE + '/v4/people/' + change.cid + '/current-status', {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ industries: industryIds })
-            });
-          }
           if (!resp.ok) throw new Error('Industry update failed (' + resp.status + ')');
         } else if (change.field === 'fit_to_profile') {
           // Fit to Profile: custom additional-info field
