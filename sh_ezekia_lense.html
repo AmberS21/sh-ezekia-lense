@@ -2085,7 +2085,6 @@ async function executePush() {
             body: JSON.stringify(fullProfile)
           });
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
-          }
 
         } else if (change.field === 'status') {
           // Pipeline Tags: POST /v4/projects/{projectId}/candidates/statuses
