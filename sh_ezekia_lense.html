@@ -1853,7 +1853,19 @@ async function connectFromUrl() {
       }
 
     // 3. Enrich in batches of 5
-    ALL = await enrichCandidates(rawCandidates);
+    // Build tag ID catalogue from the first candidate's full pipelineTags array.
+        // Ezekia's API returns ALL available pipeline tags (full catalogue) on each candidate,
+        // not just the assigned ones. We capture this now so executePush can look up tag IDs.
+        window._tagCatalogue = new Map();
+        if (rawCandidates.length > 0) {
+          const _firstRaw = rawCandidates[0];
+          const _rawTags = ((_firstRaw.meta || {}).candidate || {}).pipelineTags || [];
+          for (const _rt of _rawTags) {
+            if (_rt.id && _rt.text) window._tagCatalogue.set(_rt.text, _rt.id);
+          }
+          console.log('[SH Lense] Tag catalogue built:', window._tagCatalogue.size, 'tags');
+        }
+        ALL = await enrichCandidates(rawCandidates);
 
     buildColToggles();
     buildFilterOptions();    document.getElementById('globalSearch').value = '';
@@ -2025,7 +2037,7 @@ function openPushModal() {
 
 async function executePush() {
   const btn = document.getElementById('pushConfirmBtn');
-  btn.textContent = 'Pushing…';
+  btn.textContent = 'Pushingâ¦';
   btn.disabled = true;
 
   const changes = [...PENDING.values()];
@@ -2034,7 +2046,7 @@ async function executePush() {
   for (const change of changes) {
     try {
       if (!CURRENT_PROJECT_ID) {
-        // Demo mode — simulate
+        // Demo mode â simulate
         await new Promise(r => setTimeout(r, 120));
       } else {
         if (change.field === 'notes') {
@@ -2058,7 +2070,7 @@ async function executePush() {
 
         } else if (change.field === 'summary') {
           // Summary: must GET full profile first, then PUT with merged summary.
-          // Never send summary alone — Ezekia will wipe other fields like address.
+          // Never send summary alone â Ezekia will wipe other fields like address.
           const getResp = await fetch(BASE + '/v4/people/' + change.cid);
           if (!getResp.ok) throw new Error('GET profile failed: ' + getResp.status);
           const profileData = await getResp.json();
@@ -2075,16 +2087,25 @@ async function executePush() {
 
         } else if (change.field === 'status') {
           // Pipeline Tags: POST /v3/projects/{id}/candidates/statuses (v3 - only one that works)
-          // Build tagIdMap from _pipelineTagsMeta already loaded on candidates (no extra HTTP call)
-          const tagIdMap = new Map();
-          for (const c of ALL) {
-            for (const t of (c._pipelineTagsMeta || [])) {
-              if (t.text && t.id) tagIdMap.set(t.text, t.id);
-              if (t.name && t.id) tagIdMap.set(t.name, t.id);
-            }
-          }
-          const tagId = tagIdMap.get(change.newValue);
-          if (!tagId) {
+          // // Look up tag ID from the catalogue built at project load time.
+                // Ezekia returns ALL available tags (full catalogue) on each raw candidate response.
+                // The catalogue is built in connectFromUrl() from rawCandidates[0].pipelineTags.
+                if (!window._tagCatalogue || window._tagCatalogue.size === 0) {
+                  // Fallback: fetch one candidate to rebuild catalogue
+                  try {
+                    const _catR = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates?fields[]=meta.candidate&per_page=1');
+                    if (_catR.ok) {
+                      const _catD = await _catR.json();
+                      const _ctags = (((_catD.data || [])[0] || {}).meta || {}).candidate || {};
+                      window._tagCatalogue = new Map();
+                      for (const t of (_ctags.pipelineTags || [])) {
+                        if (t.id && t.text) window._tagCatalogue.set(t.text, t.id);
+                      }
+                    }
+                  } catch(_e) {}
+                }
+                const tagId = (window._tagCatalogue || new Map()).get(change.newValue);
+                if (!tagId) {
             console.warn('[executePush] Could not find tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
             throw new Error('Unknown pipeline tag: ' + change.newValue);
           }
@@ -2130,7 +2151,7 @@ async function executePush() {
         if (cand) delete cand['_orig_' + change.field];
       }
 
-      logUsage('push', change.candidateName + ' — ' + change.field + ' updated', CURRENT_PROJECT_NAME);
+      logUsage('push', change.candidateName + ' â ' + change.field + ' updated', CURRENT_PROJECT_NAME);
     } catch (err) {
       errors.push(Object.assign({}, change, { err: err.message }));
     }
@@ -2141,14 +2162,14 @@ async function executePush() {
   btn.disabled = false;
 
   if (errors.length === 0) {
-    // All good — clear pending
+    // All good â clear pending
     PENDING.clear();
     updateDirtyBadge();
     // Remove dirty indicators from all rows
     document.querySelectorAll('.dirty-cell').forEach(function(el) { el.classList.remove('dirty-cell'); });
     showToast(changes.length + ' change' + (changes.length > 1 ? 's' : '') + ' pushed to Ezekia successfully.', 'success');
   } else {
-    // Partial failure — remove succeeded items from PENDING, keep failed ones for retry
+    // Partial failure â remove succeeded items from PENDING, keep failed ones for retry
     const failedKeys = new Set(errors.map(function(e) { return e.cid + ':' + e.field; }));
     for (const change of changes) {
       const key = change.cid + ':' + change.field;
