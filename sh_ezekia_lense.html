@@ -2087,25 +2087,28 @@ async function executePush() {
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
 
         } else if (change.field === 'status') {
-          // Pipeline Tags: POST /v4/projects/{projectId}/candidates/statuses
-          // Build tagIdMap from GET /v4/projects/{id}/candidates/statuses (ALL defined tags)
-          const tagDefsResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-          });
+          // Pipeline Tags: build tagIdMap from loaded candidates, then POST to candidate's pipelineTags
+          // Step 1: build tagIdMap from ALL loaded candidates' _pipelineTagsMeta
           const tagIdMap = new Map();
-          if (tagDefsResp.ok) {
-            const tagDefsData = await tagDefsResp.json();
-            const tagDefs = (tagDefsData.data || tagDefsData || []);
-            for (const t of tagDefs) {
+          for (const c of ALL) {
+            for (const t of (c._pipelineTagsMeta || [])) {
               if (t.text && t.id) tagIdMap.set(t.text, t.id);
               if (t.name && t.id) tagIdMap.set(t.name, t.id);
             }
           }
-          // Fallback: also check _pipelineTagsMeta from loaded candidates
-          for (const c of ALL) {
-            for (const t of (c._pipelineTagsMeta || [])) {
-              if (t.text && t.id && !tagIdMap.has(t.text)) tagIdMap.set(t.text, t.id);
+          // Step 2: if tag not in map, try GET /v4/projects/{id}/pipelineTags
+          if (!tagIdMap.has(change.newValue)) {
+            const tagDefsResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/pipelineTags', {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (tagDefsResp.ok) {
+              const tagDefsData = await tagDefsResp.json();
+              const tagDefs = (tagDefsData.data || tagDefsData || []);
+              for (const t of tagDefs) {
+                if (t.text && t.id) tagIdMap.set(t.text, t.id);
+                if (t.name && t.id) tagIdMap.set(t.name, t.id);
+              }
             }
           }
           const tagId = tagIdMap.get(change.newValue);
@@ -2113,20 +2116,19 @@ async function executePush() {
             console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
             throw new Error('Unknown tag: ' + change.newValue);
           }
-            const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
-            });
-            if (!tagResp.ok) throw new Error('POST status failed: ' + tagResp.status);
-
-        } else if (change.field === 'industry_codes') {
-          // Industry codes: POST to /v4/people/{id}/current-status with plain integer IDs
-          const industryIds = (change.newValue || []).map(function(ind) { return ind.id; });
-          const resp = await fetch(BASE + '/v4/people/' + change.cid + '/current-status', {
+          // Step 3: POST to /v4/projects/{projectId}/candidates/{cid}/pipelineTags
+          const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/' + change.cid + '/pipelineTags', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ industries: industryIds })
+            body: JSON.stringify({ pipelineTagId: tagId })
+          });
+          if (!tagResp.ok) throw new Error('POST pipelineTags failed: ' + tagResp.status);
+                } else if (change.field === 'industry_codes') {
+          // Industry codes: POST to /v4/people/{id}/current-status with plain integer IDs
+         const resp = await fetch(BASE + '/v4/people/' + change.cid + '/current-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ industries: (change.newValue || []) })
           });
           if (!resp.ok) throw new Error('Industry update failed (' + resp.status + ')');
         } else if (change.field === 'fit_to_profile') {
