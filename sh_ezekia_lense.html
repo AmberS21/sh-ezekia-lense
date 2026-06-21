@@ -1857,14 +1857,13 @@ async function connectFromUrl() {
         // Ezekia's API returns ALL available pipeline tags (full catalogue) on each candidate,
         // not just the assigned ones. We capture this now so executePush can look up tag IDs.
         window._tagCatalogue = new Map();
-        if (rawCandidates.length > 0) {
-          const _firstRaw = rawCandidates[0];
-          const _rawTags = ((_firstRaw.meta || {}).candidate || {}).pipelineTags || [];
+        for (const _rawCand of rawCandidates) {
+          const _rawTags = ((_rawCand.meta || {}).candidate || {}).pipelineTags || [];
           for (const _rt of _rawTags) {
             if (_rt.id && _rt.text) window._tagCatalogue.set(_rt.text, _rt.id);
           }
-          console.log('[SH Lense] Tag catalogue built:', window._tagCatalogue.size, 'tags');
         }
+        console.log('[SH Lense] Tag catalogue built from all candidates:', window._tagCatalogue.size, 'tags');
         ALL = await enrichCandidates(rawCandidates);
 
     buildColToggles();
@@ -2093,20 +2092,21 @@ async function executePush() {
                 if (!window._tagCatalogue || window._tagCatalogue.size === 0) {
                   // Fallback: fetch one candidate to rebuild catalogue
                   try {
-                    const _catR = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates?fields[]=meta.candidate&per_page=1');
+                    const _catR = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates?fields[]=meta.candidate&per_page=100');
                     if (_catR.ok) {
                       const _catD = await _catR.json();
-                      const _ctags = (((_catD.data || [])[0] || {}).meta || {}).candidate || {};
                       window._tagCatalogue = new Map();
-                      for (const t of (_ctags.pipelineTags || [])) {
-                        if (t.id && t.text) window._tagCatalogue.set(t.text, t.id);
+                      for (const _fc of (_catD.data || [])) {
+                        for (const t of (((_fc.meta || {}).candidate || {}).pipelineTags || [])) {
+                          if (t.id && t.text) window._tagCatalogue.set(t.text, t.id);
+                        }
                       }
                     }
                   } catch(_e) {}
                 }
                 const tagId = (window._tagCatalogue || new Map()).get(change.newValue);
                 if (!tagId) {
-            console.warn('[executePush] Could not find tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
+            console.warn('[executePush] Could not find tag ID for:', change.newValue, 'available:', [...(window._tagCatalogue || new Map()).keys()]);
             throw new Error('Unknown pipeline tag: ' + change.newValue);
           }
           const tagResp = await fetch(BASE + '/v4/assignments/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
