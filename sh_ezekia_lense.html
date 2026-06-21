@@ -1663,6 +1663,7 @@ const COLUMNS = [
   { key: 'notes',           label: 'Progress Notes',   editable: true },
   { key: 'summary',         label: 'Summary',          editable: true },
   { key: 'industry_codes', label: 'Industry'                        },
+  { key: 'fit_to_profile', label: 'Fit to Profile'                       },
 ];
 
 let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender']);
@@ -1900,6 +1901,7 @@ async function enrichOne(_bc) {
     let _aR = aResp; if (_aR.status === 429) { await new Promise(r => setTimeout(r, 600)); _aR = await fetch(`${BASE}/v4/people/${personId}/additional-info`); } if (_aR.ok) { const ad = await _aR.json(); additionalInfo = ad.data || ad || []; }
   } catch (e) { /* best-effort */ }
 
+    const fitToProfile = additionalInfo.find(function(f) { return ((f.field && f.field.label) || f.label || '').toLowerCase().includes('fit to profile'); }) || null;
   const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
     const positions  = (person.profile?.positions || _bc.profile?.positions || []);
   const currentPos = positions[0] || {};
@@ -1937,7 +1939,10 @@ async function enrichOne(_bc) {
     _pipelineTagsMeta: ((_bc.meta || {}).candidate || {}).pipelineTags || [],
     // Current Status coding fields from profile.currentStatus
     industry_codes: ((person.profile || {}).currentStatus || {}).industries || [],
-    function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],
+    function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],    fit_to_profile: fitToProfile ? (fitToProfile.value || '') : '',
+    _fitToProfileRecordId: (function() { const r = additionalInfo.find(function(rec) { return rec.fields && rec.fields.find(function(f) { return f.field && (f.field.label === 'Fit to Profile' || f.field.label === 'fit_to_profile'); }); }); return r ? r.id : null; })(),
+    _fitToProfileFieldId: (function() { const r = additionalInfo.find(function(rec) { return rec.fields && rec.fields.find(function(f) { return f.field && (f.field.label === 'Fit to Profile' || f.field.label === 'fit_to_profile'); }); }); if (!r) return null; const fd = r.fields.find(function(f) { return f.field && (f.field.label === 'Fit to Profile' || f.field.label === 'fit_to_profile'); }); return fd ? fd.id : null; })(),
+
   };
 }
 
@@ -2093,23 +2098,42 @@ async function executePush() {
               console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
               throw new Error('Unknown tag: ' + change.newValue);
             }
-            const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
+                        const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/' + change.cid + '/pipelineTags', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
+              body: JSON.stringify({ pipelineTagId: tagId })
             });
-            if (!tagResp.ok) throw new Error('POST status failed: ' + tagResp.status);
+            if (!tagResp.ok) throw new Error('POST pipelineTags failed: ' + tagResp.status);
           }
 
-        } else if (change.field === 'industry_codes') {
-          // PUT /v4/people/{id} with profile.currentStatus.industries (array of {id})
-          const industryIds = (change.newValue || []).map(function(ind) { return { id: ind.id }; });
-          const resp = await fetch(BASE + '/v4/people/' + change.cid, {
+                } else if (change.field === 'industry_codes') {
+          // POST /v4/people/{id}/current-status with full industry objects
+          const industries = (change.newValue || []).map(function(ind) {
+            return { id: ind.id, name: ind.name || '', value: ind.value || ind.name || '', parent_id: ind.parent_id || null };
+          });
+          const indResp = await fetch(BASE + '/v4/people/' + change.cid + '/current-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ industries: industries })
+          });
+          if (!indResp.ok) throw new Error('POST current-status failed: ' + indResp.status);
+        } else if (change.field === 'fit_to_profile') {
+          // GET existing additional-info record, then PUT with updated fit_to_profile field
+          const getResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          if (!getResp.ok) throw new Error('GET additional-info failed: ' + getResp.status);
+          const getJson = await getResp.json();
+          const record = (getJson.data && getJson.data[0]) || null;
+          const fieldDef = record && record.fields && record.fields.find(function(f) { return f.field && (f.field.label === 'Fit to Profile' || f.field.label === 'fit_to_profile'); });
+          if (!fieldDef) throw new Error('Fit to Profile field not found on candidate');
+          const putResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info/' + record.id, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 'profile.currentStatus': { industries: industryIds } })
+            body: JSON.stringify({ fields: [{ id: fieldDef.id, value: change.newValue }] })
           });
-          if (!resp.ok) throw new Error(resp.status + '');
+          if (!putResp.ok) throw new Error('PUT fit_to_profile failed: ' + putResp.status);
         }
 
         // Clear stored original so next edit tracks from the new value
@@ -2727,7 +2751,10 @@ function renderCell(key, c) {
     return `<div class="ind-cell${isPendingInd?' ind-cell-pending':''}" id="ind-cell-${c.id}" onclick="openIndustryEditor(${c.id}, event)">${tagsHtml}</div>`;
   }
 
-  return `<span>${escHtml(v)}</span>`;
+    if (key === 'fit_to_profile') {
+    return `<span class="cell-text">${escHtml(v || '')}</span>`;
+  }
+return `<span>${escHtml(v)}</span>`;
 }
 
 function renderTable() {
