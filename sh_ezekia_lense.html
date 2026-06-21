@@ -2076,39 +2076,43 @@ async function executePush() {
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
 
         } else if (change.field === 'status') {
-          // Pipeline Tags: POST /v3/projects/{projectId}/candidates/statuses
-          // Requires numeric tag ID — discovered via GET /v3/projects/{projectId}/candidates/statuses
-          if (!change.newValue) {
-            console.warn('[executePush] status change has no newValue, skipping tag write for', change.cid);
-          } else {
-            // Build tag name → numeric ID map from available statuses
-            // GET all candidates with tags to build tagIdMap (name -> numeric ID)
-            const statusResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates?fields[]=meta.candidate');
-            if (!statusResp.ok) throw new Error('GET candidates/tags failed: ' + statusResp.status);
-            const statusData = await statusResp.json();
-            const candList = statusData.data || [];
-            // Build tagIdMap from pipelineTags found on all candidates
-            const tagIdMap = new Map();
-            for (const c of candList) {
-              const tags = c.meta && c.meta.candidate && c.meta.candidate.pipelineTags || [];
-              for (const t of tags) {
+          // Pipeline Tags: build tagIdMap from loaded candidates, then POST to candidate's pipelineTags
+          // Step 1: build tagIdMap from ALL loaded candidates' _pipelineTagsMeta
+          const tagIdMap = new Map();
+          for (const c of ALL) {
+            for (const t of (c._pipelineTagsMeta || [])) {
+              if (t.text && t.id) tagIdMap.set(t.text, t.id);
+              if (t.name && t.id) tagIdMap.set(t.name, t.id);
+            }
+          }
+          // Step 2: if tag not in map, try GET /v4/projects/{id}/pipelineTags
+          if (!tagIdMap.has(change.newValue)) {
+            const tagDefsResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/pipelineTags', {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (tagDefsResp.ok) {
+              const tagDefsData = await tagDefsResp.json();
+              const tagDefs = (tagDefsData.data || tagDefsData || []);
+              for (const t of tagDefs) {
                 if (t.text && t.id) tagIdMap.set(t.text, t.id);
+                if (t.name && t.id) tagIdMap.set(t.name, t.id);
               }
             }
-            const tagId = tagIdMap.get(change.newValue.trim());
-            if (tagId == null) {
-              console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
-              throw new Error('Unknown tag: ' + change.newValue);
-            }
-            const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
-            });
-            if (!tagResp.ok) throw new Error('POST status failed: ' + tagResp.status);
           }
-
-        } else if (change.field === 'industry_codes') {
+          const tagId = tagIdMap.get(change.newValue);
+          if (!tagId) {
+            console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
+            throw new Error('Unknown tag: ' + change.newValue);
+          }
+          // Step 3: POST to /v4/projects/{projectId}/candidates/{cid}/pipelineTags
+          const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/' + change.cid + '/pipelineTags', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pipelineTagId: tagId })
+          });
+          if (!tagResp.ok) throw new Error('POST pipelineTags failed: ' + tagResp.status);
+                } else if (change.field === 'industry_codes') {
           // PUT /v4/people/{id} with profile.currentStatus.industries (array of {id})
           const industryIds = (change.newValue || []).map(function(ind) { return { id: ind.id }; });
           const resp = await fetch(BASE + '/v4/people/' + change.cid, {
