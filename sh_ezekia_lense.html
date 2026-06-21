@@ -2074,31 +2074,25 @@ async function executePush() {
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
 
         } else if (change.field === 'status') {
-          // Pipeline Tags: POST /v3/projects/{projectId}/candidates/statuses
-          // Requires numeric tag ID — discovered via GET /v3/projects/{projectId}/candidates/statuses
+          // Pipeline Tags: POST /v4/projects/{id}/candidates/{cid}/pipelineTags
+          // Uses _pipelineTagsMeta already loaded on the candidate to find numeric tag ID
           if (!change.newValue) {
             console.warn('[executePush] status change has no newValue, skipping tag write for', change.cid);
           } else {
-            // Build tag name → numeric ID map from available statuses
-            // GET all candidates with tags to build tagIdMap (name -> numeric ID)
-            const statusResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates?fields[]=meta.candidate');
-            if (!statusResp.ok) throw new Error('GET candidates/tags failed: ' + statusResp.status);
-            const statusData = await statusResp.json();
-            const candList = statusData.data || [];
-            // Build tagIdMap from pipelineTags found on all candidates
+            // Find the candidate in ALL to get its _pipelineTagsMeta (already loaded)
+            const ftpCandStatus = ALL.find(function(c) { return c.id === change.cid; });
+            const tagsMeta = (ftpCandStatus && ftpCandStatus._pipelineTagsMeta) || [];
+            // Build tag name -> numeric ID map from the loaded pipeline tag definitions
             const tagIdMap = new Map();
-            for (const c of candList) {
-              const tags = c.meta && c.meta.candidate && c.meta.candidate.pipelineTags || [];
-              for (const t of tags) {
-                if (t.text && t.id) tagIdMap.set(t.text, t.id);
-              }
+            for (const t of tagsMeta) {
+              if (t.text && t.id) tagIdMap.set(t.text, t.id);
             }
             const tagId = tagIdMap.get(change.newValue.trim());
             if (tagId == null) {
               console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
               throw new Error('Unknown tag: ' + change.newValue);
             }
-                        const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/' + change.cid + '/pipelineTags', {
+            const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/' + change.cid + '/pipelineTags', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ pipelineTagId: tagId })
@@ -2106,7 +2100,7 @@ async function executePush() {
             if (!tagResp.ok) throw new Error('POST pipelineTags failed: ' + tagResp.status);
           }
 
-                } else if (change.field === 'industry_codes') {
+        } else if (change.field === 'industry_codes') {
           // POST /v4/people/{id}/current-status with full industry objects
           const industries = (change.newValue || []).map(function(ind) {
             return { id: ind.id, name: ind.name || '', value: ind.value || ind.name || '', parent_id: ind.parent_id || null };
@@ -2729,6 +2723,19 @@ function renderCell(key, c) {
            oninput="onEditInput(this)"
            onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
   }
+  if (key === 'fit_to_profile') {
+    const isEmpty = !v;
+    const cls = 'editable' + (isEmpty ? ' is-empty' : '') + (isPending ? ' is-pending' : '');
+    return `
+      <div class="${cls}"
+           contenteditable="true" spellcheck="true"
+           data-cid="${c.id}" data-field="fit_to_profile"
+           onfocus="onEditFocus(this)"
+           onblur="onEditBlur(this)"
+           oninput="onEditInput(this)"
+           onkeydown="onEditKeydown(event,this)">${escHtml(v || '')}</div>`;
+  }
+
 
   if (!v) return '<span style="color:var(--text3)">\u2014</span>';
   if (key === 'stage')  return `<span class="badge ${stageBadgeClass(v)}">${escHtml(v)}</span>`;
@@ -2751,9 +2758,6 @@ function renderCell(key, c) {
     return `<div class="ind-cell${isPendingInd?' ind-cell-pending':''}" id="ind-cell-${c.id}" onclick="openIndustryEditor(${c.id}, event)">${tagsHtml}</div>`;
   }
 
-    if (key === 'fit_to_profile') {
-    return `<span class="cell-text">${escHtml(v || '')}</span>`;
-  }
 return `<span>${escHtml(v)}</span>`;
 }
 
