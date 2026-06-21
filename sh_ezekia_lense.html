@@ -2074,31 +2074,26 @@ async function executePush() {
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
 
         } else if (change.field === 'status') {
-          // Pipeline Tags: POST /v4/projects/{id}/candidates/{cid}/pipelineTags
-          // Uses _pipelineTagsMeta already loaded on the candidate to find numeric tag ID
-          if (!change.newValue) {
-            console.warn('[executePush] status change has no newValue, skipping tag write for', change.cid);
-          } else {
-            // Find the candidate in ALL to get its _pipelineTagsMeta (already loaded)
-            const ftpCandStatus = ALL.find(function(c) { return c.id === change.cid; });
-            const tagsMeta = (ftpCandStatus && ftpCandStatus._pipelineTagsMeta) || [];
-            // Build tag name -> numeric ID map from the loaded pipeline tag definitions
-            const tagIdMap = new Map();
-            for (const t of tagsMeta) {
+          // Pipeline Tags: POST /v3/projects/{id}/candidates/statuses (v3 - only one that works)
+          // Build tagIdMap from _pipelineTagsMeta already loaded on candidates (no extra HTTP call)
+          const tagIdMap = new Map();
+          for (const c of ALL) {
+            for (const t of (c._pipelineTagsMeta || [])) {
               if (t.text && t.id) tagIdMap.set(t.text, t.id);
+              if (t.name && t.id) tagIdMap.set(t.name, t.id);
             }
-            const tagId = tagIdMap.get(change.newValue.trim());
-            if (tagId == null) {
-              console.warn('[executePush] Could not find numeric tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
-              throw new Error('Unknown tag: ' + change.newValue);
-            }
-            const tagResp = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates/' + change.cid + '/pipelineTags', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ pipelineTagId: tagId })
-            });
-            if (!tagResp.ok) throw new Error('POST pipelineTags failed: ' + tagResp.status);
           }
+          const tagId = tagIdMap.get(change.newValue);
+          if (!tagId) {
+            console.warn('[executePush] Could not find tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
+            throw new Error('Unknown pipeline tag: ' + change.newValue);
+          }
+          const tagResp = await fetch(BASE + '/v3/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
+          });
+          if (!tagResp.ok) throw new Error('POST pipeline tag failed: ' + tagResp.status);
 
         } else if (change.field === 'industry_codes') {
           // POST /v4/people/{id}/current-status with full industry objects
