@@ -1830,7 +1830,7 @@ async function connectFromUrl() {
   try {
     // 1. Project details (works for assignments, opportunities, and lists)
     const projResp = await fetch(`${BASE}/v4/projects/${parsed.entityId}`);
-    if (!projResp.ok) throw new Error(`Project fetch failed (${projResp.status})`);
+    if (!projResp.ok) throw new Error(projResp.status === 404 ? `Project ID ${parsed.entityId} not found in Ezekia — please check the URL.` : `Project fetch failed (${projResp.status})`)
     const projData = await projResp.json();
     const proj = projData.data || projData;
     CURRENT_PROJECT_NAME = proj.name || proj.title || `${parsed.entityType} ${parsed.entityId}`;
