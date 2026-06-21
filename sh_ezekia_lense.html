@@ -2088,7 +2088,7 @@ async function executePush() {
             console.warn('[executePush] Could not find tag ID for:', change.newValue, 'available:', [...tagIdMap.keys()]);
             throw new Error('Unknown pipeline tag: ' + change.newValue);
           }
-          const tagResp = await fetch(BASE + '/v3/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
+          const tagResp = await fetch(BASE + '/v4/assignments/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
