@@ -519,7 +519,7 @@ td.dirty-cell::after {
 .tag-dropdown-item:hover { background: var(--bg3); color: var(--text); }
 .tag-dropdown-item.active { color: var(--accent); font-weight: 500; }
 .tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-/* ── FIT TO PROFILE BADGE COLOURS ── */
+/* ââ FIT TO PROFILE BADGE COLOURS ââ */
 .fit-badge-A { background: rgba(34,197,94,0.18);  color: #16a34a; }
 .fit-badge-B { background: rgba(59,130,246,0.18); color: #2563eb; }
 .fit-badge-C { background: rgba(245,158,11,0.18); color: #d97706; }
@@ -1673,7 +1673,7 @@ const COLUMNS = [
   { key: 'fit_to_profile', label: 'Fit to Profile', editable: true       },
 ];
 
-let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender']);
+let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender','fit_to_profile']);;
 
 // \u2500\u2500 PIPELINE TAGS \u2500\u2500
 const PIPELINE_TAGS = [
@@ -2046,7 +2046,7 @@ function openPushModal() {
 
 async function executePush() {
   const btn = document.getElementById('pushConfirmBtn');
-  btn.textContent = 'Pushingâ¦';
+  btn.textContent = 'PushingÃ¢ÂÂ¦';
   btn.disabled = true;
 
   const changes = [...PENDING.values()];
@@ -2055,7 +2055,7 @@ async function executePush() {
   for (const change of changes) {
     try {
       if (!CURRENT_PROJECT_ID) {
-        // Demo mode â simulate
+        // Demo mode Ã¢ÂÂ simulate
         await new Promise(r => setTimeout(r, 120));
       } else {
         if (change.field === 'notes') {
@@ -2079,7 +2079,7 @@ async function executePush() {
 
         } else if (change.field === 'summary') {
           // Summary: must GET full profile first, then PUT with merged summary.
-          // Never send summary alone â Ezekia will wipe other fields like address.
+          // Never send summary alone Ã¢ÂÂ Ezekia will wipe other fields like address.
           const getResp = await fetch(BASE + '/v4/people/' + change.cid);
           if (!getResp.ok) throw new Error('GET profile failed: ' + getResp.status);
           const profileData = await getResp.json();
@@ -2095,13 +2095,13 @@ async function executePush() {
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
 
         } else if (change.field === 'status') {
-          // ── PIPELINE TAG PUSH — DO NOT MODIFY ──────────────────────────────
+          // ââ PIPELINE TAG PUSH â DO NOT MODIFY ââââââââââââââââââââââââââââââ
           // Working endpoint: POST /v4/assignments/{projectId}/candidates/statuses
           // Body: { candidates: [candidateId], tags: [tagId] }
-          // Tag IDs are Ezekia-global constants — hardcoded below as _GLOBAL_TAGS.
+          // Tag IDs are Ezekia-global constants â hardcoded below as _GLOBAL_TAGS.
           // The catalogue is seeded from _GLOBAL_TAGS at load time so every tag
           // in the dropdown always has a known ID, regardless of project history.
-          // ───────────────────────────────────────────────────────────────────
+          // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
           if (!change.newValue) {
             console.warn('[executePush] status change has no newValue, skipping', change.cid);
           } else {
@@ -2124,7 +2124,7 @@ async function executePush() {
             const tagId = window._tagCatalogue.get(change.newValue);
             if (!tagId) {
               const avail = [...window._tagCatalogue.keys()].join(', ');
-              console.warn('[executePush] Unknown pipeline tag:', change.newValue, '— available:', avail);
+              console.warn('[executePush] Unknown pipeline tag:', change.newValue, 'â available:', avail);
               throw new Error('Unknown pipeline tag: ' + change.newValue);
             }
             const tagResp = await fetch(BASE + '/v4/assignments/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
@@ -2134,9 +2134,9 @@ async function executePush() {
             });
             if (!tagResp.ok) {
               const errTxt = await tagResp.text();
-              throw new Error('POST pipeline tag failed: ' + tagResp.status + ' — ' + errTxt.substring(0, 120));
+              throw new Error('POST pipeline tag failed: ' + tagResp.status + ' â ' + errTxt.substring(0, 120));
             }
-            console.log('[executePush] Pipeline tag OK:', change.newValue, '(id=' + tagId + ') → candidate', change.cid);
+            console.log('[executePush] Pipeline tag OK:', change.newValue, '(id=' + tagId + ') â candidate', change.cid);
           }
 
         } else if (change.field === 'industry_codes') {
@@ -2174,7 +2174,7 @@ async function executePush() {
         if (cand) delete cand['_orig_' + change.field];
       }
 
-      logUsage('push', change.candidateName + ' â ' + change.field + ' updated', CURRENT_PROJECT_NAME);
+      logUsage('push', change.candidateName + ' Ã¢ÂÂ ' + change.field + ' updated', CURRENT_PROJECT_NAME);
     } catch (err) {
       errors.push(Object.assign({}, change, { err: err.message }));
     }
@@ -2185,14 +2185,14 @@ async function executePush() {
   btn.disabled = false;
 
   if (errors.length === 0) {
-    // All good â clear pending
+    // All good Ã¢ÂÂ clear pending
     PENDING.clear();
     updateDirtyBadge();
     // Remove dirty indicators from all rows
     document.querySelectorAll('.dirty-cell').forEach(function(el) { el.classList.remove('dirty-cell'); });
     showToast(changes.length + ' change' + (changes.length > 1 ? 's' : '') + ' pushed to Ezekia successfully.', 'success');
   } else {
-    // Partial failure â remove succeeded items from PENDING, keep failed ones for retry
+    // Partial failure Ã¢ÂÂ remove succeeded items from PENDING, keep failed ones for retry
     const failedKeys = new Set(errors.map(function(e) { return e.cid + ':' + e.field; }));
     for (const change of changes) {
       const key = change.cid + ':' + change.field;
@@ -2331,7 +2331,7 @@ function selectPipelineTag(cid, newTag, event) {
 }
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-// ── FIT TO PROFILE DROPDOWN ───────────────────────────────────────
+// ââ FIT TO PROFILE DROPDOWN âââââââââââââââââââââââââââââââââââââââ
 function fitColor(opt) {
   const map = { A: '#22c55e', B: '#3b82f6', C: '#f59e0b', D: '#f97316', X: '#6b7280' };
   return map[opt] || '#6b7280';
@@ -2357,7 +2357,7 @@ function selectFitToProfile(cid, newVal, event) {
   if (btn) {
     btn.innerHTML = newVal
       ? `<span class="badge fit-badge-${newVal}">${escHtml(newVal)}</span>`
-      : `<span class="badge badge-empty">—</span>`;
+      : `<span class="badge badge-empty">â</span>`;
   }
   document.querySelectorAll(`#fit-dd-${cid} .tag-dropdown-item`).forEach(item => {
     item.classList.toggle('active', item.textContent.trim() === newVal);
@@ -2365,7 +2365,7 @@ function selectFitToProfile(cid, newVal, event) {
   updateDirtyBadge();
   updateStats();
 }
-// ──────────────────────────────────────────────────────
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 // THEME
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
@@ -2802,7 +2802,7 @@ function renderCell(key, c) {
     const v = c.fit_to_profile || '';
     const badgeHtml = v
       ? `<span class="badge fit-badge-${v}">${escHtml(v)}</span>`
-      : `<span class="badge badge-empty">—</span>`;
+      : `<span class="badge badge-empty">â</span>`;
     return `
       <div class="tag-edit-wrap" id="fit-wrap-${c.id}">
         <div class="tag-edit-btn" onclick="toggleFitDropdown(${c.id}, event)">${badgeHtml}</div>
