@@ -2161,10 +2161,10 @@ async function executePush() {
           const record = (getJson.data || []).find(function(r) { return r.field && r.field.label && r.field.label.toLowerCase().includes('fit to profile'); }) || null;
           const fieldDef = record ? record.field : null;
           if (!fieldDef) throw new Error('Fit to Profile field not found on candidate');
-          const putResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info/' + record.id, {
+          const putResp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fields: [{ id: fieldDef.id, valueRaw: ({A:1,B:2,C:3,D:4,X:5}[change.newValue] || 1) }] })
+            body: JSON.stringify({ customValues: [{ id: record.id, fieldId: fieldDef.id, value: change.newValue }] })
           });
           if (!putResp.ok) throw new Error('PUT fit_to_profile failed: ' + putResp.status);
         }
