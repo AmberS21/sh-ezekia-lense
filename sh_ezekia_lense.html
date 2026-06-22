@@ -519,6 +519,13 @@ td.dirty-cell::after {
 .tag-dropdown-item:hover { background: var(--bg3); color: var(--text); }
 .tag-dropdown-item.active { color: var(--accent); font-weight: 500; }
 .tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+/* ── FIT TO PROFILE BADGE COLOURS ── */
+.fit-badge-A { background: rgba(34,197,94,0.18);  color: #16a34a; }
+.fit-badge-B { background: rgba(59,130,246,0.18); color: #2563eb; }
+.fit-badge-C { background: rgba(245,158,11,0.18); color: #d97706; }
+.fit-badge-D { background: rgba(249,115,22,0.18); color: #ea580c; }
+.fit-badge-X { background: rgba(107,114,128,0.18);color: #4b5563; }
+
 
 /* \2500 \2500  PROGRESS NOTES actions \2500 \2500  */
 .notes-wrap { position: relative; } td:has(.tag-edit-wrap) { overflow: visible !important; } td:has(.notes-wrap), td:has(.editable):not(:has(.notes-wrap)) { position: relative; } td:has(.notes-wrap) .editable, td:has(.editable):not(:has(.notes-wrap)) .editable { overflow: hidden; white-space: nowrap !important; max-height: 38px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; } td:has(.notes-wrap):hover, td:has(.editable):not(:has(.notes-wrap)):hover { overflow: visible; z-index: 200; } td:has(.notes-wrap):hover .editable, td:has(.editable):not(:has(.notes-wrap)):hover .editable { position: relative; display: block; max-height: 200px; overflow-y: auto; white-space: pre-wrap !important; -webkit-line-clamp: unset; }
@@ -1663,7 +1670,7 @@ const COLUMNS = [
   { key: 'notes',           label: 'Progress Notes',   editable: true },
   { key: 'summary',         label: 'Summary',          editable: true },
   { key: 'industry_codes', label: 'Industry'                        },
-  { key: 'fit_to_profile', label: 'Fit to Profile'                       },
+  { key: 'fit_to_profile', label: 'Fit to Profile', editable: true       },
 ];
 
 let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender']);
@@ -2324,6 +2331,42 @@ function selectPipelineTag(cid, newTag, event) {
 }
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// ── FIT TO PROFILE DROPDOWN ───────────────────────────────────────
+function fitColor(opt) {
+  const map = { A: '#22c55e', B: '#3b82f6', C: '#f59e0b', D: '#f97316', X: '#6b7280' };
+  return map[opt] || '#6b7280';
+}
+
+function toggleFitDropdown(cid, event) {
+  event.stopPropagation();
+  const dd = document.getElementById('fit-dd-' + cid);
+  if (!dd) return;
+  const wasOpen = dd.classList.contains('open');
+  document.querySelectorAll('.tag-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) dd.classList.add('open');
+}
+
+function selectFitToProfile(cid, newVal, event) {
+  event.stopPropagation();
+  const dd = document.getElementById('fit-dd-' + cid);
+  if (dd) dd.classList.remove('open');
+  const cand = (window.rawCandidates || []).find(c => c.id === cid);
+  if (!cand) return;
+  markPending(cid, 'fit_to_profile', newVal, cand.name);
+  const btn = document.querySelector('#fit-wrap-' + cid + ' .tag-edit-btn');
+  if (btn) {
+    btn.innerHTML = newVal
+      ? `<span class="badge fit-badge-${newVal}">${escHtml(newVal)}</span>`
+      : `<span class="badge badge-empty">—</span>`;
+  }
+  document.querySelectorAll(`#fit-dd-${cid} .tag-dropdown-item`).forEach(item => {
+    item.classList.toggle('active', item.textContent.trim() === newVal);
+  });
+  updateDirtyBadge();
+  updateStats();
+}
+// ──────────────────────────────────────────────────────
+
 // THEME
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function toggleTheme() {
@@ -2756,16 +2799,21 @@ function renderCell(key, c) {
            onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
   }
   if (key === 'fit_to_profile') {
-    const isEmpty = !v;
-    const cls = 'editable' + (isEmpty ? ' is-empty' : '') + (isPending ? ' is-pending' : '');
+    const v = c.fit_to_profile || '';
+    const badgeHtml = v
+      ? `<span class="badge fit-badge-${v}">${escHtml(v)}</span>`
+      : `<span class="badge badge-empty">—</span>`;
     return `
-      <div class="${cls}"
-           contenteditable="true" spellcheck="true"
-           data-cid="${c.id}" data-field="fit_to_profile"
-           onfocus="onEditFocus(this)"
-           onblur="onEditBlur(this)"
-           oninput="onEditInput(this)"
-           onkeydown="onEditKeydown(event,this)">${escHtml(v || '')}</div>`;
+      <div class="tag-edit-wrap" id="fit-wrap-${c.id}">
+        <div class="tag-edit-btn" onclick="toggleFitDropdown(${c.id}, event)">${badgeHtml}</div>
+        <div class="tag-dropdown" id="fit-dd-${c.id}">
+          ${['A','B','C','D','X'].map(opt => `
+          <div class="tag-dropdown-item${opt === v ? ' active' : ''}"
+               onclick="selectFitToProfile(${c.id}, '${opt}', event)">
+            <span class="tag-dot" style="background:${fitColor(opt)}"></span>${escHtml(opt)}
+          </div>`).join('')}
+        </div>
+      </div>`;
   }
 
 
