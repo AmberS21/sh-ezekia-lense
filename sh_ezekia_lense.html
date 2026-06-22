@@ -2088,36 +2088,49 @@ async function executePush() {
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
 
         } else if (change.field === 'status') {
-          // Pipeline Tags: POST /v3/projects/{id}/candidates/statuses (v3 - only one that works)
-          // // Look up tag ID from the catalogue built at project load time.
-                // Ezekia returns ALL available tags (full catalogue) on each raw candidate response.
-                // The catalogue is built in connectFromUrl() from rawCandidates[0].pipelineTags.
-                if (!window._tagCatalogue || window._tagCatalogue.size === 0) {
-                  // Fallback: fetch one candidate to rebuild catalogue
-                  try {
-                    const _catR = await fetch(BASE + '/v4/projects/' + CURRENT_PROJECT_ID + '/candidates?fields[]=meta.candidate&per_page=100');
-                    if (_catR.ok) {
-                      const _catD = await _catR.json();
-                      window._tagCatalogue = new Map();
-                      for (const _fc of (_catD.data || [])) {
-                        for (const t of (((_fc.meta || {}).candidate || {}).pipelineTags || [])) {
-                          if (t.id && t.text) window._tagCatalogue.set(t.text, t.id);
-                        }
-                      }
-                    }
-                  } catch(_e) {}
-                }
-                const tagId = (window._tagCatalogue || new Map()).get(change.newValue);
-                if (!tagId) {
-            console.warn('[executePush] Could not find tag ID for:', change.newValue, 'available:', [...(window._tagCatalogue || new Map()).keys()]);
-            throw new Error('Unknown pipeline tag: ' + change.newValue);
+          // ── PIPELINE TAG PUSH — DO NOT MODIFY ──────────────────────────────
+          // Working endpoint: POST /v4/assignments/{projectId}/candidates/statuses
+          // Body: { candidates: [candidateId], tags: [tagId] }
+          // Tag IDs are Ezekia-global constants — hardcoded below as _GLOBAL_TAGS.
+          // The catalogue is seeded from _GLOBAL_TAGS at load time so every tag
+          // in the dropdown always has a known ID, regardless of project history.
+          // ───────────────────────────────────────────────────────────────────
+          if (!change.newValue) {
+            console.warn('[executePush] status change has no newValue, skipping', change.cid);
+          } else {
+            // Ensure catalogue has all global tag IDs (belt-and-suspenders)
+            if (!window._tagCatalogue) window._tagCatalogue = new Map();
+            const _GLOBAL_TAGS = [
+              ['Longlist',109],['Short List and/or CV Sent to Client',110],['Carve out List',111],
+              ['Approached',113],['On Hold',114],['In Discussion',115],['Reviewing Briefing Document',116],
+              ['Consultant Interview',117],['Client Interview',118],['Interview Feedback - Client',120],
+              ['Offer Extended',122],['Offer Accepted',123],['Offer Rejected / Rescinded',124],
+              ['Rejected by Consultant',126],['Rejected by Candidate',127],
+              ['Rejected by Candidate after Interview/Withdrew',128],['Rejected by Client',129],
+              ['Rejected by Client after Interview',130],['Placed',131],
+              ['Source / Referral / Market Intel',133],['Interview Feedback - Candidate',135],
+              ['Pipeline/Target List',139],['Processed',140]
+            ];
+            for (const [_tn, _ti] of _GLOBAL_TAGS) {
+              if (!window._tagCatalogue.has(_tn)) window._tagCatalogue.set(_tn, _ti);
+            }
+            const tagId = window._tagCatalogue.get(change.newValue);
+            if (!tagId) {
+              const avail = [...window._tagCatalogue.keys()].join(', ');
+              console.warn('[executePush] Unknown pipeline tag:', change.newValue, '— available:', avail);
+              throw new Error('Unknown pipeline tag: ' + change.newValue);
+            }
+            const tagResp = await fetch(BASE + '/v4/assignments/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
+            });
+            if (!tagResp.ok) {
+              const errTxt = await tagResp.text();
+              throw new Error('POST pipeline tag failed: ' + tagResp.status + ' — ' + errTxt.substring(0, 120));
+            }
+            console.log('[executePush] Pipeline tag OK:', change.newValue, '(id=' + tagId + ') → candidate', change.cid);
           }
-          const tagResp = await fetch(BASE + '/v4/assignments/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
-          });
-          if (!tagResp.ok) throw new Error('POST pipeline tag failed: ' + tagResp.status);
 
         } else if (change.field === 'industry_codes') {
           // POST /v4/people/{id}/current-status with full industry objects
