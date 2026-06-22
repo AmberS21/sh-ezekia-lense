@@ -1863,7 +1863,10 @@ async function connectFromUrl() {
             if (_rt.id && _rt.text) window._tagCatalogue.set(_rt.text, _rt.id);
           }
         }
-        console.log('[SH Lense] Tag catalogue built from all candidates:', window._tagCatalogue.size, 'tags');
+        // Merge in globally known tag IDs so all tags work even if not yet assigned in this project
+        const _GLOBAL_TAGS = [['Longlist',109],['Short List and/or CV Sent to Client',110],['Carve out List',111],['Approached',113],['On Hold',114],['In Discussion',115],['Reviewing Briefing Document',116],['Consultant Interview',117],['Client Interview',118],['Interview Feedback - Client',120],['Offer Extended',122],['Offer Accepted',123],['Offer Rejected / Rescinded',124],['Rejected by Consultant',126],['Rejected by Candidate',127],['Rejected by Candidate after Interview/Withdrew',128],['Rejected by Client',129],['Rejected by Client after Interview',130],['Placed',131],['Source / Referral / Market Intel',133],['Interview Feedback - Candidate',135],['Pipeline/Target List',139],['Processed',140]];
+        for (const [_tn, _ti] of _GLOBAL_TAGS) { if (!window._tagCatalogue.has(_tn)) window._tagCatalogue.set(_tn, _ti); }
+        console.log('[SH Lense] Tag catalogue ready:', window._tagCatalogue.size, 'tags');
         ALL = await enrichCandidates(rawCandidates);
 
     buildColToggles();
