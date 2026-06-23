@@ -2007,7 +2007,7 @@ async function enrichOne(_bc) {
     source: ((_bc.meta || {}).candidate || {}).source || '',
     languages: ((person.profile || {}).languages || []).map(function(l) { return typeof l === 'string' ? l : (l.name || ''); }).filter(Boolean).join(', '),
     linkedin: ((person.links || _bc.links || []).find(function(l) { return l.type === 'linkedin'; }) || {}).url || '',
-        email: (((person.emails || _bc.emails || [])[0]) || {}).email || '',
+        email: (person.emails || _bc.emails || []).filter(function(e) { return e.isDefault || e.isActive; }).map(function(e) { return e.address || ''; }).filter(Boolean).join(', '),
         phone: (((person.phones || _bc.phones || [])[0]) || {}).number || '',
     education: ((person.profile || {}).education || []).slice(0, 2).map(function(e) {
       const parts = [e.school, (e.degree && e.degree !== 'N/A') ? e.degree : '', e.field].filter(Boolean);
