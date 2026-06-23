@@ -1708,7 +1708,7 @@ const COLUMNS = [
   { key: 'current_title',   label: 'Current Title'                  },
   { key: 'current_company', label: 'Current Company'                },
   { key: 'location',        label: 'Location'                       },
-  { key: 'nationality',     label: 'Nationality'                    },  { key: 'gender',           label: 'Gender'                          },
+  { key: 'nationality',     label: 'Nationality'                    },{ key: 'gender', label: 'Gender', editable: true },
   { key: 'compensation',    label: 'Compensation'                   },
   { key: 'currency',        label: 'Currency'                       },
   { key: 'type',            label: 'Type'                           },
@@ -1974,7 +1974,7 @@ async function enrichOne(_bc) {
 
   try {
     const [pResp, aResp] = await Promise.all([
-      fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`),
+      fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus&fields[]=profile`),
       fetch(`${BASE}/v4/people/${personId}/additional-info`)
     ]);
     let _pR = pResp; if (_pR.status === 429) { await new Promise(r => setTimeout(r, 600)); _pR = await fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`); } if (_pR.ok) { const pd = await _pR.json(); person = pd.data || pd; }
@@ -1997,18 +1997,22 @@ async function enrichOne(_bc) {
     current_title: currentPos.title || _bc.profile?.positions?.[0]?.title || '',
     current_company: (currentPos.company || {}).name || '',
     location: [city, country].filter(Boolean).join(', ') || currentPos.location?.name || '',
-    nationality: (person.profile || {}).nationality || '',    gender: (additionalInfo.find(f => f.field && f.field.hashId === 'boYK') || {}).value || '',
+    nationality: (person.profile || {}).nationality || '',    gender: (additionalInfo.find(function(f) { return f.field && f.field.hashId === 'boYK'; }) || {}).value || '',
+    _genderRecordId: (additionalInfo.find(function(f) { return f.field && f.field.hashId === 'boYK'; }) || {}).id || null,
     compensation: '',
     currency: '',
     type: ((_bc.meta || {}).candidate || {}).type || '',
     consultant: ((_bc.meta || {}).candidate || {}).addedBy || '',
     rating: ((_bc.meta || {}).candidate || {}).rating || '',
     source: ((_bc.meta || {}).candidate || {}).source || '',
-    languages: ((person.profile || {}).languages || []).join(', '),
-    linkedin: (person.profile || {}).linkedIn || '',
+    languages: ((person.profile || {}).languages || []).map(function(l) { return typeof l === 'string' ? l : (l.name || ''); }).filter(Boolean).join(', '),
+    linkedin: ((person.links || _bc.links || []).find(function(l) { return l.type === 'linkedin'; }) || {}).url || '',
         email: (((person.emails || _bc.emails || [])[0]) || {}).email || '',
         phone: (((person.phones || _bc.phones || [])[0]) || {}).number || '',
-    education: '',
+    education: ((person.profile || {}).education || []).slice(0, 2).map(function(e) {
+      const parts = [e.school, (e.degree && e.degree !== 'N/A') ? e.degree : '', e.field].filter(Boolean);
+      return parts.join(', ') + (e.endDate ? ' (' + e.endDate + ')' : '');
+    }).join(' | '),
     previous_co: positions[1] && positions[1].company ? positions[1].company.name : '',
     availability: ((_bc.meta || {}).candidate || {}).availability || '',
     interview_date: '',
@@ -2230,6 +2234,25 @@ async function executePush() {
                   body: JSON.stringify({ customValues: [fitCustomEntry] })
                 });
                 if (!putResp.ok) throw new Error('PUT fit_to_profile failed: ' + putResp.status);
+
+        } else if (change.field === 'gender') {
+          // ── GENDER WRITE-BACK ───────────────────────────────────────────────
+          // Custom additional-info field: hashId 'boYK', fieldId 106
+          // Same PUT /people/{id}/additional-info pattern as Progress Notes & Fit to Profile
+          // ──────────────────────────────────────────────────────
+          const gdrGetResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info');
+          if (!gdrGetResp.ok) throw new Error('GET additional-info failed: ' + gdrGetResp.status);
+          const gdrJson = await gdrGetResp.json();
+          const gdrRecord = (gdrJson.data || []).find(function(r) { return r.field && r.field.hashId === 'boYK'; }) || null;
+          const gdrEntry = gdrRecord
+            ? { id: gdrRecord.id, fieldId: gdrRecord.field.id, value: change.newValue }
+            : { fieldId: 106, value: change.newValue };
+          const gdrPutResp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ customValues: [gdrEntry] })
+          });
+          if (!gdrPutResp.ok) throw new Error('PUT gender failed: ' + gdrPutResp.status);
         }
 
         // Clear stored original so next edit tracks from the new value
@@ -2398,6 +2421,39 @@ function selectPipelineTag(cid, newTag, event) {
 function fitColor(opt) {
   const map = { A: '#22c55e', B: '#3b82f6', C: '#f59e0b', D: '#f97316', X: '#6b7280' };
   return map[opt] || '#6b7280';
+}
+
+// ── GENDER DROPDOWN ────────────────────────────────────────────────
+function toggleGenderDropdown(cid, event) {
+  event.stopPropagation();
+  const dd = document.getElementById('gender-dd-' + cid);
+  if (!dd) return;
+  const wasOpen = dd.classList.contains('open');
+  document.querySelectorAll('.tag-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
+  if (!wasOpen) {
+    dd.classList.add('open');
+    dd.onclick = function(e) {
+      const item = e.target.closest('[data-gender-val]');
+      if (!item) return;
+      e.stopPropagation();
+      selectGender(+item.dataset.cid, item.dataset.genderVal);
+    };
+  }
+}
+
+function selectGender(cid, newVal) {
+  const dd = document.getElementById('gender-dd-' + cid);
+  if (dd) dd.classList.remove('open');
+  const cand = ALL.find(function(c) { return c.id === cid; });
+  if (!cand) return;
+  markPending(cid, 'gender', newVal, cand.name);
+  const btn = document.querySelector('#gender-wrap-' + cid + ' .tag-edit-btn');
+  if (btn) {
+    btn.innerHTML = newVal
+      ? '<span class="badge badge-default" style="background:var(--bg4);color:var(--text2)">' + escHtml(newVal) + '</span>'
+      : '<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set</span>';
+  }
+  updateDirtyBadge();
 }
 
 function toggleFitDropdown(cid, event) {
@@ -2862,6 +2918,21 @@ function renderCell(key, c) {
            onblur="onEditBlur(this)"
            oninput="onEditInput(this)"
            onkeydown="onEditKeydown(event,this)">${escHtml(v)}</div>`;
+  }
+  if (key === 'gender') {
+    const gv = c.gender || '';
+    const GENDER_OPTS = ['Male','Female','Non-binary','Prefer not to say','Other'];
+    const badgeHtml = gv
+      ? '<span class="badge badge-default" style="background:var(--bg4);color:var(--text2)">' + escHtml(gv) + '</span>'
+      : '<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set</span>';
+    return '<div class="tag-edit-wrap" id="gender-wrap-' + c.id + '">' +
+      '<div class="tag-edit-btn" onclick="toggleGenderDropdown(' + c.id + ', event)">' + badgeHtml + '</div>' +
+      '<div class="tag-dropdown" id="gender-dd-' + c.id + '">' +
+      GENDER_OPTS.map(function(opt) {
+        return '<div class="tag-dropdown-item' + (opt === gv ? ' active' : '') + '" data-cid="' + c.id + '" data-gender-val="' + escHtml(opt) + '">' +
+          '<span class="tag-dot" style="background:var(--text3)"></span>' + escHtml(opt) + '</div>';
+      }).join('') +
+      '</div></div>';
   }
   if (key === 'fit_to_profile') {
     const v = c.fit_to_profile || '';
