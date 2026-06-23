@@ -519,7 +519,7 @@ td.dirty-cell::after {
 .tag-dropdown-item:hover { background: var(--bg3); color: var(--text); }
 .tag-dropdown-item.active { color: var(--accent); font-weight: 500; }
 .tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-/* ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ FIT TO PROFILE BADGE COLOURS ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ */
+/* ── FIT TO PROFILE BADGE COLOURS ── */
 .fit-badge-A { background: rgba(34,197,94,0.18);  color: #16a34a; }
 .fit-badge-B { background: rgba(59,130,246,0.18); color: #2563eb; }
 .fit-badge-C { background: rgba(245,158,11,0.18); color: #d97706; }
@@ -2046,7 +2046,7 @@ function openPushModal() {
 
 async function executePush() {
   const btn = document.getElementById('pushConfirmBtn');
-  btn.textContent = 'PushingÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦';
+  btn.textContent = 'Pushing…';
   btn.disabled = true;
 
   const changes = [...PENDING.values()];
@@ -2055,7 +2055,7 @@ async function executePush() {
   for (const change of changes) {
     try {
       if (!CURRENT_PROJECT_ID) {
-        // Demo mode ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ simulate
+        // Demo mode — simulate
         await new Promise(r => setTimeout(r, 120));
       } else {
         if (change.field === 'notes') {
@@ -2079,7 +2079,7 @@ async function executePush() {
 
         } else if (change.field === 'summary') {
           // Summary: must GET full profile first, then PUT with merged summary.
-          // Never send summary alone ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Ezekia will wipe other fields like address.
+          // Never send summary alone — Ezekia will wipe other fields like address.
           const getResp = await fetch(BASE + '/v4/people/' + change.cid);
           if (!getResp.ok) throw new Error('GET profile failed: ' + getResp.status);
           const profileData = await getResp.json();
@@ -2095,13 +2095,13 @@ async function executePush() {
           if (!putResp.ok) throw new Error('PUT profile failed: ' + putResp.status);
 
         } else if (change.field === 'status') {
-          // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ PIPELINE TAG PUSH - DO NOT MODIFY ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+          // ── PIPELINE TAG PUSH - DO NOT MODIFY ──────────────────────────────
           // Working endpoint: POST /v4/assignments/{projectId}/candidates/statuses
           // Body: { candidates: [candidateId], tags: [tagId] }
           // Tag IDs are Ezekia-global constants - hardcoded below as _GLOBAL_TAGS.
           // The catalogue is seeded from _GLOBAL_TAGS at load time so every tag
           // in the dropdown always has a known ID, regardless of project history.
-          // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+          // ──────────────────────────────────────────────────────────────────ÃÂ¢ÃÂÃÂ
           if (!change.newValue) {
             console.warn('[executePush] status change has no newValue, skipping', change.cid);
           } else {
@@ -2178,7 +2178,7 @@ async function executePush() {
         if (cand) delete cand['_orig_' + change.field];
       }
 
-      logUsage('push', change.candidateName + ' ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ' + change.field + ' updated', CURRENT_PROJECT_NAME);
+      logUsage('push', change.candidateName + ' — ' + change.field + ' updated', CURRENT_PROJECT_NAME);
     } catch (err) {
       errors.push(Object.assign({}, change, { err: err.message }));
     }
@@ -2189,14 +2189,14 @@ async function executePush() {
   btn.disabled = false;
 
   if (errors.length === 0) {
-    // All good ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ clear pending
+    // All good — clear pending
     PENDING.clear();
     updateDirtyBadge();
     // Remove dirty indicators from all rows
     document.querySelectorAll('.dirty-cell').forEach(function(el) { el.classList.remove('dirty-cell'); });
     showToast(changes.length + ' change' + (changes.length > 1 ? 's' : '') + ' pushed to Ezekia successfully.', 'success');
   } else {
-    // Partial failure ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ remove succeeded items from PENDING, keep failed ones for retry
+    // Partial failure — remove succeeded items from PENDING, keep failed ones for retry
     const failedKeys = new Set(errors.map(function(e) { return e.cid + ':' + e.field; }));
     for (const change of changes) {
       const key = change.cid + ':' + change.field;
@@ -2335,7 +2335,7 @@ function selectPipelineTag(cid, newTag, event) {
 }
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ FIT TO PROFILE DROPDOWN ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── FIT TO PROFILE DROPDOWN ──────────────────────────────────────ÃÂ¢ÃÂÃÂ
 function fitColor(opt) {
   const map = { A: '#22c55e', B: '#3b82f6', C: '#f59e0b', D: '#f97316', X: '#6b7280' };
   return map[opt] || '#6b7280';
@@ -2369,7 +2369,7 @@ function selectFitToProfile(cid, newVal, event) {
   updateDirtyBadge();
   updateStats();
 }
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ──────────────────────────────────────────────────────
 
 // THEME
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
