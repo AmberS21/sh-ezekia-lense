@@ -3340,15 +3340,28 @@ function renderSavedViews() {
   container.innerHTML = views.map(function(v) {
     const isActive = v.name === _activeViewName;
     const colCount = v.visible ? v.visible.length : '?';
-    return '<div class="view-item' + (isActive ? ' active-view' : '') + '" onclick="applySavedView(' + JSON.stringify(v.name) + ')">' +
+    const safeName = escHtml(v.name);
+    return '<div class="view-item' + (isActive ? ' active-view' : '') + '" data-view-name="' + safeName + '">' +
       '<span style="color:var(--accent);font-size:10px">▣</span>' +
-      '<span class="view-item-name">' + escHtml(v.name) + '</span>' +
+      '<span class="view-item-name">' + safeName + '</span>' +
       '<span style="font-size:9px;color:var(--text3);flex-shrink:0">' + colCount + ' cols</span>' +
-      '<span class="view-item-del" onclick="deleteSavedView(' + JSON.stringify(v.name) + ', event)" title="Delete">×</span>' +
+      '<span class="view-item-del" data-del-view="' + safeName + '" title="Delete">×</span>' +
     '</div>';
   }).join('');
+  // Attach click handlers via event delegation (avoids inline onclick quoting issues)
+  container.onclick = function(e) {
+    const delBtn = e.target.closest('[data-del-view]');
+    if (delBtn) {
+      e.stopPropagation();
+      deleteSavedView(delBtn.getAttribute('data-del-view'));
+      return;
+    }
+    const item = e.target.closest('[data-view-name]');
+    if (item) {
+      applySavedView(item.getAttribute('data-view-name'));
+    }
+  };
 }
-
 function autoSaveLastView() {
   try { localStorage.setItem(LAST_VIEW_KEY, JSON.stringify(_serializeView())); } catch(e) {}
 }
@@ -3391,15 +3404,21 @@ function renderRecentProjects() {
     list.innerHTML = recent.map(function(r) {
       const typeLabel = (r.type || 'project').replace('opportunity','opp.').replace('assignment','assign.');
       const ago = r.ts ? _timeAgo(r.ts) : '';
-      return '<div class="recent-item" onclick="loadRecentProject(' + JSON.stringify(r.url) + ')" title="' + escHtml(r.url) + '">' +
+      const safeUrl = escHtml(r.url || '');
+      const safeName = escHtml(r.name || '');
+      return '<div class="recent-item" data-recent-url="' + safeUrl + '" title="' + safeName + (ago ? ' — ' + ago : '') + '">' +
         '<span class="recent-item-icon">⌚</span>' +
-        '<span class="recent-item-name">' + escHtml(r.name) + '</span>' +
-        '<span class="recent-item-type" title="' + ago + '">' + escHtml(typeLabel) + '</span>' +
+        '<span class="recent-item-name">' + safeName + '</span>' +
+        '<span class="recent-item-type">' + escHtml(typeLabel) + '</span>' +
       '</div>';
     }).join('');
+    // Event delegation — avoids inline onclick with embedded URL strings
+    list.onclick = function(e) {
+      const item = e.target.closest('[data-recent-url]');
+      if (item) loadRecentProject(item.getAttribute('data-recent-url'));
+    };
   } catch(e) {}
 }
-
 function _timeAgo(ts) {
   const mins = Math.floor((Date.now() - ts) / 60000);
   if (mins < 2) return 'just now';
