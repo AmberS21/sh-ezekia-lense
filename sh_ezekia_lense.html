@@ -2151,22 +2151,26 @@ async function executePush() {
           });
           if (!indResp.ok) throw new Error('POST current-status failed: ' + indResp.status);
         } else if (change.field === 'fit_to_profile') {
-          // GET existing additional-info record, then PUT with updated fit_to_profile field
-          const getResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          if (!getResp.ok) throw new Error('GET additional-info failed: ' + getResp.status);
-          const getJson = await getResp.json();
-          const record = (getJson.data || []).find(function(r) { return r.field && r.field.label && r.field.label.toLowerCase().includes('fit to profile'); }) || null;
-          const fieldDef = record ? record.field : null;
-          if (!fieldDef) throw new Error('Fit to Profile field not found on candidate');
-          const putResp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ customValues: [{ id: record.id, fieldId: fieldDef.id, value: change.newValue }] })
-          });
-          if (!putResp.ok) throw new Error('PUT fit_to_profile failed: ' + putResp.status);
+                // GET existing additional-info record, then PUT with updated fit_to_profile field
+                // If no record exists yet, fall back to fieldId-only — Ezekia will create it.
+                // This mirrors the Progress Notes write-back pattern exactly.
+                const getResp = await fetch(BASE + '/v4/people/' + change.cid + '/additional-info', {
+                  method: 'GET',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+                if (!getResp.ok) throw new Error('GET additional-info failed: ' + getResp.status);
+                const getJson = await getResp.json();
+                const record = (getJson.data || []).find(function(r) { return r.field && r.field.label && r.field.label.toLowerCase().includes('fit to profile'); }) || null;
+                // record exists: update (id + fieldId + value); no record: create (fieldId 94 + value)
+                const fitCustomEntry = record
+                  ? { id: record.id, fieldId: record.field.id, value: change.newValue }
+                  : { fieldId: 94, value: change.newValue };
+                const putResp = await fetch(BASE + '/people/' + change.cid + '/additional-info', {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ customValues: [fitCustomEntry] })
+                });
+                if (!putResp.ok) throw new Error('PUT fit_to_profile failed: ' + putResp.status);
         }
 
         // Clear stored original so next edit tracks from the new value
