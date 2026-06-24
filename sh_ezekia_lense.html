@@ -1366,42 +1366,42 @@ tr.selected td { background: var(--accent-glow); }
     <!-- FILTERS -->
     <div class="sb-section">
       <div class="sb-label">Filters</div>
-      <div class="filter-group">
+      <div class="filter-group" data-filter-col="status">
         <label class="filter-label">Pipeline Tag</label>
         <div class="ms-filter" id="ms-fStatus">
           <button class="ms-filter-btn" onclick="toggleMsDropdown('fStatus')" id="fStatusBtn">All pipeline tags</button>
           <div class="ms-filter-dropdown" id="fStatusDrop"></div>
         </div>
       </div>
-      <div class="filter-group">
+      <div class="filter-group" data-filter-col="stage">
         <label class="filter-label">Stage</label>
         <div class="ms-filter" id="ms-fStage">
           <button class="ms-filter-btn" onclick="toggleMsDropdown('fStage')" id="fStageBtn">All stages</button>
           <div class="ms-filter-dropdown" id="fStageDrop"></div>
         </div>
       </div>
-      <div class="filter-group">
+      <div class="filter-group" data-filter-col="type">
         <label class="filter-label">Type</label>
         <div class="ms-filter" id="ms-fType">
           <button class="ms-filter-btn" onclick="toggleMsDropdown('fType')" id="fTypeBtn">All types</button>
           <div class="ms-filter-dropdown" id="fTypeDrop"></div>
         </div>
       </div>
-      <div class="filter-group">
+      <div class="filter-group" data-filter-col="consultant">
         <label class="filter-label">Consultant</label>
         <div class="ms-filter" id="ms-fConsultant">
           <button class="ms-filter-btn" onclick="toggleMsDropdown('fConsultant')" id="fConsultantBtn">All consultants</button>
           <div class="ms-filter-dropdown" id="fConsultantDrop"></div>
         </div>
       </div>
-      <div class="filter-group">
+      <div class="filter-group" data-filter-col="rating">
         <label class="filter-label">Rating</label>
         <div class="ms-filter" id="ms-fRating">
           <button class="ms-filter-btn" onclick="toggleMsDropdown('fRating')" id="fRatingBtn">All ratings</button>
           <div class="ms-filter-dropdown" id="fRatingDrop"></div>
         </div>
       </div>
-      <div class="filter-group">
+      <div class="filter-group" data-filter-col="location">
         <label class="filter-label">Location</label>
         <div class="ms-filter" id="ms-fLocation">
           <button class="ms-filter-btn" onclick="toggleMsDropdown('fLocation')" id="fLocationBtn">All locations</button>
@@ -2547,6 +2547,7 @@ function buildColToggles() {
         buildColToggles();
         renderTable();
           autoSaveLastView();
+          syncFilterVisibility();
       });
     }
 
@@ -2583,10 +2584,38 @@ function buildColToggles() {
         buildColToggles();
         renderTable();
           autoSaveLastView();
+          syncFilterVisibility();
       });
     }
 
     list.appendChild(item);
+  });
+}
+
+function syncFilterVisibility() {
+  // Show/hide filter groups based on whether their column is visible
+  const filterColMap = {
+    fStatus:     'status',
+    fStage:      'stage',
+    fType:       'type',
+    fConsultant: 'consultant',
+    fRating:     'rating',
+    fLocation:   'location',
+  };
+  Object.keys(filterColMap).forEach(function(filterId) {
+    const colKey = filterColMap[filterId];
+    const group = document.querySelector('.filter-group[data-filter-col="' + colKey + '"]');
+    if (!group) return;
+    const col = COLUMNS.find(function(c) { return c.key === colKey; });
+    const shouldShow = !col || col.always || VISIBLE.has(colKey);
+    group.style.display = shouldShow ? '' : 'none';
+    // Clear selections for hidden filters so they don't silently restrict results
+    if (!shouldShow && FILTER_SETS[filterId] && FILTER_SETS[filterId].size > 0) {
+      FILTER_SETS[filterId].clear();
+      const drop = document.getElementById(filterId + 'Drop');
+      if (drop) drop.querySelectorAll('input[type=checkbox]').forEach(function(cb) { cb.checked = false; });
+      updateMsBtn(filterId);
+    }
   });
 }
 
@@ -3346,6 +3375,7 @@ function _applyView(v) {
   COLUMNS.forEach(function(c) { if (!COLUMN_ORDER.includes(c.key)) COLUMN_ORDER.push(c.key); });
   VISIBLE = new Set(v.visible.filter(function(k) { return validKeys.has(k); }));
   buildColToggles();
+  syncFilterVisibility();
   renderTable();
 }
 
@@ -3386,6 +3416,7 @@ function applySavedView(name) {
   if (!v) return;
   _activeViewName = name;
   _applyView(v);
+  syncFilterVisibility();
   autoSaveLastView();
   renderSavedViews();
   showToast('View "' + name + '" applied.', 'info');
@@ -3443,6 +3474,7 @@ function restoreLastView() {
     if (!raw) return;
     const v = JSON.parse(raw);
     _applyView(v);
+    syncFilterVisibility();
   } catch(e) {}
 }
 
