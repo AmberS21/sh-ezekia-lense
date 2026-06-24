@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SH Ezekia Lense</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root,
@@ -1364,50 +1363,9 @@ tr.selected td { background: var(--accent-glow); }
     </div>
 
     <!-- FILTERS -->
-    <div class="sb-section">
+    <div class="sb-section" id="filtersSection">
       <div class="sb-label">Filters</div>
-      <div class="filter-group" data-filter-col="status">
-        <label class="filter-label">Pipeline Tag</label>
-        <div class="ms-filter" id="ms-fStatus">
-          <button class="ms-filter-btn" onclick="toggleMsDropdown('fStatus')" id="fStatusBtn">All pipeline tags</button>
-          <div class="ms-filter-dropdown" id="fStatusDrop"></div>
-        </div>
-      </div>
-      <div class="filter-group" data-filter-col="stage">
-        <label class="filter-label">Stage</label>
-        <div class="ms-filter" id="ms-fStage">
-          <button class="ms-filter-btn" onclick="toggleMsDropdown('fStage')" id="fStageBtn">All stages</button>
-          <div class="ms-filter-dropdown" id="fStageDrop"></div>
-        </div>
-      </div>
-      <div class="filter-group" data-filter-col="type">
-        <label class="filter-label">Type</label>
-        <div class="ms-filter" id="ms-fType">
-          <button class="ms-filter-btn" onclick="toggleMsDropdown('fType')" id="fTypeBtn">All types</button>
-          <div class="ms-filter-dropdown" id="fTypeDrop"></div>
-        </div>
-      </div>
-      <div class="filter-group" data-filter-col="consultant">
-        <label class="filter-label">Consultant</label>
-        <div class="ms-filter" id="ms-fConsultant">
-          <button class="ms-filter-btn" onclick="toggleMsDropdown('fConsultant')" id="fConsultantBtn">All consultants</button>
-          <div class="ms-filter-dropdown" id="fConsultantDrop"></div>
-        </div>
-      </div>
-      <div class="filter-group" data-filter-col="rating">
-        <label class="filter-label">Rating</label>
-        <div class="ms-filter" id="ms-fRating">
-          <button class="ms-filter-btn" onclick="toggleMsDropdown('fRating')" id="fRatingBtn">All ratings</button>
-          <div class="ms-filter-dropdown" id="fRatingDrop"></div>
-        </div>
-      </div>
-      <div class="filter-group" data-filter-col="location">
-        <label class="filter-label">Location</label>
-        <div class="ms-filter" id="ms-fLocation">
-          <button class="ms-filter-btn" onclick="toggleMsDropdown('fLocation')" id="fLocationBtn">All locations</button>
-          <div class="ms-filter-dropdown" id="fLocationDrop"></div>
-        </div>
-      </div>
+      <div id="filterContainer"></div>
       <button class="sb-btn secondary" onclick="clearFilters()" style="margin-top:4px">Clear all filters</button>
     </div>
 
@@ -2592,83 +2550,81 @@ function buildColToggles() {
   });
 }
 
-function syncFilterVisibility() {
-  // Show/hide filter groups based on whether their column is visible
-  const filterColMap = {
-    fStatus:     'status',
-    fStage:      'stage',
-    fType:       'type',
-    fConsultant: 'consultant',
-    fRating:     'rating',
-    fLocation:   'location',
-  };
-  Object.keys(filterColMap).forEach(function(filterId) {
-    const colKey = filterColMap[filterId];
-    const group = document.querySelector('.filter-group[data-filter-col="' + colKey + '"]');
-    if (!group) return;
-    const col = COLUMNS.find(function(c) { return c.key === colKey; });
-    const shouldShow = !col || col.always || VISIBLE.has(colKey);
-    group.style.display = shouldShow ? '' : 'none';
-    // Clear selections for hidden filters so they don't silently restrict results
-    if (!shouldShow && FILTER_SETS[filterId] && FILTER_SETS[filterId].size > 0) {
-      FILTER_SETS[filterId].clear();
-      const drop = document.getElementById(filterId + 'Drop');
-      if (drop) drop.querySelectorAll('input[type=checkbox]').forEach(function(cb) { cb.checked = false; });
-      updateMsBtn(filterId);
-    }
-  });
-}
-
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // FILTER OPTIONS
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // \u2500\u2500 Multi-select filter state: each key \u2192 Set of selected values \u2500\u2500
-const FILTER_SETS = {
-  fStatus:     new Set(),
-  fStage:      new Set(),
-  fType:       new Set(),
-  fConsultant: new Set(),
-  fRating:     new Set(),
-  fLocation:   new Set(),
-};
-
-// Default labels shown when nothing is selected
-const FILTER_DEFAULTS = {
-  fStatus:     'All pipeline tags',
-  fStage:      'All stages',
-  fType:       'All types',
-  fConsultant: 'All consultants',
-  fRating:     'All ratings',
-  fLocation:   'All locations',
-};
+// ── Dynamic filter state: colKey → Set<value> ──
+const FILTER_SETS = {};
 
 function buildFilterOptions() {
-  const fill = (id, key, fixedList) => {
-    const vals = fixedList
-      ? [...fixedList]
-      : [...new Set(ALL.map(c => c[key]).filter(v => v && v !== '\u2014'))].sort();
-    const drop = document.getElementById(id + 'Drop');
-    if (!drop) return;
-    drop.innerHTML = vals.map(v => {
-      const checked = FILTER_SETS[id].has(v) ? ' checked' : '';
-      const esc = escHtml(v);
-      return `<label class="ms-filter-opt"><input type="checkbox" value="${esc}"${checked} onchange="toggleMsOption('${id}',this)"><span>${esc}</span></label>`;
-    }).join('');
-    updateMsBtn(id);
-  };
-  fill('fStatus', 'status', PIPELINE_TAGS);
-  fill('fStage', 'stage');
-  fill('fType', 'type');
-  fill('fConsultant', 'consultant');
-  fill('fRating', 'rating', ['A','B','C']);
-  fill('fLocation', 'location');
-}
+  // Columns that can be filtered with their option sources
+  const FILTERABLE_COLS = [
+    { key: 'status',          label: 'Pipeline Tag',    fixedList: PIPELINE_TAGS },
+    { key: 'stage',           label: 'Stage',           fixedList: null },
+    { key: 'gender',          label: 'Gender',          fixedList: ['Male','Female','Non-binary','Prefer not to say','Other'] },
+    { key: 'fit_to_profile',  label: 'Fit to Profile',  fixedList: ['A','B','C','D','X'] },
+    { key: 'rating',          label: 'Rating',          fixedList: ['A','B','C'] },
+    { key: 'type',            label: 'Type',            fixedList: null },
+    { key: 'consultant',      label: 'Consultant',      fixedList: null },
+    { key: 'location',        label: 'Location',        fixedList: null },
+    { key: 'nationality',     label: 'Nationality',     fixedList: null },
+    { key: 'current_title',   label: 'Current Title',   fixedList: null },
+    { key: 'current_company', label: 'Current Company', fixedList: null },
+    { key: 'source',          label: 'Source',          fixedList: null },
+    { key: 'availability',    label: 'Availability',    fixedList: null },
+    { key: 'languages',       label: 'Languages',       fixedList: null },
+  ];
+  // Only show filters for currently visible columns
+  const visible = FILTERABLE_COLS.filter(function(fc) {
+    const col = COLUMNS.find(function(c) { return c.key === fc.key; });
+    return col && (col.always || VISIBLE.has(fc.key));
+  });
 
-function toggleMsDropdown(id) {
-  const drop = document.getElementById(id + 'Drop');
+  const container = document.getElementById('filterContainer');
+  if (!container) return;
+
+  // Preserve existing selections
+  const prev = {};
+  Object.keys(FILTER_SETS).forEach(function(k) { prev[k] = new Set(FILTER_SETS[k]); });
+  // Clear old keys no longer visible
+  Object.keys(FILTER_SETS).forEach(function(k) { delete FILTER_SETS[k]; });
+
+  container.innerHTML = visible.map(function(fc) {
+    const vals = fc.fixedList
+      ? fc.fixedList.filter(function(v) { return ALL.length === 0 || ALL.some(function(c) { return c[fc.key] === v; }) || fc.fixedList.length <= 10; })
+      : [...new Set(ALL.map(function(c) { return c[fc.key]; }).filter(function(v) { return v && v !== '—'; }))].sort();
+    if (vals.length === 0) return '';
+    FILTER_SETS[fc.key] = prev[fc.key] || new Set();
+    const set = FILTER_SETS[fc.key];
+    const btnLabel = set.size === 0
+      ? 'All ' + fc.label.toLowerCase() + 's'
+      : (set.size === 1 ? [...set][0] : set.size + ' selected');
+    const hasSel = set.size > 0;
+    const sk = escHtml(fc.key);
+    const sl = escHtml(fc.label);
+    return '<div class="filter-group" data-filter-col="' + sk + '">' +
+      '<label class="filter-label">' + sl + '</label>' +
+      '<div class="ms-filter" id="ms-f-' + sk + '">' +
+        '<button class="ms-filter-btn' + (hasSel ? ' has-selection' : '') + '" ' +
+          'onclick="toggleMsDropdown(' + JSON.stringify(fc.key) + ')" id="f-' + sk + '-Btn">' +
+          escHtml(btnLabel) + '</button>' +
+        '<div class="ms-filter-dropdown" id="f-' + sk + '-Drop">' +
+          vals.map(function(v) {
+            const chk = (set && set.has(v)) ? ' checked' : '';
+            const ev = escHtml(v);
+            return '<label class="ms-filter-opt"><input type="checkbox" value="' + ev + '"' + chk +
+              ' onchange="toggleMsOption(' + JSON.stringify(fc.key) + ',this)"><span>' + ev + '</span></label>';
+          }).join('') +
+        '</div></div></div>';
+  }).join('');
+  document.querySelectorAll('.ms-filter-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
+}
+function toggleMsDropdown(key) {
+  const drop = document.getElementById('f-' + key + '-Drop');
+  if (!drop) return;
   const isOpen = drop.classList.contains('open');
-  // Close all open dropdowns first
-  document.querySelectorAll('.ms-filter-dropdown.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.ms-filter-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
   if (!isOpen) drop.classList.add('open');
 }
 
@@ -2679,47 +2635,32 @@ document.addEventListener('click', function(e) {
   }
 });
 
-function toggleMsOption(id, checkbox) {
+function toggleMsOption(key, checkbox) {
+  if (!FILTER_SETS[key]) FILTER_SETS[key] = new Set();
   const val = checkbox.value;
-  if (checkbox.checked) {
-    FILTER_SETS[id].add(val);
-  } else {
-    FILTER_SETS[id].delete(val);
+  if (checkbox.checked) { FILTER_SETS[key].add(val); } else { FILTER_SETS[key].delete(val); }
+  const btn = document.getElementById('f-' + key + '-Btn');
+  if (btn) {
+    const set = FILTER_SETS[key];
+    const labelEl = document.querySelector('[data-filter-col="' + key + '"] .filter-label');
+    const label = labelEl ? labelEl.textContent : key;
+    if (set.size === 0) { btn.textContent = 'All ' + label.toLowerCase() + 's'; btn.classList.remove('has-selection'); }
+    else if (set.size === 1) { btn.textContent = [...set][0]; btn.classList.add('has-selection'); }
+    else { btn.textContent = set.size + ' selected'; btn.classList.add('has-selection'); }
   }
-  updateMsBtn(id);
   applyFilters();
 }
 
-function updateMsBtn(id) {
-  const btn = document.getElementById(id + 'Btn');
-  if (!btn) return;
-  const set = FILTER_SETS[id];
-  if (set.size === 0) {
-    btn.textContent = FILTER_DEFAULTS[id];
-    btn.classList.remove('has-selection');
-  } else if (set.size === 1) {
-    btn.textContent = [...set][0];
-    btn.classList.add('has-selection');
-  } else {
-    btn.textContent = set.size + ' selected';
-    btn.classList.add('has-selection');
-  }
-}
 
-// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-// FILTER / SORT / STATS
-// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function applyFilters() {
   const q = (document.getElementById('globalSearch').value || '').toLowerCase();
 
   FILTERED = ALL.filter(c => {
-    // For each filter: if any values are selected, candidate must match at least one (OR within filter)
-    if (FILTER_SETS.fStatus.size     && !FILTER_SETS.fStatus.has(c.status))       return false;
-    if (FILTER_SETS.fStage.size      && !FILTER_SETS.fStage.has(c.stage))         return false;
-    if (FILTER_SETS.fType.size       && !FILTER_SETS.fType.has(c.type))           return false;
-    if (FILTER_SETS.fConsultant.size && !FILTER_SETS.fConsultant.has(c.consultant)) return false;
-    if (FILTER_SETS.fRating.size     && !FILTER_SETS.fRating.has(c.rating))       return false;
-    if (FILTER_SETS.fLocation.size   && !FILTER_SETS.fLocation.has(c.location))   return false;
+    // Dynamic: for each filter that has selections, candidate must match at least one value
+    for (const _fk of Object.keys(FILTER_SETS)) {
+      const _fs = FILTER_SETS[_fk];
+      if (_fs && _fs.size > 0 && !_fs.has(c[_fk])) return false;
+    }
     if (q) {
       const blob = Object.values(c).join(' ').toLowerCase();
       if (!blob.includes(q)) return false;
@@ -2740,15 +2681,16 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  Object.keys(FILTER_SETS).forEach(id => {
-    FILTER_SETS[id].clear();
-    // Uncheck all checkboxes in this dropdown
-    const drop = document.getElementById(id + 'Drop');
-    if (drop) drop.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
-    updateMsBtn(id);
-    // Close any open dropdowns
-    const d = document.getElementById(id + 'Drop');
-    if (d) d.classList.remove('open');
+  Object.keys(FILTER_SETS).forEach(function(key) {
+    FILTER_SETS[key].clear();
+    const drop = document.getElementById('f-' + key + '-Drop');
+    if (drop) { drop.querySelectorAll('input[type=checkbox]').forEach(function(cb) { cb.checked = false; }); drop.classList.remove('open'); }
+    const btn = document.getElementById('f-' + key + '-Btn');
+    if (btn) {
+      btn.classList.remove('has-selection');
+      const labelEl = document.querySelector('[data-filter-col="' + key + '"] .filter-label');
+      btn.textContent = 'All ' + (labelEl ? labelEl.textContent.toLowerCase() : key) + 's';
+    }
   });
   document.getElementById('globalSearch').value = '';
   applyFilters();
@@ -2782,42 +2724,46 @@ function updateStats() {
 function renderActiveTags() {
   const tags = document.getElementById('activeTags');
   tags.innerHTML = '';
-  const filters = [
-    { id: 'fStatus', label: 'Pipeline Tag' }, { id: 'fStage', label: 'Stage' },
-    { id: 'fType', label: 'Type' }, { id: 'fConsultant', label: 'Consultant' },
-    { id: 'fRating', label: 'Rating' }, { id: 'fLocation', label: 'Location' },
-  ];
   const q = document.getElementById('globalSearch').value;
   if (q) {
-    const tag = document.createElement('div');
-    tag.className = 'filter-tag';
-    tag.innerHTML = `Search: "${q}" <span class="filter-tag-x" onclick="document.getElementById('globalSearch').value='';applyFilters()">\u00d7</span>`;
-    tags.appendChild(tag);
+    const t = document.createElement('div'); t.className = 'filter-tag';
+    t.innerHTML = 'Search: "' + escHtml(q) + '" <span class="filter-tag-x" data-rmf-key="_search">×</span>';
+    tags.appendChild(t);
   }
-  filters.forEach(f => {
-    const set = FILTER_SETS[f.id];
+  Object.keys(FILTER_SETS).forEach(function(key) {
+    const set = FILTER_SETS[key];
     if (!set || set.size === 0) return;
-    // Create one tag per selected value so each can be individually removed
-    set.forEach(val => {
-      const tag = document.createElement('div');
-      tag.className = 'filter-tag';
-      const dispVal = val.length > 22 ? val.slice(0,20) + '\u2026' : val;
-      tag.innerHTML = `${f.label}: ${dispVal} <span class="filter-tag-x" onclick="removeMsFilter('${f.id}',${JSON.stringify(val)})">\u00d7</span>`;
+    const labelEl = document.querySelector('[data-filter-col="' + key + '"] .filter-label');
+    const labelText = labelEl ? labelEl.textContent : key;
+    set.forEach(function(val) {
+      const tag = document.createElement('div'); tag.className = 'filter-tag';
+      const dv = val.length > 22 ? val.slice(0,20) + '…' : val;
+      tag.innerHTML = escHtml(labelText) + ': ' + escHtml(dv) + ' <span class="filter-tag-x" data-rmf-key="' + escHtml(key) + '" data-rmf-val="' + escHtml(val) + '">×</span>';
       tags.appendChild(tag);
     });
   });
+  tags.onclick = function(e) {
+    const x = e.target.closest('[data-rmf-key]');
+    if (!x) return;
+    const k = x.getAttribute('data-rmf-key');
+    if (k === '_search') { document.getElementById('globalSearch').value = ''; applyFilters(); return; }
+    removeMsFilter(k, x.getAttribute('data-rmf-val'));
+  };
 }
 
-function removeMsFilter(id, val) {
-  FILTER_SETS[id].delete(val);
-  // Uncheck the checkbox
-  const drop = document.getElementById(id + 'Drop');
-  if (drop) {
-    drop.querySelectorAll('input[type=checkbox]').forEach(cb => {
-      if (cb.value === val) cb.checked = false;
-    });
+function removeMsFilter(key, val) {
+  if (FILTER_SETS[key]) FILTER_SETS[key].delete(val);
+  const drop = document.getElementById('f-' + key + '-Drop');
+  if (drop) drop.querySelectorAll('input[type=checkbox]').forEach(function(cb) { if (cb.value === val) cb.checked = false; });
+  const btn = document.getElementById('f-' + key + '-Btn');
+  if (btn) {
+    const set = FILTER_SETS[key] || new Set();
+    const labelEl = document.querySelector('[data-filter-col="' + key + '"] .filter-label');
+    const label = labelEl ? labelEl.textContent : key;
+    if (set.size === 0) { btn.textContent = 'All ' + label.toLowerCase() + 's'; btn.classList.remove('has-selection'); }
+    else if (set.size === 1) { btn.textContent = [...set][0]; }
+    else { btn.textContent = set.size + ' selected'; }
   }
-  updateMsBtn(id);
   applyFilters();
 }
 
