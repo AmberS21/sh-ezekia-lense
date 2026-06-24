@@ -549,6 +549,56 @@ td.dirty-cell::after {
 .tag-dropdown-item:hover { background: var(--bg3); color: var(--text); }
 .tag-dropdown-item.active { color: var(--accent); font-weight: 500; }
 .tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+/* ── PIPELINE TAG UNDO / OLD→NEW INDICATOR ── */
+.tag-old-val {
+  display: block;
+  font-size: 10px;
+  color: var(--text3);
+  line-height: 1.2;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tag-old-val .tag-old-name { text-decoration: line-through; opacity: 0.7; }
+.tag-old-val .tag-arrow { margin: 0 2px; opacity: 0.5; }
+.tag-undo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 2px;
+  opacity: 0.75;
+}
+.tag-undo-btn:hover { opacity: 1; text-decoration: underline; }
+/* Push modal change values */
+.push-change-vals {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.push-change-vals .pv-old { text-decoration: line-through; opacity: 0.65; }
+.push-change-vals .pv-arr { margin: 0 2px; }
+.push-change-vals .pv-new { color: var(--text2); font-weight: 500; }
+.push-change-undo {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0.8;
+  flex-shrink: 0;
+  align-self: center;
+}
+.push-change-undo:hover { opacity: 1; background: var(--bg3); }
 /* ── FIT TO PROFILE BADGE COLOURS ── */
 .fit-badge-A { background: rgba(34,197,94,0.18);  color: #16a34a; }
 .fit-badge-B { background: rgba(59,130,246,0.18); color: #2563eb; }
@@ -2081,7 +2131,7 @@ function markPending(cid, field, newValue, candidateName) {
     // Value reverted back to original \u2014 remove from pending
     PENDING.delete(key);
   } else {
-    PENDING.set(key, { cid, field, newValue, candidateName: candidateName || (cand ? cand.name : '') });
+    PENDING.set(key, { cid, field, newValue, oldValue: cand ? (cand['_orig_' + field] !== undefined ? cand['_orig_' + field] : '') : '', candidateName: candidateName || (cand ? cand.name : '') });
   }
 
   // Update in-memory model
@@ -2125,11 +2175,22 @@ function openPushModal() {
   const changes = [...PENDING.values()];
 
   const fieldLabel = { notes: 'Progress Notes', summary: 'Summary', status: 'Pipeline Tag' };
-  const listHtml = changes.map(c => `
+  const listHtml = changes.map(c => {
+    const origV = c.oldValue !== undefined ? c.oldValue : '';
+    const newV  = c.newValue || '';
+    const valHtml = origV !== newV
+      ? `<div class="push-change-vals"><span class="pv-old">${escHtml(origV||'(none)')}</span><span class="pv-arr"> → </span><span class="pv-new">${escHtml(newV||'(none)')}</span></div>`
+      : '';
+    return `
     <div class="push-change-row">
-      <span class="push-change-name">${escHtml(c.candidateName)}</span>
-      <span class="push-change-field">${fieldLabel[c.field] || c.field}</span>
-    </div>`).join('');
+      <div style="flex:1;min-width:0">
+        <span class="push-change-name">${escHtml(c.candidateName)}</span>
+        <span class="push-change-field">${fieldLabel[c.field] || c.field}</span>
+        ${valHtml}
+      </div>
+      <button class="push-change-undo" onclick="undoChange(${c.cid},'${c.field}',event)">↩ Undo</button>
+    </div>`;
+  }).join('');
 
   document.getElementById('pushSummary').innerHTML = `
     <strong>${changes.length} change${changes.length > 1 ? 's' : ''}</strong> across
@@ -2452,6 +2513,23 @@ function selectPipelineTag(cid, newTag, event) {
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // ── FIT TO PROFILE DROPDOWN ──────────────────────────────────────ÃÂ¢ÃÂÃÂ
+function undoChange(cid, field, event) {
+  if (event) event.stopPropagation();
+  const cand = ALL.find(c => c.id === cid);
+  if (!cand) return;
+  const origVal = cand['_orig_' + field];
+  if (origVal === undefined) return;
+  // Revert the field back to its original value
+  markPending(cid, field, origVal, cand.name);
+  renderTable();
+  // If push modal is open, refresh it
+  const modal = document.getElementById('pushModal');
+  if (modal && modal.classList.contains('open')) {
+    modal.classList.remove('open');
+    openPushModal();
+  }
+}
+
 function fitColor(opt) {
   const map = { A: '#22c55e', B: '#3b82f6', C: '#f59e0b', D: '#f97316', X: '#6b7280' };
   return map[opt] || '#6b7280';
@@ -2958,9 +3036,16 @@ function renderCell(key, c) {
     const badgeHtml = v
       ? `<span class="badge ${cls}">${escHtml(v)}</span>`
       : `<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set tag</span>`;
+    const origVal = c['_orig_status'];
+    const oldTag  = (isPending && origVal !== undefined && origVal !== v) ? origVal : null;
+    const oldHtml = oldTag
+      ? `<span class="tag-old-val"><span class="tag-old-name">${escHtml(oldTag)}</span><span class="tag-arrow"> → </span>${escHtml(v)}</span>
+        <button class="tag-undo-btn" onclick="undoChange(${c.id},'status',event)">↩ Undo</button>`
+      : '';
     return `
       <div class="tag-edit-wrap" id="tag-wrap-${c.id}">
         <div class="tag-edit-btn" onclick="toggleTagDropdown(${c.id}, event)">${badgeHtml}</div>
+        ${oldHtml}
         <div class="tag-dropdown" id="tag-dd-${c.id}">
           ${PIPELINE_TAGS.map(t => `
             <div class="tag-dropdown-item${t === v ? ' active' : ''}"
