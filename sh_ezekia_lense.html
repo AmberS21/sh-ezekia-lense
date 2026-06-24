@@ -2844,6 +2844,14 @@ function removeMsFilter(key, val) {
 }
 
 
+// ══════════════════════════════════════════════════════
+// RENDER TABLE
+// ══════════════════════════════════════════════════════
+const AVATAR_COLORS = [
+  ['#4f8ef7','#0a1f3e'],['#3ecf8e','#0a2e1f'],['#a78bfa','#1e1040'],
+  ['#f5a623','#3d2800'],['#2dd4bf','#062924'],['#f56565','#3d0a0a'],
+];
+
 function avatarColor(name) {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = ((h << 5) - h) + name.charCodeAt(i);
