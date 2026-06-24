@@ -3130,7 +3130,7 @@ function renderCell(key, c) {
     const cls = v==='A'?'rating-a':v==='B'?'rating-b':'rating-c';
     return `<span class="${cls}">${v==='A'?'\u2605 ':''}${escHtml(v)}</span>`;
   }
-  if (key === 'linkedin')   return `<a href="https://${escHtml(v)}" style="color:var(--accent);text-decoration:none;font-size:11px" onclick="event.preventDefault()">View \u2197</a>`;
+  if (key === 'linkedin')   return `<a href="${escHtml(v.startsWith('http')?v:'https://'+v)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:none;font-size:11px">View ↗</a>`;
   if (key === 'email')      return `<span style="font-family:var(--mono);font-size:11px;color:var(--text2)">${escHtml(v)}</span>`;
   if (key === 'interview_date') return `<span style="color:var(--amber);font-family:var(--mono);font-size:11px">${escHtml(v)}</span>`;
   if (key === 'added_date' || key === 'last_updated') return `<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">${escHtml(v)}</span>`;
