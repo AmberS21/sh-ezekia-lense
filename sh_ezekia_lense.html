@@ -72,21 +72,57 @@ body {
 
 /* ---- LAYOUT ---- */
 .shell { display: flex; height: 100vh; overflow: hidden; }
+/* ---- SIDEBAR TOGGLE ---- */
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: -14px;
+  transform: translateY(-50%);
+  z-index: 200;
+  width: 14px;
+  height: 48px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+  font-size: 10px;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-toggle-btn:hover { background: var(--bg3); color: var(--text); }
+
 .sidebar {
   width: 260px;
-  min-width: 260px;
+  min-width: 0;
   background: var(--bg2);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 0 0 0;
+  position: relative;
+  transition: width 0.25s ease;
+  flex-shrink: 0;
+}
+.sidebar.collapsed {
+  width: 0;
+  border-right: none;
+}
+.sidebar.collapsed .sidebar-toggle-btn {
+  right: -14px;
+  border-left: none;
 }
 /* Scrollable middle section */
 .sidebar-scroll {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 0.5rem;
+  min-width: 260px;
 }
 /* Admin button pinned at bottom */
 .sidebar-footer {
@@ -94,6 +130,7 @@ body {
   padding: 0.75rem 1rem 1rem;
   border-top: 1px solid var(--border);
   background: var(--bg2);
+  min-width: 260px;
 }
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .topbar {
@@ -581,7 +618,7 @@ td.dirty-cell::after {
   margin-bottom: 1.25rem;
 }
 .admin-section-title {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -773,7 +810,7 @@ th:last-child { border-right: none; }
 th:hover { background: #1e6e8f; color: #fff; }
 th.active { color: #87CEEB; background: #154f66; }
 .th-inner { display: flex; align-items: center; gap: 5px; }
-.sort-icon { font-size: 9px; opacity: 0.5; color: #e8f4f8; }
+.sort-icon { font-size: 11px; opacity: 0.5; color: #e8f4f8; }
 th.active .sort-icon { opacity: 1; color: #87CEEB; }
 
 /* ---- COLUMN HEADER FILTER ---- */
@@ -783,7 +820,7 @@ th.active .sort-icon { opacity: 1; color: #87CEEB; }
   cursor: pointer;
   padding: 1px 3px;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 13px;
   opacity: 0.45;
   color: #e8f4f8;
   line-height: 1;
@@ -799,15 +836,15 @@ th.active .sort-icon { opacity: 1; color: #87CEEB; }
   border: 1px solid var(--accent);
   border-radius: 6px;
   z-index: 99999;
-  min-width: 180px;
+  min-width: 210px;
   max-height: 260px;
   overflow-y: auto;
   box-shadow: 0 6px 24px rgba(0,0,0,0.45);
 }
 .col-filter-drop.open { display: block; }
 .col-filter-opt {
-  display: flex; align-items: center; gap: 7px;
-  padding: 6px 10px; cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px; cursor: pointer; font-size: 13px;
   color: var(--text); transition: background 0.12s;
 }
 .col-filter-opt:hover { background: var(--bg2); }
@@ -818,7 +855,7 @@ th.active .sort-icon { opacity: 1; color: #87CEEB; }
 }
 .col-filter-opt span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .col-filter-clear {
-  padding: 5px 10px; font-size: 11px; color: var(--accent);
+  padding: 7px 12px; font-size: 13px; color: var(--accent);
   cursor: pointer; border-top: 1px solid var(--border);
   text-align: center;
 }
@@ -1365,7 +1402,8 @@ tr.selected td { background: var(--accent-glow); }
 <div class="shell">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-toggle-btn" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9664;</button>
     <div class="logo-area">
       <div class="logo">
         <img src="SH%20Ezekia%20Lens%20logo%20(2).svg" alt="SH Ezekia Lens" style="height:40px;width:auto;display:block;">
@@ -3751,6 +3789,19 @@ function tableScrollPage(direction) {
   const amount = area.clientHeight * 0.85;
   area.scrollBy({ top: direction * amount, behavior: 'smooth' });
 }
+
+// ══════════════════════════════════════════════════════
+// SIDEBAR TOGGLE
+// ══════════════════════════════════════════════════════
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebarToggle');
+  if (!sb) return;
+  sb.classList.toggle('collapsed');
+  const isCollapsed = sb.classList.contains('collapsed');
+  if (btn) btn.innerHTML = isCollapsed ? '&#9654;' : '&#9664;';
+}
+
 </script>
 
 <!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;
