@@ -2254,7 +2254,7 @@ async function executePush() {
 
         } else if (change.field === 'status') {
           // ── PIPELINE TAG PUSH - DO NOT MODIFY ──────────────────────────────
-          // Working endpoint: POST /v4/assignments/{projectId}/candidates/statuses
+          // Working endpoint: POST /v3/projects/{projectId}/candidates/statuses
           // Body: { candidates: [candidateId], tags: [tagId] }
           // Tag IDs are Ezekia-global constants - hardcoded below as _GLOBAL_TAGS.
           // The catalogue is seeded from _GLOBAL_TAGS at load time so every tag
@@ -2285,7 +2285,7 @@ async function executePush() {
               console.warn('[executePush] Unknown pipeline tag:', change.newValue, '- available:', avail);
               throw new Error('Unknown pipeline tag: ' + change.newValue);
             }
-            const tagResp = await fetch(BASE + '/v4/assignments/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
+            const tagResp = await fetch(BASE + '/v3/projects/' + CURRENT_PROJECT_ID + '/candidates/statuses', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ candidates: [change.cid], tags: [tagId] })
