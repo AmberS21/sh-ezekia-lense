@@ -2056,6 +2056,8 @@ async function enrichOne(_bc) {
   const personId = _bc.id;
   let person = {}, additionalInfo = [];
 
+  let fitToProfile = null;
+  let notesField = null;
   try {
     const [pResp, aResp] = await Promise.all([
       fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus&fields[]=profile`),
@@ -2064,9 +2066,9 @@ async function enrichOne(_bc) {
     let _pR = pResp; if (_pR.status === 429) { await new Promise(r => setTimeout(r, 600)); _pR = await fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`); } if (_pR.ok) { const pd = await _pR.json(); person = pd.data || pd; }
     let _aR = aResp; if (_aR.status === 429) { await new Promise(r => setTimeout(r, 600)); _aR = await fetch(`${BASE}/v4/people/${personId}/additional-info`); } if (_aR.ok) { const ad = await _aR.json(); additionalInfo = ad.data || ad || []; }
       const _fitAll = (ad.data || []).filter(function(f) { return ((f.field && f.field.label) || f.label || '').toLowerCase().includes('fit to profile'); });
-    const fitToProfile = _fitAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _fitAll[0] || null;
+    fitToProfile = _fitAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _fitAll[0] || null;
   const _notesAll = (ad.data || []).filter(function(f) { return ((f.field && f.field.label) || f.label || '').toLowerCase().includes('progress notes'); });
-  const notesField = _notesAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _notesAll[0] || null;
+  notesField = _notesAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _notesAll[0] || null;
 } catch (e) { /* best-effort */ }
 
     const positions  = (person.profile?.positions || _bc.profile?.positions || []);
