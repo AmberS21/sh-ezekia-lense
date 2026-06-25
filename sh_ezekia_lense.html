@@ -2065,8 +2065,10 @@ async function enrichOne(_bc) {
     let _aR = aResp; if (_aR.status === 429) { await new Promise(r => setTimeout(r, 600)); _aR = await fetch(`${BASE}/v4/people/${personId}/additional-info`); } if (_aR.ok) { const ad = await _aR.json(); additionalInfo = ad.data || ad || []; }
   } catch (e) { /* best-effort */ }
 
-    const fitToProfile = additionalInfo.find(function(f) { return ((f.field && f.field.label) || f.label || '').toLowerCase().includes('fit to profile'); }) || null;
-  const notesField = additionalInfo.find(f => f.field && f.field.hashId === 'bmwO');
+    const _fitAll = (ad.data || []).filter(function(f) { return ((f.field && f.field.label) || f.label || '').toLowerCase().includes('fit to profile'); });
+    const fitToProfile = _fitAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _fitAll[0] || null;
+  const _notesAll = (ad.data || []).filter(function(f) { return ((f.field && f.field.label) || f.label || '').toLowerCase().includes('progress notes'); });
+  const notesField = _notesAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _notesAll[0] || null;
     const positions  = (person.profile?.positions || _bc.profile?.positions || []);
   const currentPos = positions[0] || {};
     const addresses  = person.addresses || _bc.addresses || [];
@@ -2224,7 +2226,8 @@ async function executePush() {
           if (!aiResp.ok) throw new Error('GET additional-info failed: ' + aiResp.status);
           const aiData = await aiResp.json();
           const aiFields = aiData.data || aiData || [];
-          const bmwORecord = aiFields.find(function(f) { return f.field && f.field.hashId === 'bmwO'; });
+          const _notesWriteAll = (aiFields || []).filter(function(f) { return f.field && f.field.id === 92; });
+          const bmwORecord = _notesWriteAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _notesWriteAll[0] || null;
           const customValueEntry = bmwORecord
             ? { id: bmwORecord.id, fieldId: bmwORecord.field.id, value: change.newValue }
             : { fieldId: 92, value: change.newValue };
@@ -2318,7 +2321,8 @@ async function executePush() {
                 });
                 if (!getResp.ok) throw new Error('GET additional-info failed: ' + getResp.status);
                 const getJson = await getResp.json();
-                const record = (getJson.data || []).find(function(r) { return r.field && r.field.label && r.field.label.toLowerCase().includes('fit to profile'); }) || null;
+                const _fitWriteAll = (getJson.data || []).filter(function(f) { return f.field && f.field.id === 94; });
+                const record = _fitWriteAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _fitWriteAll[0] || null;
                 // record exists: update (id + fieldId + value); no record: create (fieldId 94 + value)
                 const fitCustomEntry = record
                   ? { id: record.id, fieldId: record.field.id, value: change.newValue }
