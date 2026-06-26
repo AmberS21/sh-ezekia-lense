@@ -1460,7 +1460,7 @@ tr.selected td { background: var(--accent-glow); }
     <div class="sb-section">
       <div class="sb-label">Load Project</div>
       <input class="sb-input" id="projectUrl" type="text" placeholder="Paste Ezekia project URL&#8230;" />
-      <button class="sb-btn" onclick="connectFromUrl()">Load Project</button>
+      <button class="sb-btn" id="loadProjectBtn" onclick="connectFromUrl()">Load Project</button>
       <button class="sb-btn secondary" onclick="loadDemo()">Load Demo Data</button>
       <div class="info-note">Paste an Ezekia assignment or project URL. Credentials are managed in Admin settings.</div>
     </div>
@@ -1757,6 +1757,108 @@ tr.selected td { background: var(--accent-glow); }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROJECT CACHE  — IndexedDB · last-5 projects · manual refresh only
+// ═══════════════════════════════════════════════════════════════════════════════
+const CACHE_DB_NAME = 'sh-ezekia-lens-cache';
+const CACHE_DB_VER  = 1;
+const CACHE_STORE   = 'projects';
+const CACHE_MAX     = 5;
+
+function _openCacheDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(CACHE_DB_NAME, CACHE_DB_VER);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(CACHE_STORE))
+        db.createObjectStore(CACHE_STORE, { keyPath: 'url' });
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+async function cacheGet(url) {
+  try {
+    const db = await _openCacheDB();
+    return new Promise(resolve => {
+      const tx  = db.transaction(CACHE_STORE, 'readonly');
+      const req = tx.objectStore(CACHE_STORE).get(url);
+      req.onsuccess = e => resolve(e.target.result || null);
+      req.onerror   = ()  => resolve(null);
+    });
+  } catch(e) { return null; }
+}
+
+async function cachePut(url, candidates) {
+  try {
+    const db  = await _openCacheDB();
+    const all = await new Promise(resolve => {
+      const tx  = db.transaction(CACHE_STORE, 'readonly');
+      const req = tx.objectStore(CACHE_STORE).getAll();
+      req.onsuccess = e => resolve(e.target.result);
+      req.onerror   = ()  => resolve([]);
+    });
+    if (all.length >= CACHE_MAX) {
+      all.sort((a, b) => a.savedAt - b.savedAt);
+      const toDelete = all.slice(0, all.length - CACHE_MAX + 1).map(r => r.url);
+      const txDel = db.transaction(CACHE_STORE, 'readwrite');
+      toDelete.forEach(u => txDel.objectStore(CACHE_STORE).delete(u));
+      await new Promise(r => { txDel.oncomplete = r; txDel.onerror = r; });
+    }
+    const txPut = db.transaction(CACHE_STORE, 'readwrite');
+    txPut.objectStore(CACHE_STORE).put({ url, candidates, savedAt: Date.now() });
+    await new Promise(r => { txPut.oncomplete = r; txPut.onerror = r; });
+    console.log('[SH Lens] cached', candidates.length, 'candidates');
+  } catch(e) { console.warn('[SH Lens] cache write failed', e); }
+}
+
+async function cacheDelete(url) {
+  try {
+    const db = await _openCacheDB();
+    const tx  = db.transaction(CACHE_STORE, 'readwrite');
+    tx.objectStore(CACHE_STORE).delete(url);
+    await new Promise(r => { tx.oncomplete = r; tx.onerror = r; });
+    console.log('[SH Lens] cache cleared for refresh');
+  } catch(e) {}
+}
+
+let _loadedFromCache = false;
+
+function _updateLoadBtn() {
+  const btn = document.getElementById('loadProjectBtn');
+  if (!btn) return;
+  if (CURRENT_PROJECT_ID) {
+    btn.textContent = '\u21ba Refresh from Ezekia';
+    btn.title = 'Re-fetch fresh data from Ezekia and update the cache';
+  } else {
+    btn.textContent = 'Load Project';
+    btn.title = '';
+  }
+}
+
+function _showCacheBadge(fromCache, savedAt) {
+  let badge = document.getElementById('sh-cache-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'sh-cache-badge';
+    badge.style.cssText = 'font-size:11px;padding:3px 8px;border-radius:4px;margin-top:6px;text-align:center;transition:all .3s';
+    const btn = document.getElementById('loadProjectBtn');
+    if (btn && btn.parentNode) btn.parentNode.insertBefore(badge, btn.nextSibling);
+  }
+  if (fromCache && savedAt) {
+    const mins = Math.floor((Date.now() - savedAt) / 60000);
+    const t = mins < 1 ? 'just now' : mins < 60 ? mins + 'm ago' : Math.floor(mins/60) + 'h ago';
+    badge.textContent = '\u26a1 Loaded from cache (' + t + ')';
+    badge.style.cssText += ';background:#d4edda;color:#155724;border:1px solid #c3e6cb';
+  } else {
+    badge.textContent = '\uD83C\uDF10 Live from Ezekia';
+    badge.style.cssText += ';background:#cce5ff;color:#004085;border:1px solid #b8daff';
+  }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+
+
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // SH EZEKIA LENSE \u2014 v2.0
 // Sheffield Haworth internal CRM view + write tool
@@ -1954,6 +2056,7 @@ function parseEzekiaUrl(url) {
 async function connectFromUrl() {
   const raw = (document.getElementById('projectUrl').value || '').trim();
   if (!raw) { showToast('Please paste an Ezekia project or assignment URL.', 'error'); return; }
+  if (CURRENT_PROJECT_ID) { await cacheDelete(raw); _loadedFromCache = false; }
 
   const parsed = parseEzekiaUrl(raw);
   if (!parsed) { showToast('Could not read that URL. Expected:\n\u2022 https://ezekia.com/#/assignments/{id}/pipeline\n\u2022 https://ezekia.com/#/opportunities/{id}/pipeline\n\u2022 https://ezekia.com/#/lists/{id}', 'error'); return; }
@@ -2016,13 +2119,27 @@ async function connectFromUrl() {
         const _GLOBAL_TAGS = [['Longlist',109],['Short List and/or CV Sent to Client',110],['Carve out List',111],['Approached',113],['On Hold',114],['In Discussion',115],['Reviewing Briefing Document',116],['Consultant Interview',117],['Client Interview',118],['Interview Feedback - Client',120],['Offer Extended',122],['Offer Accepted',123],['Offer Rejected / Rescinded',124],['Rejected by Consultant',126],['Rejected by Candidate',127],['Rejected by Candidate after Interview/Withdrew',128],['Rejected by Client',129],['Rejected by Client after Interview',130],['Placed',131],['Source / Referral / Market Intel',133],['Interview Feedback - Candidate',135],['Pipeline/Target List',139],['Processed',140]];
         for (const [_tn, _ti] of _GLOBAL_TAGS) { if (!window._tagCatalogue.has(_tn)) window._tagCatalogue.set(_tn, _ti); }
         console.log('[SH Lense] Tag catalogue ready:', window._tagCatalogue.size, 'tags');
-        ALL = await enrichCandidates(rawCandidates);
+        // ── cache: check before enriching ──
+        const _cacheKey = raw;
+        const _cached   = await cacheGet(_cacheKey);
+        if (_cached) {
+          ALL = _cached.candidates;
+          _loadedFromCache = true;
+          console.log('[SH Lens] cache HIT:', ALL.length, 'candidates loaded instantly');
+          _showCacheBadge(true, _cached.savedAt);
+        } else {
+          _loadedFromCache = false;
+          ALL = await enrichCandidates(rawCandidates);
+          cachePut(_cacheKey, ALL);
+          _showCacheBadge(false, null);
+        }
 
     buildColToggles();
     buildFilterOptions();    document.getElementById('globalSearch').value = '';
     applyFilters();
     showToast(`Loaded ${ALL.length} candidates from Ezekia ${parsed.entityType}.`, 'success');
     saveRecentProject(CURRENT_PROJECT_NAME, raw, parsed.entityType);
+    _updateLoadBtn();
     logUsage('load', `Loaded ${parsed.entityType}: ${CURRENT_PROJECT_NAME} (${ALL.length} candidates)`);
   } catch (err) {
     console.error('SH Ezekia Lense load error:', err);
