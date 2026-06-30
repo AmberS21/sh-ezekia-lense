@@ -3190,7 +3190,7 @@ function applyFilters() {
     return true;
   });
 
-  FILTERED.sort((a, b) => {
+  if (SORT_COL) FILTERED.sort((a, b) => {
     const av = String(a[SORT_COL] || '').toLowerCase();
     const bv = String(b[SORT_COL] || '').toLowerCase();
     return av < bv ? -SORT_DIR : av > bv ? SORT_DIR : 0;
@@ -3214,8 +3214,10 @@ function clearFilters() {
 }
 
 function setSort(col) {
-  if (SORT_COL === col) SORT_DIR *= -1;
-  else { SORT_COL = col; SORT_DIR = 1; }
+  if (SORT_COL === col) {
+    if (SORT_DIR === -1) { SORT_COL = ''; SORT_DIR = 1; }
+    else { SORT_DIR *= -1; }
+  } else { SORT_COL = col; SORT_DIR = 1; }
   applyFilters();
 }
 
