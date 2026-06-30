@@ -2393,7 +2393,7 @@ async function enrichOne(_bc) {
   return {
     id: personId,
     name: person.fullName || `${_bc.firstName || ''} ${_bc.lastName || ''}`.trim(),
-    status: _bc._resolvedPipelineTag || '',
+    status: (_bc._resolvedPipelineTag || '').replace(/^[*]+/, ''),
     stage: ((_bc.meta || {}).candidate || {}).stage || '',
     current_title: currentPos.title || _bc.profile?.positions?.[0]?.title || '',
     current_company: (currentPos.company || {}).name || '',
@@ -3336,7 +3336,7 @@ function statusBadgeClass(s) {
     'Processed':'tag-pipe-processed',
     'Identified':'tag-pipe-identified',
   };
-  return map[s] || 'badge-default';
+  return map[s.replace(/^[*]+/,'')] || 'badge-default';
 }
 
 function escHtml(s) {
