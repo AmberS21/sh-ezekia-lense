@@ -193,6 +193,14 @@ body {
   box-shadow: 0 0 8px var(--accent);
 }
 .logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+/* ---- INLINE SH BADGE LOGO ---- */
+.app-logo-inline { display: flex; align-items: center; gap: 10px; }
+.app-logo-sh-badge { width: 34px; height: 34px; background: linear-gradient(135deg,#0d2e52,#1a4a7a); border: 1.5px solid rgba(212,175,80,0.45); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.app-logo-sh-badge span { font-size: 12px; font-weight: 800; color: #d4af50; letter-spacing: 0.5px; line-height: 1; }
+.app-logo-text { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.app-logo-text em { font-style: normal; color: var(--accent); }
+/* BF page logo bar */
+.bf-logo-bar { display: flex; align-items: center; padding: 14px 20px 10px; border-bottom: 1px solid var(--border); margin-bottom: 0; }
 
 /* ---- SIDEBAR SECTIONS ---- */
 .sb-section { padding: 0 1rem; margin-bottom: 1.25rem; }
@@ -1576,6 +1584,12 @@ tr.selected td { background: var(--accent-glow); }
   </div>
 </div>
 <div id="bf-page">
+  <div class="bf-logo-bar">
+    <div class="app-logo-inline">
+      <div class="app-logo-sh-badge"><span>SH</span></div>
+      <span class="app-logo-text">Ezekia<em>Lens</em></span>
+    </div>
+  </div>
   <div class="bf-mode-nav bf-visible" id="bf-nav-in-bf">
     <button class="bf-nav-btn bf-inactive" onclick="BF_goMode('pl')">&#128203; Project Listing</button>
     <button class="bf-nav-btn bf-active-blue" onclick="BF_goMode('bf')">&#128269; Bulk Finder</button>
@@ -1643,8 +1657,9 @@ tr.selected td { background: var(--accent-glow); }
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="logo-area">
-      <div class="logo">
-        <img src="SH%20Ezekia%20Lens%20logo%20(2).svg" alt="SH Ezekia Lens" style="height:40px;width:auto;display:block;">
+      <div class="logo app-logo-inline">
+        <div class="app-logo-sh-badge"><span>SH</span></div>
+        <span class="app-logo-text">Ezekia<em>Lens</em></span>
       </div>
       <div class="logo-sub" id="sidebarSub">Sheffield Haworth &#183; candidate pipeline &#183; v2.0</div>
     </div>
