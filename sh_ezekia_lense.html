@@ -853,24 +853,28 @@ th {
 th:last-child { border-right: none; }
 th:hover { background: #1e6e8f; color: #fff; }
 th.active { color: #87CEEB; background: #154f66; }
-.th-inner { display: flex; align-items: center; gap: 5px; }
-.sort-icon { font-size: 11px; opacity: 0.5; color: #e8f4f8; }
+.th-inner { display: flex; align-items: center; gap: 4px; width: 100%; }
+.sort-icon { display: inline-flex; align-items: center; opacity: 0.45; color: #e8f4f8; flex-shrink: 0; }
 th.active .sort-icon { opacity: 1; color: #87CEEB; }
+.sort-icon svg { width: 12px; height: 12px; fill: currentColor; }
 
 /* ---- COLUMN HEADER FILTER ---- */
 .th-filter-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 1px 3px;
+  padding: 2px 4px;
   border-radius: 3px;
-  font-size: 13px;
   opacity: 0.45;
   color: #e8f4f8;
   line-height: 1;
   flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
   transition: opacity 0.15s, color 0.15s;
 }
+.th-filter-btn svg { width: 13px; height: 13px; fill: currentColor; }
 .th-filter-btn:hover, .th-filter-btn.active { opacity: 1; color: #87CEEB; }
 .col-filter-wrap { position: relative; display: inline-block; }
 .col-filter-drop {
@@ -3487,10 +3491,10 @@ function renderTable() {
       const isFilterable = FILTERABLE_COLS.some(function(fc){ return fc.key === c.key; });
       const hasFilter = isFilterable && FILTER_SETS[c.key] && FILTER_SETS[c.key].size > 0;
       const fIcon = isFilterable
-        ? `<button class="th-filter-btn${hasFilter?' active':''}" onclick="event.stopPropagation();openColFilter(event,'${c.key}')" title="Filter ${c.label}">▼</button>`
+        ? `<button class="th-filter-btn${hasFilter?' active':''}" onclick="event.stopPropagation();openColFilter(event,'${c.key}')" title="Filter ${c.label}"><svg viewBox="0 0 14 13" xmlns="http://www.w3.org/2000/svg"><path d="M0.5 1.5h13L8.5 7v5l-3-1.5V7z"/></svg></button>`
         : '';
       return `<th onclick="setSort('${c.key}')" class="${SORT_COL===c.key?'active':''}">
-        <div class="th-inner">${c.label}<span class="sort-icon">${SORT_COL===c.key?(SORT_DIR===1?'\u25b2':'\u25bc'):'\u21c5'}</span>${fIcon}</div>
+        <div class="th-inner">${c.label}<span class="sort-icon">${SORT_COL===c.key?(SORT_DIR===1?'<svg viewBox="0 0 10 8" xmlns="http://www.w3.org/2000/svg"><path d="M5 0L10 8H0z"/></svg>':'<svg viewBox="0 0 10 8" xmlns="http://www.w3.org/2000/svg"><path d="M5 8L0 0h10z"/></svg>'):'<svg viewBox="0 0 10 14" xmlns="http://www.w3.org/2000/svg"><path d="M5 0L9.5 6H0.5z" opacity="0.55"/><path d="M5 14L0.5 8h9z" opacity="0.55"/></svg>'}</span>${fIcon}</div>
       </th>`;
     }).join('')}
     <th style="width:120px">Actions</th>
