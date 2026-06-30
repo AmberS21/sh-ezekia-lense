@@ -1449,20 +1449,35 @@ tr.selected td { background: var(--accent-glow); }
 .bf-nav-btn.bf-active-green{background:var(--green);color:#fff;border-color:var(--green)}
 .bf-nav-btn.bf-active-blue{background:var(--accent);color:#fff;border-color:var(--accent)}
 /* ── BF: Landing ── */
-#bf-landing{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:40px}
+
+/* ── BF: Landing Page (dark navy redesign) ── */
+#bf-landing{display:none;position:fixed;inset:0;background:linear-gradient(145deg,#031022 0%,#062040 40%,#0a3060 70%,#062040 100%);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:0;overflow:auto}
 #bf-landing.bf-visible{display:flex}
-.bf-landing-logo{display:flex;align-items:center;gap:14px;margin-bottom:8px}
-.bf-landing-logo img{height:48px}
-.bf-landing-logo-text{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.5px}
-.bf-landing-logo-sub{font-size:13px;color:var(--text2);margin-top:2px}
-.bf-landing-cards{display:flex;gap:32px;align-items:stretch}
-.bf-landing-card{width:220px;padding:36px 28px;border-radius:14px;background:var(--bg2);border:2px solid var(--border);cursor:pointer;text-align:center;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:14px}
-.bf-landing-card:hover{background:var(--bg3);transform:translateY(-3px);box-shadow:0 8px 32px rgba(54,169,225,.18)}
-.bf-landing-card-icon{font-size:38px;line-height:1}
-.bf-landing-card-title{font-size:17px;font-weight:700;color:var(--text)}
-.bf-landing-card-desc{font-size:12px;color:var(--text2);line-height:1.5}
-.bf-card-pl{border-color:var(--green)!important}
-.bf-card-bf{border-color:var(--accent)!important}
+.bf-landing-inner{display:flex;flex-direction:column;align-items:center;gap:0;max-width:820px;width:100%;padding:60px 32px 48px}
+.bf-landing-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:6px}
+.bf-landing-sh-badge{width:72px;height:72px;background:linear-gradient(135deg,#0d2e52,#1a4a7a);border:2px solid rgba(212,175,80,0.4);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.bf-landing-sh-badge span{font-size:26px;font-weight:800;color:#d4af50;letter-spacing:1px}
+.bf-landing-eyebrow{font-size:11px;font-weight:600;letter-spacing:3px;color:#d4af50;text-transform:uppercase;opacity:0.85;margin-bottom:10px}
+.bf-landing-title{font-size:40px;font-weight:800;color:#ffffff;letter-spacing:-1px;margin-bottom:10px;text-align:center}
+.bf-landing-tagline{font-size:13.5px;color:rgba(180,205,240,0.7);font-style:italic;margin-bottom:6px}
+.bf-landing-divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,#d4af50,transparent);margin:24px auto 32px}
+.bf-landing-cards{display:flex;gap:24px;width:100%;justify-content:center;margin-bottom:36px}
+.bf-landing-card{flex:1;max-width:320px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.10);border-radius:20px;padding:36px 28px 32px;cursor:pointer;transition:all .25s ease;text-align:center;position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+.bf-landing-card::before{content:'';position:absolute;inset:0;border-radius:20px;opacity:0;transition:opacity .25s}
+.bf-landing-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.bf-card-pl{border-color:rgba(46,213,115,0.25)}
+.bf-card-pl::before{background:radial-gradient(ellipse at top,rgba(46,213,115,0.07),transparent 70%)}
+.bf-card-pl:hover{border-color:rgba(46,213,115,0.6);box-shadow:0 20px 60px rgba(46,213,115,0.15)}
+.bf-card-pl:hover::before{opacity:1}
+.bf-card-bf{border-color:rgba(91,143,249,0.25)}
+.bf-card-bf::before{background:radial-gradient(ellipse at top,rgba(91,143,249,0.08),transparent 70%)}
+.bf-card-bf:hover{border-color:rgba(91,143,249,0.6);box-shadow:0 20px 60px rgba(91,143,249,0.15)}
+.bf-card-bf:hover::before{opacity:1}
+.bf-landing-card-icon{font-size:36px;margin-bottom:16px;display:block}
+.bf-landing-card-title{font-size:18px;font-weight:700;color:#ffffff;margin-bottom:10px}
+.bf-landing-card-desc{font-size:13px;color:rgba(180,205,240,0.65);line-height:1.55}
+.bf-landing-desc{font-size:14px;color:rgba(180,205,240,0.55);line-height:1.7;text-align:center;max-width:640px;border-top:1px solid rgba(255,255,255,0.07);padding-top:28px}
+
 /* ── BF: Page ── */
 #bf-page{display:none;flex-direction:column;height:100vh;overflow:hidden;background:var(--bg)}
 #bf-page.bf-visible{display:flex}
@@ -1532,25 +1547,30 @@ tr.selected td { background: var(--accent-glow); }
 <body>
 
 <!-- BF:LANDING -->
-<div id="bf-landing" class="bf-visible">
-  <div class="bf-landing-logo">
-    <img src="SH%20Ezekia%20Lens%20logo%20(2).svg" alt="">
-    <div><div class="bf-landing-logo-text">Ezekia Lens</div><div class="bf-landing-logo-sub">Sheffield Haworth &middot; candidate pipeline &middot; v2.0</div></div>
-  </div>
-  <div class="bf-landing-cards">
-    <div class="bf-landing-card bf-card-pl" onclick="BF_goMode('pl')">
-      <div class="bf-landing-card-icon">&#128203;</div>
-      <div class="bf-landing-card-title">Project Listing</div>
-      <div class="bf-landing-card-desc">Load an Ezekia assignment, project or list into a fast filterable pipeline view</div>
+<div id="bf-landing" class="">
+  <div class="bf-landing-inner">
+    <div class="bf-landing-logo-wrap">
+      <div class="bf-landing-sh-badge"><span>SH</span></div>
+      <div class="bf-landing-eyebrow">Sheffield Haworth &middot; Ezekia</div>
+      <div class="bf-landing-title">Ezekia Lens</div>
+      <div class="bf-landing-tagline">Developed internally by Sheffield Haworth</div>
     </div>
-    <div class="bf-landing-card bf-card-bf" onclick="BF_goMode('bf')">
-      <div class="bf-landing-card-icon">&#128269;</div>
-      <div class="bf-landing-card-title">Bulk Finder</div>
-      <div class="bf-landing-card-desc">Upload a list of names and find them in Ezekia &mdash; then push to a project in one click</div>
+    <div class="bf-landing-divider"></div>
+    <div class="bf-landing-cards">
+      <div class="bf-landing-card bf-card-pl" onclick="BF_goMode('pl')">
+        <span class="bf-landing-card-icon">&#128203;</span>
+        <div class="bf-landing-card-title">Project Listing</div>
+        <div class="bf-landing-card-desc">Load an Ezekia assignment, project or list into a fast filterable pipeline view</div>
+      </div>
+      <div class="bf-landing-card bf-card-bf" onclick="BF_goMode('bf')">
+        <span class="bf-landing-card-icon">&#128269;</span>
+        <div class="bf-landing-card-title">Bulk Finder</div>
+        <div class="bf-landing-card-desc">Upload a list of names and find them in Ezekia &mdash; then push to a project in one click</div>
+      </div>
     </div>
+    <div class="bf-landing-desc">Ezekia Lens gives you faster, more flexible access to your Ezekia data &mdash; sort and filter freely, edit inline with instant write-back, bulk-match candidates by LinkedIn, email, or phone, and push results straight into your projects. Built in-house at Sheffield Haworth.</div>
   </div>
 </div>
-<!-- BF:PAGE -->
 <div id="bf-page">
   <div class="bf-mode-nav bf-visible" id="bf-nav-in-bf">
     <button class="bf-nav-btn bf-inactive" onclick="BF_goMode('pl')">&#128203; Project Listing</button>
