@@ -3076,9 +3076,10 @@ function openColFilter(evt, key) {
   // Build the dropdown if it doesn't exist or needs rebuilding
   const fc = FILTERABLE_COLS.find(function(f) { return f.key === key; });
   if (!fc) return;
+  const _pool = (typeof FILTERED !== 'undefined' && FILTERED.length > 0) ? FILTERED : ALL;
   const vals = fc.fixedList
-    ? fc.fixedList.filter(function(v) { return ALL.length === 0 || ALL.some(function(c) { return c[key] === v; }); })
-    : [...new Set(ALL.map(function(c) { return c[key]; }).filter(function(v) { return v && v !== '—'; }))].sort();
+    ? fc.fixedList.filter(function(v) { return _pool.length === 0 || _pool.some(function(c) { return c[key] === v; }); })
+    : [...new Set(_pool.map(function(c) { return c[key]; }).filter(function(v) { return v && v !== '—'; }))]
   if (vals.length === 0) return;
 
   if (!FILTER_SETS[key]) FILTER_SETS[key] = new Set();
