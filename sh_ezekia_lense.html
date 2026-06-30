@@ -1485,7 +1485,7 @@ tr.selected td { background: var(--accent-glow); }
 .bf-card-bf::before{background:radial-gradient(ellipse at top,rgba(91,143,249,0.08),transparent 70%)}
 .bf-card-bf:hover{border-color:rgba(91,143,249,0.6);box-shadow:0 20px 60px rgba(91,143,249,0.15)}
 .bf-card-bf:hover::before{opacity:1}
-.bf-landing-card-icon{font-size:36px;margin-bottom:16px;display:block}
+.bf-landing-card-icon{margin-bottom:16px;display:flex;justify-content:center;align-items:center}
 .bf-landing-card-title{font-size:18px;font-weight:700;color:#ffffff;margin-bottom:10px}
 .bf-landing-card-desc{font-size:13px;color:rgba(180,205,240,0.65);line-height:1.55}
 .bf-landing-desc{font-size:14px;color:rgba(180,205,240,0.7);line-height:1.7;text-align:center;max-width:640px;border-top:1px solid rgba(255,255,255,0.07);padding-top:28px}
@@ -1569,12 +1569,12 @@ tr.selected td { background: var(--accent-glow); }
     <div class="bf-landing-divider"></div>
     <div class="bf-landing-cards">
       <div class="bf-landing-card bf-card-pl" onclick="BF_goMode('pl')">
-        <span class="bf-landing-card-icon">&#128203;</span>
+        <span class="bf-landing-card-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="44" height="44"><circle cx="3.5" cy="7" r="2"/><rect x="7" y="5.5" width="13.5" height="3" rx="1.5"/><circle cx="3.5" cy="12" r="2"/><rect x="7" y="10.5" width="13.5" height="3" rx="1.5"/><circle cx="3.5" cy="17" r="2"/><rect x="7" y="15.5" width="13.5" height="3" rx="1.5"/></svg></span>
         <div class="bf-landing-card-title">Project Listing</div>
         <div class="bf-landing-card-desc">Load an Ezekia assignment, project or list into a fast filterable pipeline view</div>
       </div>
       <div class="bf-landing-card bf-card-bf" onclick="BF_goMode('bf')">
-        <span class="bf-landing-card-icon">&#128269;</span>
+        <span class="bf-landing-card-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="44" height="44"><path d="M10.5 2a8.5 8.5 0 1 0 5.262 15.176l3.531 3.531a1 1 0 0 0 1.414-1.414l-3.531-3.531A8.5 8.5 0 0 0 10.5 2zm0 2a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm0 7c-2.206 0-4 1.12-4 2.5v.5h8v-.5c0-1.38-1.794-2.5-4-2.5z"/></svg></span>
         <div class="bf-landing-card-title">Bulk Finder</div>
         <div class="bf-landing-card-desc">Upload a list of names and find them in Ezekia &mdash; then push to a project in one click</div>
       </div>
