@@ -4374,6 +4374,7 @@ function BF_esc(s) { return (s||'').toString().replace(/&/g,'&amp;').replace(/</
 async function BF_matchOne(row) {
   const _B = window._BF_BASE;
   try {
+    // Step 1: Search by name
     let page = 1, all = [], lastPage = 1;
     do {
       const r = await fetch(_B + '/v4/people?q=' + encodeURIComponent(row.inputName) + '&per_page=15&page=' + page);
@@ -4384,6 +4385,20 @@ async function BF_matchOne(row) {
       if ((d.meta.total || 0) > 50) return BF_score(row, all, true);
       page++;
     } while (page <= lastPage && page <= 4);
+    // Step 2: LinkedIn fallback - if name returned nothing and we have a LinkedIn URL
+    if (all.length === 0 && row.inputLinkedIn) {
+      try {
+        const liR = await fetch(_B + '/v4/people?q=' + encodeURIComponent(row.inputLinkedIn) + '&per_page=15&page=1');
+        if (liR.ok) { const liD = await liR.json(); all = liD.data || []; }
+      } catch(e2) {}
+    }
+    // Step 3: Email fallback - if still nothing and we have an email
+    if (all.length === 0 && row.inputEmail) {
+      try {
+        const emR = await fetch(_B + '/v4/people?q=' + encodeURIComponent(row.inputEmail) + '&per_page=15&page=1');
+        if (emR.ok) { const emD = await emR.json(); all = emD.data || []; }
+      } catch(e3) {}
+    }
     return BF_score(row, all, false);
   } catch(e) {
     return Object.assign({}, row, {ezekiaId:'', matchName:'', title:'', company:'', location:'', linkedin:'', email:'', phone:'', matchType:'Error', matchNote: e.message});
