@@ -7,25 +7,25 @@
 <style>
 :root,
 [data-theme="dark"] {
-  /* Sheffield Haworth brand theme \2014  navy dark + #36a9e1 sky blue accent */
+  /* Sheffield Haworth brand theme \2014  navy dark + #0e83df sky blue accent */
   --bg: #0d1120;       /* deep SH navy-black \2014  main background */
   --bg2: #131929;      /* slightly lighter navy \2014  sidebar / topbar panels */
   --bg3: #1c2336;      /* card/input background \2014  clearly distinct from bg2 */
   --bg4: #243049;      /* hover / elevated surfaces */
-  --border: rgba(54,169,225,0.12);   /* subtle SH-blue border tint */
-  --border2: rgba(54,169,225,0.22);  /* slightly more visible border */
+  --border: rgba(14,131,223,0.12);   /* subtle SH-blue border tint */
+  --border2: rgba(14,131,223,0.22);  /* slightly more visible border */
   --text: #eef2f8;     /* near-white \2014  primary text, maximum legibility */
   --text2: #8daabf;    /* medium blue-grey \2014  secondary text */
   --text3: #4e6a84;    /* muted \2014  hints, placeholders */
-  --accent: #36a9e1;   /* SH signature sky blue \2014  buttons, links, active states */
+  --accent: #0e83df;   /* SH signature sky blue \2014  buttons, links, active states */
   --accent2: #1e8cc4;  /* darker SH blue \2014  hover states */
-  --accent-glow: rgba(54,169,225,0.18); /* SH blue glow for tags/badges */h
+  --accent-glow: rgba(14,131,223,0.18); /* SH blue glow for tags/badges */h
   --green: #2ec48a;    /* success / placed */
   --amber: #f5a623;    /* warning / on hold */
   --red: #f06565;      /* rejection / negative */
   --purple: #a07cf0;   /* interview track */
   --teal: #2dd4bf;     /* teal accents */
-  --row-hover: rgba(54,169,225,0.05); /* SH-tinted row hover */
+  --row-hover: rgba(14,131,223,0.05); /* SH-tinted row hover */
   --shadow: 0 8px 28px rgba(0,0,0,0.45);
   --font: 'DM Sans', sans-serif;
   --mono: 'DM Mono', monospace;
@@ -42,15 +42,15 @@
   --text: #10063d;     /* SH deep navy \2014  primary text for max brand alignment */
   --text2: #2e4a6e;    /* medium navy-blue \2014  secondary text */
   --text3: #6b87a0;    /* muted \2014  hints, placeholders */
-  --accent: #36a9e1;   /* SH signature sky blue */
+  --accent: #0e83df;   /* SH signature sky blue */
   --accent2: #1e8cc4;  /* darker SH blue \2014  hover states */
-  --accent-glow: rgba(54,169,225,0.14); /* SH blue glow */
+  --accent-glow: rgba(14,131,223,0.14); /* SH blue glow */
   --green: #0fa86a;    /* success / placed */
   --amber: #c47d10;    /* warning / on hold */
   --red: #c93f3f;      /* rejection / negative */
   --purple: #6b44d4;   /* interview track */
   --teal: #0aa896;     /* teal accents */
-  --row-hover: rgba(54,169,225,0.06); /* SH-tinted row hover */
+  --row-hover: rgba(14,131,223,0.06); /* SH-tinted row hover */
   --shadow: 0 4px 16px rgba(16,6,61,0.10);
   --font: 'DM Sans', sans-serif;
   --mono: 'DM Mono', monospace;
@@ -475,15 +475,15 @@ body {
 
 /* Update Ezekia Project button */
 .top-btn.push-btn {
-  border-color: rgba(54,169,225,0.45);
-  color: #36a9e1;
-  background: rgba(54,169,225,0.08);
+  border-color: rgba(14,131,223,0.45);
+  color: #0e83df;
+  background: rgba(14,131,223,0.08);
   position: relative;
 }
-.top-btn.push-btn:hover { background: rgba(54,169,225,0.16); color: #7dcfef; }
+.top-btn.push-btn:hover { background: rgba(14,131,223,0.16); color: #7dcfef; }
 .top-btn.push-btn:disabled { opacity: 0.4; cursor: default; }
-[data-theme="light"] .top-btn.push-btn { color: #1e8cc4; border-color: rgba(54,169,225,0.4); background: rgba(54,169,225,0.07); }
-[data-theme="light"] .top-btn.push-btn:hover { background: rgba(54,169,225,0.13); }
+[data-theme="light"] .top-btn.push-btn { color: #1e8cc4; border-color: rgba(14,131,223,0.4); background: rgba(14,131,223,0.07); }
+[data-theme="light"] .top-btn.push-btn:hover { background: rgba(14,131,223,0.13); }
 
 /* Dirty change badge on push button */
 .dirty-badge {
@@ -841,8 +841,8 @@ table {
 }
 thead { position: sticky; top: 0; z-index: 10; }
 thead tr {
-  background: #290fbe;
-  border-bottom: 2px solid #36a9e1;
+  background: #0e83df;
+  border-bottom: 2px solid #0e83df;
 }
 th {
   padding: 10px 14px;
@@ -859,8 +859,8 @@ th {
   border-right: 1px solid rgba(255,255,255,0.12);
 }
 th:last-child { border-right: none; }
-th:hover { background: #1e6e8f; color: #fff; }
-th.active { color: #87CEEB; background: #154f66; }
+th:hover { background: #290fbe; color: #fff; }
+th.active { color: #ffffff; background: #290fbe; }
 .th-inner { display: flex; align-items: center; gap: 4px; width: 100%; }
 .sort-icon { display: inline-flex; align-items: center; opacity: 0.45; color: #e8f4f8; flex-shrink: 0; }
 th.active .sort-icon { opacity: 1; color: #87CEEB; }
@@ -1297,9 +1297,9 @@ tr.selected td { background: var(--accent-glow); }
   display: inline-flex; align-items: center;
   font-size: 10px; padding: 2px 7px;
   border-radius: 10px;
-  background: rgba(54,169,225,0.12);
+  background: rgba(14,131,223,0.12);
   color: var(--accent);
-  border: 1px solid rgba(54,169,225,0.30);
+  border: 1px solid rgba(14,131,223,0.30);
   white-space: nowrap; max-width: 180px;
   overflow: hidden; text-overflow: ellipsis;
 }
@@ -1329,8 +1329,8 @@ tr.selected td { background: var(--accent-glow); }
 .ind-chip {
   display: inline-flex; align-items: center; gap: 4px;
   font-size: 11px; padding: 3px 8px; border-radius: 12px;
-  background: rgba(54,169,225,0.14); color: var(--accent);
-  border: 1px solid rgba(54,169,225,0.35);
+  background: rgba(14,131,223,0.14); color: var(--accent);
+  border: 1px solid rgba(14,131,223,0.35);
 }
 .ind-chip-x {
   cursor: pointer; opacity: 0.7; font-size: 12px; line-height: 1;
@@ -1529,13 +1529,13 @@ tr.selected td { background: var(--accent-glow); }
 .bf-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .bf-table th{position:sticky;top:0;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
 .bf-table th:hover{color:var(--text)}
-.bf-table td{padding:8px 10px;border-bottom:1px solid rgba(54,169,225,.08);color:var(--text);vertical-align:middle;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bf-table td{padding:8px 10px;border-bottom:1px solid rgba(14,131,223,.08);color:var(--text);vertical-align:middle;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bf-table tr:hover td{background:var(--row-hover)}
 .bf-table td a{color:var(--accent);text-decoration:none}
 .bf-table td a:hover{text-decoration:underline}
 .bf-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:700;letter-spacing:.03em}
 .bf-badge-exact{background:rgba(46,196,138,.18);color:var(--green)}
-.bf-badge-fuzzy{background:rgba(54,169,225,.15);color:var(--accent)}
+.bf-badge-fuzzy{background:rgba(14,131,223,.15);color:var(--accent)}
 .bf-badge-multiple{background:rgba(245,166,35,.18);color:#f5a623}
 .bf-badge-notfound{background:rgba(240,78,78,.15);color:#f04e4e}
 .bf-badge-error{background:rgba(240,78,78,.12);color:#f04e4e}
