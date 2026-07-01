@@ -4390,7 +4390,7 @@ async function BF_matchOne(row) {
     // Step 2: LinkedIn fallback - if name returned nothing and we have a LinkedIn URL
     if (all.length === 0 && row.inputLinkedIn) {
       try {
-        const liR = await fetch(_B + '/v4/people?q=' + encodeURIComponent(row.inputLinkedIn) + '&per_page=15&page=1');
+        const liR = await fetch(_B + '/v4/people?q=' + encodeURIComponent(BF_liId(row.inputLinkedIn)||row.inputLinkedIn) + '&per_page=15&page=1');
         if (liR.ok) { const liD = await liR.json(); all = liD.data || []; }
       } catch(e2) {}
     }
@@ -4535,7 +4535,7 @@ function BF_score(row, people, tooMany) {
     if (inLI) {
       const ezLIs = (p.links||[]).filter(l => /linkedin/i.test(l.url||''));
       for (const l of ezLIs) {
-        if (BF_normLI(l.url) === inLI) { liMatch = p; break; }
+        if ((ezLI=>ezLI===inLI||ezLI.startsWith(inLI)||inLI.startsWith(ezLI))(BF_normLI(l.url))) { liMatch = p; break; }
       }
     }
     // Email
