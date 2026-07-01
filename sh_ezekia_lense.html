@@ -27,31 +27,35 @@
   --teal: #2dd4bf;     /* teal accents */
   --row-hover: rgba(14,131,223,0.05); /* SH-tinted row hover */
   --shadow: 0 8px 28px rgba(0,0,0,0.45);
+  --thead-bg: #1a2644;   /* deep navy header row */
+  --thead-text: #eef2f8; /* near-white text */
   --font: 'DM Sans', sans-serif;
   --mono: 'DM Mono', monospace;
 } 
 
 [data-theme="light"] {
-  /* Sheffield Haworth brand light theme \2014  clean white with SH navy + sky blue */
-  --bg: #f2f6fa;       /* cool light grey-blue \2014  clean main background */
-  --bg2: #ffffff;      /* pure white \2014  sidebar / topbar panels */
-  --bg3: #e8eef5;      /* light blue-grey \2014  inputs / cards */
-  --bg4: #d6e2ed;      /* slightly deeper \2014  hover / elevated surfaces */
-  --border: rgba(16,6,61,0.10);   /* SH navy border tint */
-  --border2: rgba(16,6,61,0.18);  /* slightly more visible border */
-  --text: #10063d;     /* SH deep navy \2014  primary text for max brand alignment */
-  --text2: #2e4a6e;    /* medium navy-blue \2014  secondary text */
-  --text3: #6b87a0;    /* muted \2014  hints, placeholders */
+  /* Sheffield Haworth brand light theme — warm slate, easy on the eyes */
+  --bg: #eaecf4;       /* warm slate — soft main background, not blinding white */
+  --bg2: #f4f5fb;      /* slightly lighter — sidebar / topbar panels */
+  --bg3: #dde1ef;      /* cool grey-blue — inputs / cards / buttons */
+  --bg4: #cdd3e4;      /* deeper slate — hover / elevated surfaces */
+  --border: rgba(30,45,100,0.12);   /* SH navy border tint */
+  --border2: rgba(30,45,100,0.22);  /* more visible border */
+  --text: #1a2140;     /* rich SH navy — primary text, softer than pure black */
+  --text2: #3a4f72;    /* medium navy — secondary text */
+  --text3: #7a90b0;    /* muted — hints, placeholders */
   --accent: #0e83df;   /* SH signature sky blue */
-  --accent2: #1e8cc4;  /* darker SH blue \2014  hover states */
+  --accent2: #1e8cc4;  /* darker SH blue — hover states */
   --accent-glow: rgba(14,131,223,0.14); /* SH blue glow */
   --green: #0fa86a;    /* success / placed */
   --amber: #c47d10;    /* warning / on hold */
   --red: #c93f3f;      /* rejection / negative */
   --purple: #6b44d4;   /* interview track */
   --teal: #0aa896;     /* teal accents */
-  --row-hover: rgba(14,131,223,0.06); /* SH-tinted row hover */
-  --shadow: 0 4px 16px rgba(16,6,61,0.10);
+  --row-hover: rgba(14,131,223,0.07); /* SH-tinted row hover */
+  --shadow: 0 4px 16px rgba(30,45,100,0.12);
+  --thead-bg: #2c3e5c;   /* rich SH navy header — clearly visible */
+  --thead-text: #ffffff; /* white text on navy — maximum contrast */
   --font: 'DM Sans', sans-serif;
   --mono: 'DM Mono', monospace;
 }
@@ -838,10 +842,11 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 12.5px;
+  background: var(--bg);
 }
 thead { position: sticky; top: 0; z-index: 10; }
 thead tr {
-  background: var(--bg2);
+  background: var(--thead-bg, #2c3e5c);
   border-bottom: 2px solid var(--border2);
 }
 th {
@@ -851,12 +856,12 @@ th {
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: none;
-  color: #eef2f8;
+  color: var(--thead-text, #ffffff);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
   transition: color 0.1s, background 0.1s;
-  border-right: 1px solid rgba(255,255,255,0.12);
+  border-right: 1px solid rgba(255,255,255,0.10);
 }
 th:last-child { border-right: none; }
 th:hover { background: #0e83df; color: #fff; }
@@ -930,7 +935,7 @@ td {
   border-right: 1px solid var(--border);
 }
 td:last-child { border-right: none; }
-tr:hover td { background: rgba(255,255,255,0.02); }
+tr:hover td { background: var(--row-hover); }
 tr.selected td { background: var(--accent-glow); }
 
 .td-name { font-weight: 500; color: var(--text); }
