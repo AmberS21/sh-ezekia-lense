@@ -4472,7 +4472,14 @@ function BF_fuzzyScore(row, p) {
     if (inL === ezL) score += 10;
     else if (inL.split(/[,\s]+/).some(w => w.length > 2 && ezL.includes(w))) score += 6;
   }
-  return Math.min(score, 100);
+  // Name-match floors: prevent exact name match from falling below Found-Review
+  // (spec: "name alone is never Found" = can't reach 90+, but exact match is Found-Review minimum)
+  const surnamePerfect = iP.surname && eP.surname && iP.surname === eP.surname;
+  const givenPerfect   = iP.given   && eP.given   && iP.given   === eP.given;
+  const givenAbsent    = !iP.given  || !eP.given;
+  if (surnamePerfect && (givenPerfect || givenAbsent)) score = Math.max(score, 80);
+  else if (surnamePerfect) score = Math.max(score, 70);
+  return Math.min(score, 89); // cap at 89: name alone can never reach Found (90+)
 }
 function BF_statusFromConf(conf) {
   if (conf >= 90) return 'Found';
