@@ -1664,14 +1664,14 @@ tr.selected td { background: var(--accent-glow); }
               <th onclick="BF_sortBy('title')" style="min-width:160px">Current Position &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('title',this)">&#9660;</button></th>
               <th onclick="BF_sortBy('company')" style="min-width:140px">Company &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('company',this)">&#9660;</button></th>
               <th onclick="BF_sortBy('location')" style="min-width:120px">Location &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('location',this)">&#9660;</button></th>
-              <th>LinkedIn</th>
+              <th>LinkedIn <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('linkedin',this)">&#9660;</button></th>
               <th onclick="BF_sortBy('email')" style="min-width:160px">Email &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('email',this)">&#9660;</button></th>
-              <th>Phone</th>
-              <th onclick="BF_sortBy('ezekiaId')">Ezekia ID &#8693;</th>
+              <th>Phone <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('phone',this)">&#9660;</button></th>
+              <th onclick="BF_sortBy('ezekiaId')">Ezekia ID &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('ezekiaId',this)">&#9660;</button></th>
               <th onclick="BF_sortBy('matchType')">Match &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchType',this)">&#9660;</button></th>
-              <th onclick="BF_sortBy('matchConfidence')" style="min-width:80px">Conf% &#8693;</th>
-              <th style="min-width:180px">Match Reason</th>
-              <th style="min-width:130px">Data Quality</th>
+              <th onclick="BF_sortBy('matchConfidence')" style="min-width:80px">Conf% &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchConfidence',this)">&#9660;</button></th>
+              <th style="min-width:180px">Match Reason <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchReason',this)">&#9660;</button></th>
+              <th style="min-width:130px">Data Quality <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('dataQualityFlags',this)">&#9660;</button></th>
               <th onclick="BF_sortBy('recommendedAction')">Action &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('recommendedAction',this)">&#9660;</button></th>
             </tr></thead>
           <tbody id="bf-tbody"></tbody>
@@ -4698,7 +4698,7 @@ function BF_renderTable() {
     'Error':            '<span class="bf-badge bf-badge-error">Error</span>',
   };
   const actionBadges = {
-    'AUTO_ADD':          '<span class="bf-badge bf-badge-action-add">AUTO ADD</span>',
+    'AUTO_ADD':          '<span class="bf-badge bf-badge-action-add">STRONG MATCH</span>',
     'REVIEW_BEFORE_ADD': '<span class="bf-badge bf-badge-action-review">REVIEW</span>',
     'DO_NOT_ADD':        '<span class="bf-badge bf-badge-action-dna">DO NOT ADD</span>',
     'CREATE_NEW':        '<span class="bf-badge bf-badge-action-new">CREATE NEW</span>',
