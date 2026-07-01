@@ -197,8 +197,8 @@ body {
 .app-logo-inline { display: flex; align-items: center; gap: 10px; }
 .app-logo-sh-badge { width: 34px; height: 34px; background: linear-gradient(135deg,#0d2e52,#1a4a7a); border: 1.5px solid rgba(212,175,80,0.45); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 .app-logo-sh-badge span { font-size: 12px; font-weight: 800; color: #d4af50; letter-spacing: 0.5px; line-height: 1; }
-.app-logo-text { font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
-.app-logo-text em { font-style: normal; color: #ffffff; }
+.app-logo-text { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.app-logo-text em { font-style: normal; color: var(--text); }
 /* BF page logo bar */
 .bf-logo-bar { display: flex; align-items: center; padding: 14px 20px 10px; border-bottom: 1px solid var(--border); margin-bottom: 0; }
 
@@ -241,7 +241,7 @@ body {
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 }
-.sb-btn:hover { background: var(--bg4); color: #fff; }
+.sb-btn:hover { background: var(--bg4); color: var(--text); }
 .sb-btn:active { background: #0e83df; color: #fff; border-color: #0e83df; }
 .sb-btn.secondary {
   background: var(--bg4);
@@ -1438,7 +1438,7 @@ tr.selected td { background: var(--accent-glow); }
   padding: 5px 10px; border-radius: 5px; cursor: pointer;
   white-space: nowrap; transition: background 0.12s;
 }
-.view-save-btn:hover { background: var(--bg4); color: #fff; }
+.view-save-btn:hover { background: var(--bg4); color: var(--text); }
 .recent-list { display: flex; flex-direction: column; gap: 3px; }
 .recent-item {
   display: flex; align-items: center; gap: 6px;
@@ -1510,7 +1510,7 @@ tr.selected td { background: var(--accent-glow); }
 .bf-action-row{display:flex;gap:10px;margin-top:14px;align-items:center}
 .bf-btn{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s}
 .bf-btn-primary{background:var(--bg3);color:var(--text);border:1.5px solid var(--border2)}
-.bf-btn-primary:hover{background:var(--bg4);color:#fff}
+.bf-btn-primary:hover{background:var(--bg4);color:var(--text)}
 .bf-btn-primary:active{background:#0e83df;color:#fff;border-color:#0e83df}
 .bf-btn-primary:disabled,.bf-btn-green:disabled{opacity:.5;cursor:not-allowed}
 .bf-btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
