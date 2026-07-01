@@ -1561,6 +1561,12 @@ tr.selected td { background: var(--accent-glow); }
 .bf-badge-error{background:rgba(240,78,78,.12);color:#f04e4e}
 .bf-badge-skipped,.bf-badge-searching{background:var(--bg4);color:var(--text2)}
 .bf-badge-searching{color:var(--accent2)}
+.bf-badge-review{background:rgba(245,166,35,.18);color:#f5a623}
+.bf-badge-action-add{background:rgba(46,196,138,.18);color:var(--green);font-size:9.5px}
+.bf-badge-action-review{background:rgba(245,166,35,.18);color:#f5a623;font-size:9.5px}
+.bf-badge-action-dna{background:rgba(240,78,78,.15);color:#f04e4e;font-size:9.5px}
+.bf-badge-action-new{background:rgba(14,131,223,.15);color:var(--accent);font-size:9.5px}
+.bf-dq-flag{display:inline-block;padding:1px 6px;border-radius:8px;font-size:9.5px;font-weight:600;background:rgba(240,78,78,.12);color:#f04e4e;margin:1px 2px}
 /* ── BF: Push ── */
 .bf-push-section{padding:16px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .bf-push-label{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
@@ -1653,16 +1659,20 @@ tr.selected td { background: var(--accent-glow); }
         <table class="bf-table" id="bf-table">
           <thead><tr>
               <th class="bf-cb"><input type="checkbox" id="bf-select-all" onchange="BF_toggleSelectAll(this)"></th>
-              <th onclick="BF_sortBy('inputName')" style="min-width:140px">Name &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('inputName',this)" title="Filter">&#9660;</button></th>
-              <th onclick="BF_sortBy('matchName')" style="min-width:140px">Matched Name &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchName',this)" title="Filter">&#9660;</button></th>
-              <th onclick="BF_sortBy('title')" style="min-width:160px">Current Position &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('title',this)" title="Filter">&#9660;</button></th>
-              <th onclick="BF_sortBy('company')" style="min-width:140px">Company &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('company',this)" title="Filter">&#9660;</button></th>
-              <th onclick="BF_sortBy('location')" style="min-width:130px">Location &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('location',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('inputName')" style="min-width:140px">Name &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('inputName',this)">&#9660;</button></th>
+              <th onclick="BF_sortBy('matchName')" style="min-width:140px">Matched Name &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchName',this)">&#9660;</button></th>
+              <th onclick="BF_sortBy('title')" style="min-width:160px">Current Position &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('title',this)">&#9660;</button></th>
+              <th onclick="BF_sortBy('company')" style="min-width:140px">Company &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('company',this)">&#9660;</button></th>
+              <th onclick="BF_sortBy('location')" style="min-width:120px">Location &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('location',this)">&#9660;</button></th>
               <th>LinkedIn</th>
-              <th onclick="BF_sortBy('email')" style="min-width:160px">Email &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('email',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('email')" style="min-width:160px">Email &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('email',this)">&#9660;</button></th>
               <th>Phone</th>
-              <th onclick="BF_sortBy('ezekiaId')" style="min-width:100px">Ezekia ID &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('ezekiaId',this)" title="Filter">&#9660;</button></th>
-              <th onclick="BF_sortBy('matchType')" style="min-width:100px">Match &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchType',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('ezekiaId')">Ezekia ID &#8693;</th>
+              <th onclick="BF_sortBy('matchType')">Match &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchType',this)">&#9660;</button></th>
+              <th onclick="BF_sortBy('matchConfidence')" style="min-width:80px">Conf% &#8693;</th>
+              <th style="min-width:180px">Match Reason</th>
+              <th style="min-width:130px">Data Quality</th>
+              <th onclick="BF_sortBy('recommendedAction')">Action &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('recommendedAction',this)">&#9660;</button></th>
             </tr></thead>
           <tbody id="bf-tbody"></tbody>
         </table>
@@ -4324,6 +4334,7 @@ function BF_parseInput() {
     linkedin: hdr.findIndex(h => h.includes('linkedin') || (h.includes('link') && !h.includes('linked'))),
     email:    hdr.findIndex(h => h.includes('email') || h.includes('mail')),
     phone:    hdr.findIndex(h => h.includes('phone') || h.includes('mobile')),
+    location: hdr.findIndex(h => h.includes('location') || h.includes('city') || h.includes('country')),
   };
   if (col.name < 0) { alert('No "Name" column found in header row. Please include a Name column.'); return []; }
   const out = [];
@@ -4337,6 +4348,7 @@ function BF_parseInput() {
       inputLinkedIn:col.linkedin >= 0 ? (r[col.linkedin]||'').trim() : '',
       inputEmail:   col.email    >= 0 ? (r[col.email]   ||'').trim() : '',
       inputPhone:   col.phone    >= 0 ? (r[col.phone]   ||'').trim() : '',
+      inputLocation:col.location >= 0 ? (r[col.location]||'').trim() : '',
     });
   }
   return out;
@@ -4374,62 +4386,227 @@ async function BF_matchOne(row) {
   }
 }
 
-function BF_score(row, people, tooMany) {
-  const blank = Object.assign({}, row, {ezekiaId:'', matchName:'', title:'', company:'', location:'', linkedin:'', email:'', phone:''});
-  if (!people.length) return Object.assign(blank, {matchType:'Not Found'});
-  const inLI    = BF_liId(row.inputLinkedIn);
-  const inEmail = (row.inputEmail||'').toLowerCase();
-  const inPhone = row.inputPhone||'';
-  const inComp  = (row.inputCompany||'').toLowerCase();
-  const inTitle = (row.inputTitle||'').toLowerCase();
-  let best = null, bestScore = -1;
-  for (const p of people) {
-    let score = 0, exactReason = '';
-    const pLI = (p.links||[]).find(l => l.type === 'linkedin');
-    const pLIId = BF_liId(pLI ? pLI.url : '');
-    if (inLI && pLIId && inLI === pLIId) { score += 100; exactReason = 'linkedin'; }
-    const pEmails = (p.emails||[]).map(e => (e.address||'').toLowerCase());
-    if (inEmail && pEmails.some(e => e === inEmail)) { score += 90; if (!exactReason) exactReason = 'email'; }
-    const pPhones = (p.phones||[]).map(ph => ph.number||'');
-    if (inPhone && pPhones.some(ph => BF_phoneMatch(ph, inPhone))) { score += 60; if (!exactReason) exactReason = 'phone'; }
-    const pComp = ((p.profile && p.profile.positions && p.profile.positions[0] && p.profile.positions[0].company) ? p.profile.positions[0].company.name : '').toLowerCase();
-    if (inComp && pComp && pComp.includes(inComp.slice(0, 6))) score += 20;
-    const pTitle = ((p.profile && p.profile.positions && p.profile.positions[0]) ? p.profile.positions[0].title : '').toLowerCase();
-    if (inTitle && pTitle && pTitle.includes(inTitle.slice(0, 6))) score += 10;
-    if (score > bestScore) { bestScore = score; best = {person: p, exactReason, score}; }
+// ── v2 Normalization helpers ──────────────────────────────────────────
+function BF_normLI(u) {
+  if (!u) return '';
+  const m = (u+'').match(/linkedin\.com\/in\/([^/?#]+)/i);
+  return m ? m[1].toLowerCase().replace(/[\-_]/g,'') : '';
+}
+function BF_normEmail(e) {
+  return (e||'').trim().toLowerCase();
+}
+function BF_normPhone(p) {
+  const d = (p||'').replace(/\D/g,'');
+  return d.length >= 9 ? d.slice(-10) : '';
+}
+function BF_normName(n) {
+  return (n||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\b(mr|mrs|ms|dr|prof|sir|jr|sr|ii|iii|iv)\b\.?/gi,'')
+    .replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();
+}
+function BF_splitName(n) {
+  const parts = BF_normName(n).split(' ').filter(Boolean);
+  if (parts.length === 0) return {given:'', surname:''};
+  if (parts.length === 1) return {given:'', surname:parts[0]};
+  return {given: parts.slice(0,-1).join(' '), surname: parts[parts.length-1]};
+}
+function BF_nameLadder(inputName, ezName) {
+  // Returns {confidence, flag} per §4 name validation ladder
+  if (!inputName) return {confidence:90, flag:''};
+  const iN = BF_normName(inputName);
+  const eN = BF_normName(ezName||'');
+  if (!eN) return {confidence:75, flag:'name_not_in_ezekia'};
+  if (iN === eN) return {confidence:98, flag:''};
+  const iP = BF_splitName(inputName);
+  const eP = BF_splitName(ezName);
+  // Close variation (swap/nickname/abbreviation)
+  const surnameMatch = iP.surname && eP.surname && (iP.surname === eP.surname || eP.surname.startsWith(iP.surname) || iP.surname.startsWith(eP.surname));
+  const givenMatch = !iP.given || !eP.given || iP.given === eP.given || eP.given.startsWith(iP.given[0]) || iP.given.startsWith(eP.given[0]);
+  if (surnameMatch && givenMatch) return {confidence:92, flag:''};
+  // Surname matches, given clearly different
+  if (surnameMatch && iP.given && eP.given) return {confidence:82, flag:'name_given_mismatch'};
+  // Surname different
+  if (!surnameMatch && iP.surname && eP.surname) return {confidence:62, flag:'name_surname_mismatch'};
+  return {confidence:70, flag:'name_unclear'};
+}
+function BF_fuzzyScore(row, p) {
+  // §5 fuzzy weights: Surname 35, Given 20, Company 25, Title 10, Location 10
+  const iP = BF_splitName(row.inputName);
+  const pos = p.positions && p.positions[0];
+  const addr = pos && pos.location;
+  const ezCompany = pos && pos.company ? (pos.company.name||'') : '';
+  const ezTitle = pos ? (pos.title||'') : '';
+  const ezLoc = [addr ? addr.city : '', addr ? addr.country : ''].filter(Boolean).join(', ');
+  const eP = BF_splitName(p.fullName||'');
+  let score = 0;
+  // Surname (35)
+  if (iP.surname && eP.surname) {
+    if (iP.surname === eP.surname) score += 35;
+    else if (eP.surname.startsWith(iP.surname) || iP.surname.startsWith(eP.surname)) score += 25;
   }
-  if (!best) return Object.assign(blank, {matchType:'Not Found'});
-  const p   = best.person;
-  const pos = p.profile && p.profile.positions && p.profile.positions[0] ? p.profile.positions[0] : null;
-  const addr= p.addresses && p.addresses[0] ? p.addresses[0] : null;
-  const liL = (p.links||[]).find(l => l.type === 'linkedin');
-  const res = Object.assign({}, row, {
-    ezekiaId:  p.id,
-    matchName: p.fullName||'',
+  // Given name (20)
+  if (iP.given && eP.given) {
+    if (iP.given === eP.given) score += 20;
+    else if (eP.given.startsWith(iP.given[0]) || iP.given.startsWith(eP.given[0])) score += 12;
+  } else if (!iP.given || !eP.given) score += 10;
+  // Company (25)
+  const inCo = (row.inputCompany||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const ezCo = ezCompany.toLowerCase().replace(/[^a-z0-9]/g,'');
+  if (inCo && ezCo) {
+    if (inCo === ezCo) score += 25;
+    else if (inCo.includes(ezCo) || ezCo.includes(inCo)) score += 18;
+    else if (inCo.substring(0,4) === ezCo.substring(0,4)) score += 8;
+  }
+  // Title (10)
+  const inT = (row.inputTitle||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const ezT = ezTitle.toLowerCase().replace(/[^a-z0-9]/g,'');
+  if (inT && ezT) {
+    if (inT === ezT) score += 10;
+    else if (inT.includes(ezT) || ezT.includes(inT)) score += 6;
+  }
+  // Location (10)
+  const inL = (row.inputLocation||'').toLowerCase();
+  const ezL = ezLoc.toLowerCase();
+  if (inL && ezL) {
+    if (inL === ezL) score += 10;
+    else if (inL.split(/[,\s]+/).some(w => w.length > 2 && ezL.includes(w))) score += 6;
+  }
+  return Math.min(score, 100);
+}
+function BF_statusFromConf(conf) {
+  if (conf >= 90) return 'Found';
+  if (conf >= 80) return 'Found – Review';
+  if (conf >= 60) return 'Fuzzy';
+  return 'Not Found';
+}
+function BF_recommendedAction(status, flags) {
+  if (status === 'Found') return 'AUTO_ADD';
+  if (status === 'Found – Review') return 'REVIEW_BEFORE_ADD';
+  if (flags && flags.some(f => f === 'conflicting_identifiers' || f === 'multiple_matches')) return 'DO_NOT_ADD';
+  if (status === 'Fuzzy') return 'REVIEW_BEFORE_ADD';
+  return 'CREATE_NEW';
+}
+
+// ── v2 BF_score – deterministic entity-resolution ─────────────────────
+function BF_score(row, people, tooMany) {
+  const blank = Object.assign({}, row, {ezekiaId:'', matchName:'', title:'', company:'', location:'', linkedin:'', email:'', phone:'', matchType:'Not Found', matchConfidence:0, matchReason:'No candidates returned', dataQualityFlags:[], matchedOn:[], recommendedAction:'CREATE_NEW'});
+  if (!people.length) return blank;
+
+  const inLI    = BF_normLI(row.inputLinkedIn);
+  const inEmail = BF_normEmail(row.inputEmail);
+  const inPhone = BF_normPhone(row.inputPhone);
+
+  let best = null;
+  let conflictFlag = false;
+  let liMatch = null, emailMatch = null, phoneMatch = null;
+
+  // Tier 1: unique identifier matching
+  for (const p of people) {
+    // LinkedIn
+    if (inLI) {
+      const ezLIs = (p.links||[]).filter(l => /linkedin/i.test(l.url||''));
+      for (const l of ezLIs) {
+        if (BF_normLI(l.url) === inLI) { liMatch = p; break; }
+      }
+    }
+    // Email
+    if (inEmail) {
+      const ezEmails = (p.emails||[]).map(e => BF_normEmail(e.address||''));
+      if (ezEmails.includes(inEmail)) emailMatch = p;
+    }
+    // Phone
+    if (inPhone) {
+      const ezPhones = (p.phones||[]).map(ph => BF_normPhone(ph.number||''));
+      if (ezPhones.includes(inPhone)) phoneMatch = p;
+    }
+  }
+
+  // Detect conflicting identifiers (T1a → person A, T1b → person B)
+  if (liMatch && emailMatch && liMatch.id !== emailMatch.id) conflictFlag = true;
+  if (liMatch && phoneMatch && liMatch.id !== phoneMatch.id) conflictFlag = true;
+  if (emailMatch && phoneMatch && emailMatch.id !== phoneMatch.id) conflictFlag = true;
+
+  let tier1Person = liMatch || emailMatch || phoneMatch;
+  let matchedOn = [];
+  let confidence = 0;
+  let matchReason = '';
+  let flags = [];
+
+  if (conflictFlag) {
+    // Return the strongest match but flag the conflict
+    const pos = (tier1Person.positions && tier1Person.positions[0]) || null;
+    const addr = pos && pos.location;
+    const liL = (tier1Person.links||[]).find(l => /linkedin/i.test(l.url||''));
+    const res = Object.assign({}, row, {
+      ezekiaId:  tier1Person.id,
+      matchName: tier1Person.fullName||'',
+      title:     pos ? pos.title||'' : '',
+      company:   pos && pos.company ? pos.company.name||'' : '',
+      location:  [addr ? addr.city : '', addr ? addr.country : ''].filter(Boolean).join(', '),
+      linkedin:  liL ? liL.url||'' : '',
+      email:     tier1Person.emails && tier1Person.emails[0] ? tier1Person.emails[0].address||'' : '',
+      phone:     tier1Person.phones && tier1Person.phones[0] ? tier1Person.phones[0].number||'' : '',
+      matchType: 'Found – Review',
+      matchConfidence: 80,
+      matchReason: 'Conflicting identifiers point to different records',
+      dataQualityFlags: ['conflicting_identifiers'],
+      matchedOn: [],
+      recommendedAction: 'DO_NOT_ADD'
+    });
+    return res;
+  }
+
+  if (tier1Person) {
+    // Tier 1 match found — apply name validation ladder
+    const nameLadder = BF_nameLadder(row.inputName, tier1Person.fullName);
+    if (liMatch)    { matchedOn.push('linkedin_url');  matchReason = 'LinkedIn URL matched'; }
+    else if (emailMatch) { matchedOn.push('email');    matchReason = 'Email matched'; }
+    else if (phoneMatch) { matchedOn.push('phone');    matchReason = 'Phone matched'; }
+    confidence = nameLadder.confidence;
+    if (nameLadder.flag) flags.push(nameLadder.flag);
+    best = tier1Person;
+  } else {
+    // Tier 2: fuzzy scoring across all candidates
+    let bestScore = 0;
+    let bestPerson = null;
+    let multipleMatches = false;
+    for (const p of people) {
+      const s = BF_fuzzyScore(row, p);
+      if (s > bestScore) { bestScore = s; bestPerson = p; multipleMatches = false; }
+      else if (s === bestScore && s >= 60) multipleMatches = true;
+    }
+    if (multipleMatches) flags.push('multiple_matches');
+    if (!bestPerson || bestScore < 30) return blank;
+    if (tooMany && bestScore < 50) return Object.assign({}, blank, {matchType:'Not Found', matchReason:'Too many candidates, no confident fuzzy match'});
+    confidence = bestScore;
+    best = bestPerson;
+    matchedOn = ['name_fuzzy'];
+    matchReason = 'Fuzzy name/company/title match (score ' + bestScore + ')';
+    if (multipleMatches) matchReason += ' — multiple candidates tied';
+  }
+
+  const pos = (best.positions && best.positions[0]) || null;
+  const addr = pos && pos.location;
+  const liL = (best.links||[]).find(l => /linkedin/i.test(l.url||''));
+  const status = BF_statusFromConf(confidence);
+
+  return Object.assign({}, row, {
+    ezekiaId:  best.id,
+    matchName: best.fullName||'',
     title:     pos ? pos.title||'' : '',
     company:   pos && pos.company ? pos.company.name||'' : '',
     location:  [addr ? addr.city : '', addr ? addr.country : ''].filter(Boolean).join(', '),
     linkedin:  liL ? liL.url||'' : '',
-    email:     p.emails && p.emails[0] ? p.emails[0].address||'' : '',
-    phone:     p.phones && p.phones[0] ? p.phones[0].number||'' : '',
+    email:     best.emails && best.emails[0] ? best.emails[0].address||'' : '',
+    phone:     best.phones && best.phones[0] ? best.phones[0].number||'' : '',
+    matchType: status,
+    matchConfidence: confidence,
+    matchReason: matchReason,
+    dataQualityFlags: flags,
+    matchedOn: matchedOn,
+    recommendedAction: BF_recommendedAction(status, flags)
   });
-  if (best.exactReason === 'linkedin' || best.exactReason === 'email') {
-    const key = best.exactReason, inVal = key === 'linkedin' ? inLI : inEmail;
-    const dups = people.filter(pp => {
-      if (key === 'linkedin') return BF_liId((pp.links||[]).find(l=>l.type==='linkedin') ? (pp.links||[]).find(l=>l.type==='linkedin').url : '') === inVal;
-      return (pp.emails||[]).some(e => (e.address||'').toLowerCase() === inVal);
-    });
-    res.matchType = dups.length > 1 ? 'Multiple Matches' : 'Exact';
-  } else if (best.exactReason === 'phone') {
-    res.matchType = 'Exact';
-  } else if (tooMany && best.score < 20) {
-    res.matchType = 'Too Many Matches';
-  } else if (best.score >= 20) {
-    res.matchType = 'Fuzzy';
-  } else {
-    res.matchType = 'Not Found'; res.ezekiaId = '';
-  }
-  return res;
 }
 
 async function BF_runMatch() {
@@ -4457,8 +4634,29 @@ async function BF_runMatch() {
   }
   document.getElementById('bf-run-btn').disabled = false;
   document.getElementById('bf-progress-wrap').classList.remove('bf-visible');
+  // §8 Batch-level duplicate detection
+  const _seenIds = {};
+  BF_results.forEach(function(r) {
+    if (!r.ezekiaId) return;
+    if (_seenIds[r.ezekiaId]) {
+      _seenIds[r.ezekiaId].push(r);
+    } else {
+      _seenIds[r.ezekiaId] = [r];
+    }
+  });
+  Object.values(_seenIds).forEach(function(group) {
+    if (group.length > 1) {
+      group.forEach(function(r) {
+        if (!r.dataQualityFlags) r.dataQualityFlags = [];
+        if (!r.dataQualityFlags.includes('possible_intra_batch_duplicate')) {
+          r.dataQualityFlags.push('possible_intra_batch_duplicate');
+        }
+        if (r.recommendedAction === 'AUTO_ADD') r.recommendedAction = 'REVIEW_BEFORE_ADD';
+      });
+    }
+  });
   document.getElementById('bf-status-text').textContent = 'Done — ' + total + ' rows';
-  document.getElementById('bf-results-title').textContent = 'Results (' + total + ' rows / ' + BF_results.filter(function(r){ return r.matchType==='Exact'; }).length + ' exact / ' + BF_results.filter(function(r){ return r.matchType==='Fuzzy'; }).length + ' fuzzy)';
+  document.getElementById('bf-results-title').textContent = 'Results (' + total + ' rows / ' + BF_results.filter(function(r){ return r.matchType==='Found'; }).length + ' found / ' + BF_results.filter(function(r){ return r.matchType==='Found – Review'; }).length + ' review / ' + BF_results.filter(function(r){ return r.matchType==='Fuzzy'; }).length + ' fuzzy)';
   BF_running = false;
 }
 
@@ -4467,29 +4665,46 @@ function BF_renderTable() {
   if (!tbody) return;
   let rows = BF_results.slice();
   if (BF_sortKey) {
-    rows.sort(function(a,b){ const av=(a[BF_sortKey]||'').toString().toLowerCase(), bv=(b[BF_sortKey]||'').toString().toLowerCase(); return av<bv?-BF_sortDir:av>bv?BF_sortDir:0; });
+    rows.sort(function(a,b){ const av=(a[BF_sortKey]||'').toString().toLowerCase(), bv=(b[BF_sortKey]||'').toString().toLowerCase(); return BF_sortDir*(av<bv?-1:av>bv?1:0); });
   }
   // Apply column filters
   Object.keys(BF_colFilters).forEach(function(key) {
     const vals = BF_colFilters[key];
-    if (!vals || vals.length === 0) return;
+    if (!vals || !vals.length) return;
     rows = rows.filter(function(r) {
-      const v = (r[key]||'').toString().trim();
-      if (vals.includes('__BLANK__') && v === '') return true;
+      const v = (r[key]||'').toString();
       return vals.includes(v);
     });
   });
   // Update count display
   const total = BF_results.length;
-  const showing = rows.length;
-  const countEl = document.getElementById('bf-row-count');
-  if (countEl) countEl.textContent = showing < total ? ('Showing ' + showing + ' of ' + total) : ('Total: ' + total);
-  const badges = {'Exact':'<span class="bf-badge bf-badge-exact">Exact</span>','Fuzzy':'<span class="bf-badge bf-badge-fuzzy">Fuzzy</span>','Multiple Matches':'<span class="bf-badge bf-badge-multiple">Multiple</span>','Too Many Matches':'<span class="bf-badge bf-badge-multiple">Too Many</span>','Not Found':'<span class="bf-badge bf-badge-notfound">Not Found</span>','Error':'<span class="bf-badge bf-badge-error">Error</span>','Searching...':'<span class="bf-badge bf-badge-searching">...</span>'};
+  const found = BF_results.filter(r => r.matchType === 'Found').length;
+  const review = BF_results.filter(r => r.matchType === 'Found – Review').length;
+  const fuzzy = BF_results.filter(r => r.matchType === 'Fuzzy').length;
+  const el = document.getElementById('bf-results-count');
+  if (el) el.textContent = total + ' rows / ' + found + ' found / ' + review + ' review / ' + fuzzy + ' fuzzy';
+  const badges = {
+    'Found':            '<span class="bf-badge bf-badge-exact">Found</span>',
+    'Found – Review': '<span class="bf-badge bf-badge-review">Found – Review</span>',
+    'Fuzzy':            '<span class="bf-badge bf-badge-fuzzy">Fuzzy</span>',
+    'Not Found':        '<span class="bf-badge bf-badge-notfound">Not Found</span>',
+    'Error':            '<span class="bf-badge bf-badge-error">Error</span>',
+  };
+  const actionBadges = {
+    'AUTO_ADD':          '<span class="bf-badge bf-badge-action-add">AUTO ADD</span>',
+    'REVIEW_BEFORE_ADD': '<span class="bf-badge bf-badge-action-review">REVIEW</span>',
+    'DO_NOT_ADD':        '<span class="bf-badge bf-badge-action-dna">DO NOT ADD</span>',
+    'CREATE_NEW':        '<span class="bf-badge bf-badge-action-new">CREATE NEW</span>',
+  };
   tbody.innerHTML = rows.map(function(r, idx){
     const li = r.linkedin ? '<a href="' + BF_esc(r.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>' : '&mdash;';
-    const ez = r.ezekiaId ? '<a href="https://app.ezekia.com/people/' + r.ezekiaId + '" target="_blank" rel="noopener">' + BF_esc(r.ezekiaId) + '</a>' : '&mdash;';
+    const ez = r.ezekiaId ? '<a href="https://app.ezekia.com/people/' + r.ezekiaId + '" target="_blank" rel="noopener">' + r.ezekiaId + '</a>' : '&mdash;';
     const badge = badges[r.matchType] || '<span class="bf-badge bf-badge-skipped">' + BF_esc(r.matchType) + '</span>';
-    return '<tr><td class="bf-cb"><input type="checkbox" class="bf-row-cb" data-id="' + (r.ezekiaId||'') + '" ' + (!r.ezekiaId?'disabled title="No Ezekia ID"':'') + '></td><td title="' + BF_esc(r.inputName) + '">' + BF_esc(r.inputName) + '</td><td title="' + BF_esc(r.matchName) + '">' + (BF_esc(r.matchName)||'&mdash;') + '</td><td title="' + BF_esc(r.title) + '">' + (BF_esc(r.title)||'&mdash;') + '</td><td title="' + BF_esc(r.company) + '">' + (BF_esc(r.company)||'&mdash;') + '</td><td>' + (BF_esc(r.location)||'&mdash;') + '</td><td>' + li + '</td><td>' + (BF_esc(r.email)||'&mdash;') + '</td><td>' + (BF_esc(r.phone)||'&mdash;') + '</td><td>' + ez + '</td><td>' + badge + '</td></tr>';
+    const actionBadge = actionBadges[r.recommendedAction] || '';
+    const dnaBadge = r.recommendedAction === 'DO_NOT_ADD' ? ' <span class="bf-badge bf-badge-action-dna" title="Do not add — review required">!</span>' : '';
+    const confPct = r.matchConfidence ? r.matchConfidence + '%' : '&mdash;';
+    const flagsHtml = r.dataQualityFlags && r.dataQualityFlags.length ? r.dataQualityFlags.map(function(f){ return '<span class="bf-dq-flag" title="' + BF_esc(f) + '">' + BF_esc(f.replace(/_/g,' ')) + '</span>'; }).join(' ') : '&mdash;';
+    return '<tr><td class="bf-cb"><input type="checkbox" class="bf-row-cb" data-id="' + (r.ezekiaId||'') + '" ' + (!r.ezekiaId?'disabled title="No Ezekia ID"':'') + '></td><td title="' + BF_esc(r.inputName) + '">' + BF_esc(r.inputName) + '</td><td title="' + BF_esc(r.matchName) + '">' + (BF_esc(r.matchName)||'&mdash;') + '</td><td title="' + BF_esc(r.title) + '">' + (BF_esc(r.title)||'&mdash;') + '</td><td title="' + BF_esc(r.company) + '">' + (BF_esc(r.company)||'&mdash;') + '</td><td>' + (BF_esc(r.location)||'&mdash;') + '</td><td>' + li + '</td><td>' + (BF_esc(r.email)||'&mdash;') + '</td><td>' + (BF_esc(r.phone)||'&mdash;') + '</td><td>' + ez + '</td><td>' + badge + '</td><td style="text-align:center;font-weight:700">' + confPct + '</td><td style="font-size:11px;max-width:220px;overflow:hidden;text-overflow:ellipsis" title="' + BF_esc(r.matchReason) + '">' + (BF_esc(r.matchReason)||'&mdash;') + '</td><td>' + flagsHtml + '</td><td>' + actionBadge + dnaBadge + '</td></tr>';
   }).join('');
 }
 function BF_sortBy(key) { if (BF_sortKey===key) BF_sortDir=-BF_sortDir; else { BF_sortKey=key; BF_sortDir=1; } BF_renderTable(); }
@@ -4587,8 +4802,19 @@ async function BF_pushToProject() {
 
 function BF_exportExcel() {
   if (!BF_results.length) return;
-  const ws = XLSX.utils.aoa_to_sheet([['Input Name','Matched Name','Current Position','Company','Location','LinkedIn','Email','Phone','Ezekia ID','Match Type']].concat(BF_results.map(function(r){ return [r.inputName,r.matchName,r.title,r.company,r.location,r.linkedin,r.email,r.phone,r.ezekiaId||'',r.matchType]; })));
-  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Bulk Finder');
+  const headers = ['Input Name','Matched Name','Current Position','Company','Location','LinkedIn','Email','Phone','Ezekia ID','Match Status','Confidence %','Match Reason','Data Quality Flags','Recommended Action'];
+  const ws = XLSX.utils.aoa_to_sheet([headers].concat(BF_results.map(function(r){
+    return [
+      r.inputName, r.matchName, r.title, r.company, r.location,
+      r.linkedin, r.email, r.phone, r.ezekiaId, r.matchType,
+      r.matchConfidence || 0,
+      r.matchReason || '',
+      r.dataQualityFlags ? r.dataQualityFlags.join('; ') : '',
+      r.recommendedAction || ''
+    ];
+  })));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Bulk Finder Results');
   XLSX.writeFile(wb, 'bulk-finder-results.xlsx');
 }
 
