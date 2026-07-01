@@ -178,9 +178,12 @@ body {
 
 /* ---- LOGO ---- */
 .logo-area {
-  padding: 1.25rem 1.25rem 1rem;
+  padding: 10px 20px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .logo {
   font-size: 15px;
@@ -1536,6 +1539,18 @@ tr.selected td { background: var(--accent-glow); }
 .bf-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .bf-table th{position:sticky;top:0;background:var(--thead-bg,#2c3e5c);color:var(--thead-text,#ffffff);font-size:11px;font-weight:600;text-transform:none;letter-spacing:.03em;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
 .bf-table th:hover{background:#0e83df;color:#fff}
+.bf-col-filter-btn{background:none;border:none;color:inherit;cursor:pointer;font-size:9px;opacity:0.6;padding:0 2px;vertical-align:middle;line-height:1}
+.bf-col-filter-btn:hover{opacity:1}
+.bf-col-filter-active{opacity:1;color:#ffcc44}
+.bf-col-filter-drop{position:absolute;z-index:99999;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;box-shadow:0 6px 20px rgba(0,0,0,0.35);min-width:180px;max-height:280px;overflow-y:auto;display:none;padding:6px 0}
+.bf-col-filter-drop.open{display:block}
+.bf-col-filter-search{width:calc(100% - 12px);margin:4px 6px 6px;padding:5px 8px;border-radius:5px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px;font-family:var(--font);outline:none}
+.bf-col-filter-opt{display:flex;align-items:center;gap:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bf-col-filter-opt:hover{background:var(--row-hover)}
+.bf-col-filter-opt input{cursor:pointer;flex-shrink:0}
+.bf-col-filter-footer{padding:6px 10px;border-top:1px solid var(--border);display:flex;gap:6px;justify-content:flex-end}
+.bf-col-filter-footer button{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;font-family:var(--font)}
+.bf-col-filter-footer button:hover{background:var(--bg4)}
 .bf-table td{padding:8px 10px;border-bottom:1px solid rgba(14,131,223,.08);color:var(--text);vertical-align:middle;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bf-table tr:hover td{background:var(--row-hover)}
 .bf-table td a{color:var(--accent);text-decoration:none}
@@ -1630,22 +1645,27 @@ tr.selected td { background: var(--accent-glow); }
     </div>
     <div class="bf-results-section" id="bf-results-section" style="display:none">
       <div class="bf-results-header">
-        <h3 id="bf-results-title">Results</h3>
+        <div style="display:flex;align-items:center;gap:14px">
+          <h3 id="bf-results-title">Results</h3>
+          <span id="bf-row-count" style="font-size:12px;color:var(--text3);font-weight:400"></span>
+        </div>
         <div class="bf-results-actions"><button class="bf-btn bf-btn-secondary" onclick="BF_exportExcel()" style="font-size:12px;padding:6px 14px">Export Excel</button></div>
       </div>
       <div class="bf-table-wrap">
         <table class="bf-table" id="bf-table">
           <thead><tr>
-            <th class="bf-cb"><input type="checkbox" id="bf-select-all" onchange="BF_toggleSelectAll(this)"></th>
-            <th onclick="BF_sortBy('inputName')">Name <span class="bf-sort-icon">&#8693;</span></th>
-            <th onclick="BF_sortBy('matchName')">Matched Name <span class="bf-sort-icon">&#8693;</span></th>
-            <th onclick="BF_sortBy('title')">Current Position <span class="bf-sort-icon">&#8693;</span></th>
-            <th onclick="BF_sortBy('company')">Company <span class="bf-sort-icon">&#8693;</span></th>
-            <th onclick="BF_sortBy('location')">Location <span class="bf-sort-icon">&#8693;</span></th>
-            <th>LinkedIn</th><th>Email</th><th>Phone</th>
-            <th onclick="BF_sortBy('ezekiaId')">Ezekia ID <span class="bf-sort-icon">&#8693;</span></th>
-            <th onclick="BF_sortBy('matchType')">Match <span class="bf-sort-icon">&#8693;</span></th>
-          </tr></thead>
+              <th class="bf-cb"><input type="checkbox" id="bf-select-all" onchange="BF_toggleSelectAll(this)"></th>
+              <th onclick="BF_sortBy('inputName')" style="min-width:140px">Name &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('inputName',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('matchName')" style="min-width:140px">Matched Name &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchName',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('title')" style="min-width:160px">Current Position &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('title',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('company')" style="min-width:140px">Company &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('company',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('location')" style="min-width:130px">Location &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('location',this)" title="Filter">&#9660;</button></th>
+              <th>LinkedIn</th>
+              <th onclick="BF_sortBy('email')" style="min-width:160px">Email &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('email',this)" title="Filter">&#9660;</button></th>
+              <th>Phone</th>
+              <th onclick="BF_sortBy('ezekiaId')" style="min-width:100px">Ezekia ID &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('ezekiaId',this)" title="Filter">&#9660;</button></th>
+              <th onclick="BF_sortBy('matchType')" style="min-width:100px">Match &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchType',this)" title="Filter">&#9660;</button></th>
+            </tr></thead>
           <tbody id="bf-tbody"></tbody>
         </table>
       </div>
@@ -1668,6 +1688,11 @@ tr.selected td { background: var(--accent-glow); }
         <span class="app-logo-text">Ezekia Lens</span>
       </div>
       <div class="logo-sub" id="sidebarSub">Sheffield Haworth &#183; candidate pipeline &#183; v2.0</div>
+    
+      <div class="bf-mode-nav bf-visible" id="bf-nav-in-pl">
+        <button class="bf-nav-btn bf-active-green" onclick="BF_goMode('pl')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15" style="vertical-align:-2px;margin-right:5px"><circle cx="3.5" cy="7" r="2"/><rect x="7" y="5.5" width="13.5" height="3" rx="1.5"/><circle cx="3.5" cy="12" r="2"/><rect x="7" y="10.5" width="13.5" height="3" rx="1.5"/><circle cx="3.5" cy="17" r="2"/><rect x="7" y="15.5" width="13.5" height="3" rx="1.5"/></svg> Project Listing</button>
+        <button class="bf-nav-btn bf-inactive" onclick="BF_goMode('bf')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15" style="vertical-align:-2px;margin-right:5px"><path d="M10.5 2a8.5 8.5 0 1 0 5.262 15.176l3.531 3.531a1 1 0 0 0 1.414-1.414l-3.531-3.531A8.5 8.5 0 0 0 10.5 2zm0 2a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm0 7c-2.206 0-4 1.12-4 2.5v.5h8v-.5c0-1.38-1.794-2.5-4-2.5z"/></svg> Bulk Finder</button>
+      </div>
     </div>
 
     <div class="sidebar-scroll">
@@ -1730,11 +1755,6 @@ tr.selected td { background: var(--accent-glow); }
 
   <!-- MAIN -->
   <div class="main">
-  <!-- BF:NAV-PL -->
-  <div class="bf-mode-nav bf-visible" id="bf-nav-in-pl">
-    <button class="bf-nav-btn bf-active-green" onclick="BF_goMode('pl')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15" style="vertical-align:-2px;margin-right:5px"><circle cx="3.5" cy="7" r="2"/><rect x="7" y="5.5" width="13.5" height="3" rx="1.5"/><circle cx="3.5" cy="12" r="2"/><rect x="7" y="10.5" width="13.5" height="3" rx="1.5"/><circle cx="3.5" cy="17" r="2"/><rect x="7" y="15.5" width="13.5" height="3" rx="1.5"/></svg> Project Listing</button>
-    <button class="bf-nav-btn bf-inactive" onclick="BF_goMode('bf')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15" style="vertical-align:-2px;margin-right:5px"><path d="M10.5 2a8.5 8.5 0 1 0 5.262 15.176l3.531 3.531a1 1 0 0 0 1.414-1.414l-3.531-3.531A8.5 8.5 0 0 0 10.5 2zm0 2a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm0 7c-2.206 0-4 1.12-4 2.5v.5h8v-.5c0-1.38-1.794-2.5-4-2.5z"/></svg> Bulk Finder</button>
-  </div>
     <!-- TOPBAR -->
     <div class="topbar">
       <div class="search-wrap">
@@ -4232,7 +4252,7 @@ function toggleSidebar() {
 // ============================================================
 // BULK FINDER — BF_ prefix, no collision with existing code
 // ============================================================
-let BF_results = [], BF_sortKey = '', BF_sortDir = 1, BF_fileData = null, BF_running = false;
+let BF_results = [], BF_sortKey = '', BF_sortDir = 1, BF_fileData = null, BF_running = false, BF_colFilters = {};
 
 function BF_goMode(mode) {
   const landing = document.getElementById('bf-landing');
@@ -4446,22 +4466,103 @@ async function BF_runMatch() {
 }
 
 function BF_renderTable() {
-  const tbody = document.getElementById('bf-tbody');
+  const tbody = document.querySelector('#bf-table tbody');
   if (!tbody) return;
   let rows = BF_results.slice();
   if (BF_sortKey) {
     rows.sort(function(a,b){ const av=(a[BF_sortKey]||'').toString().toLowerCase(), bv=(b[BF_sortKey]||'').toString().toLowerCase(); return av<bv?-BF_sortDir:av>bv?BF_sortDir:0; });
   }
-  const badges = {'Exact':'<span class="bf-badge bf-badge-exact">Exact</span>','Fuzzy':'<span class="bf-badge bf-badge-fuzzy">Fuzzy</span>','Multiple Matches':'<span class="bf-badge bf-badge-multiple">Multiple</span>','Too Many Matches':'<span class="bf-badge bf-badge-multiple">Too Many</span>','Not Found':'<span class="bf-badge bf-badge-notfound">Not Found</span>','Error':'<span class="bf-badge bf-badge-error">Error</span>','Searching...':'<span class="bf-badge bf-badge-searching">Searching</span>'};
+  // Apply column filters
+  Object.keys(BF_colFilters).forEach(function(key) {
+    const vals = BF_colFilters[key];
+    if (!vals || vals.length === 0) return;
+    rows = rows.filter(function(r) {
+      const v = (r[key]||'').toString().trim();
+      if (vals.includes('__BLANK__') && v === '') return true;
+      return vals.includes(v);
+    });
+  });
+  // Update count display
+  const total = BF_results.length;
+  const showing = rows.length;
+  const countEl = document.getElementById('bf-row-count');
+  if (countEl) countEl.textContent = showing < total ? ('Showing ' + showing + ' of ' + total) : ('Total: ' + total);
+  const badges = {'Exact':'<span class="bf-badge bf-badge-exact">Exact</span>','Fuzzy':'<span class="bf-badge bf-badge-fuzzy">Fuzzy</span>','Multiple Matches':'<span class="bf-badge bf-badge-multiple">Multiple</span>','Too Many Matches':'<span class="bf-badge bf-badge-multiple">Too Many</span>','Not Found':'<span class="bf-badge bf-badge-notfound">Not Found</span>','Error':'<span class="bf-badge bf-badge-error">Error</span>','Searching...':'<span class="bf-badge bf-badge-searching">...</span>'};
   tbody.innerHTML = rows.map(function(r, idx){
     const li = r.linkedin ? '<a href="' + BF_esc(r.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>' : '&mdash;';
-    const ez = r.ezekiaId ? '<a href="https://app.ezekia.com/people/' + r.ezekiaId + '" target="_blank" rel="noopener">' + r.ezekiaId + '</a>' : '&mdash;';
-    const badge = badges[r.matchType] || '<span class="bf-badge bf-badge-skipped">' + BF_esc(r.matchType||'') + '</span>';
-    return '<tr><td class="bf-cb"><input type="checkbox" class="bf-row-cb" data-id="' + (r.ezekiaId||'') + '" ' + (!r.ezekiaId?'disabled title="No Ezekia ID"':'') + '></td><td title="' + BF_esc(r.inputName) + '">' + BF_esc(r.inputName) + '</td><td title="' + BF_esc(r.matchName) + '">' + (BF_esc(r.matchName)||'&mdash;') + '</td><td title="' + BF_esc(r.title) + '">' + (BF_esc(r.title)||'&mdash;') + '</td><td title="' + BF_esc(r.company) + '">' + (BF_esc(r.company)||'&mdash;') + '</td><td>' + (BF_esc(r.location)||'&mdash;') + '</td><td>' + li + '</td><td title="' + BF_esc(r.email) + '">' + (BF_esc(r.email)||'&mdash;') + '</td><td>' + (BF_esc(r.phone)||'&mdash;') + '</td><td>' + ez + '</td><td>' + badge + '</td></tr>';
+    const ez = r.ezekiaId ? '<a href="https://app.ezekia.com/people/' + r.ezekiaId + '" target="_blank" rel="noopener">' + BF_esc(r.ezekiaId) + '</a>' : '&mdash;';
+    const badge = badges[r.matchType] || '<span class="bf-badge bf-badge-skipped">' + BF_esc(r.matchType) + '</span>';
+    return '<tr><td class="bf-cb"><input type="checkbox" class="bf-row-cb" data-id="' + (r.ezekiaId||'') + '" ' + (!r.ezekiaId?'disabled title="No Ezekia ID"':'') + '></td><td title="' + BF_esc(r.inputName) + '">' + BF_esc(r.inputName) + '</td><td title="' + BF_esc(r.matchName) + '">' + (BF_esc(r.matchName)||'&mdash;') + '</td><td title="' + BF_esc(r.title) + '">' + (BF_esc(r.title)||'&mdash;') + '</td><td title="' + BF_esc(r.company) + '">' + (BF_esc(r.company)||'&mdash;') + '</td><td>' + (BF_esc(r.location)||'&mdash;') + '</td><td>' + li + '</td><td>' + (BF_esc(r.email)||'&mdash;') + '</td><td>' + (BF_esc(r.phone)||'&mdash;') + '</td><td>' + ez + '</td><td>' + badge + '</td></tr>';
   }).join('');
 }
-
 function BF_sortBy(key) { if (BF_sortKey===key) BF_sortDir=-BF_sortDir; else { BF_sortKey=key; BF_sortDir=1; } BF_renderTable(); }
+// BF Column Filters
+function BF_openColFilter(key, btn) {
+  // Remove any existing dropdown
+  document.querySelectorAll('.bf-col-filter-drop').forEach(function(d){ d.remove(); });
+  // Build unique values for this column
+  const vals = {};
+  BF_results.forEach(function(r) {
+    const v = (r[key]||'').toString().trim();
+    vals[v === '' ? '__BLANK__' : v] = true;
+  });
+  const sorted = Object.keys(vals).sort(function(a,b){ if(a==='__BLANK__') return -1; if(b==='__BLANK__') return 1; return a.toLowerCase()<b.toLowerCase()?-1:1; });
+  const current = BF_colFilters[key] || [];
+  let html2 = '<input class="bf-col-filter-search" placeholder="Search..." oninput="BF_filterDropSearch(this)">';
+  sorted.forEach(function(v) {
+    const checked = current.length === 0 || current.includes(v) ? 'checked' : '';
+    const label = v === '__BLANK__' ? '<em style="color:var(--text3)">(blank)</em>' : BF_esc(v);
+    html2 += '<label class="bf-col-filter-opt"><input type="checkbox" value="' + BF_esc(v) + '" ' + checked + '>' + label + '</label>';
+  });
+  html2 += '<div class="bf-col-filter-footer"><button onclick="BF_selectAllColFilter(this)">All</button><button onclick="BF_clearColFilter(this)">None</button><button onclick="BF_applyColFilter('' + key + '',this)" style="background:var(--accent);color:#fff;border-color:var(--accent)">Apply</button></div>';
+  const drop = document.createElement('div');
+  drop.className = 'bf-col-filter-drop open';
+  drop.innerHTML = html2;
+  drop.dataset.key = key;
+  // Position below the button
+  const rect = btn.getBoundingClientRect();
+  drop.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+  drop.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 200) + 'px';
+  document.body.appendChild(drop);
+  // Close on outside click
+  setTimeout(function() {
+    document.addEventListener('click', function handler(e) {
+      if (!drop.contains(e.target)) { drop.remove(); document.removeEventListener('click', handler); }
+    });
+  }, 10);
+}
+function BF_filterDropSearch(inp) {
+  const q = inp.value.toLowerCase();
+  inp.closest('.bf-col-filter-drop').querySelectorAll('.bf-col-filter-opt').forEach(function(opt) {
+    opt.style.display = opt.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+function BF_selectAllColFilter(btn) {
+  btn.closest('.bf-col-filter-drop').querySelectorAll('input[type=checkbox]').forEach(function(cb){ cb.checked = true; });
+}
+function BF_clearColFilter(btn) {
+  btn.closest('.bf-col-filter-drop').querySelectorAll('input[type=checkbox]').forEach(function(cb){ cb.checked = false; });
+}
+function BF_applyColFilter(key, btn) {
+  const drop = btn.closest('.bf-col-filter-drop');
+  const checked = [...drop.querySelectorAll('input[type=checkbox]:checked')].map(function(cb){ return cb.value; });
+  const total = drop.querySelectorAll('input[type=checkbox]').length;
+  // If all checked = no filter; if none checked = no filter (show all)
+  if (checked.length === 0 || checked.length === total) {
+    delete BF_colFilters[key];
+  } else {
+    BF_colFilters[key] = checked;
+  }
+  // Update filter button visual
+  document.querySelectorAll('.bf-col-filter-btn').forEach(function(b) {
+    const thKey = b.closest('th') && b.closest('th').getAttribute('onclick');
+    if (thKey && thKey.includes("'" + key + "'")) {
+      b.classList.toggle('bf-col-filter-active', !!BF_colFilters[key]);
+    }
+  });
+  drop.remove();
+  BF_renderTable();
+}
 function BF_toggleSelectAll(cb) { document.querySelectorAll('.bf-row-cb:not(:disabled)').forEach(function(c){ c.checked=cb.checked; }); }
 
 async function BF_pushToProject() {
