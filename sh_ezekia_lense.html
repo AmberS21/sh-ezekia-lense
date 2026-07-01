@@ -4514,7 +4514,7 @@ function BF_openColFilter(key, btn) {
     const label = v === '__BLANK__' ? '<em style="color:var(--text3)">(blank)</em>' : BF_esc(v);
     html2 += '<label class="bf-col-filter-opt"><input type="checkbox" value="' + BF_esc(v) + '" ' + checked + '>' + label + '</label>';
   });
-  html2 += '<div class="bf-col-filter-footer"><button onclick="BF_selectAllColFilter(this)">All</button><button onclick="BF_clearColFilter(this)">None</button><button onclick="BF_applyColFilter('' + key + '',this)" style="background:var(--accent);color:#fff;border-color:var(--accent)">Apply</button></div>';
+  html2 += '<div class="bf-col-filter-footer"><button onclick="BF_selectAllColFilter(this)">All</button><button onclick="BF_clearColFilter(this)">None</button><button onclick="BF_applyColFilter(\'' + key + '\',this)" style="background:var(--accent);color:#fff;border-color:var(--accent)">Apply</button></div>';
   const drop = document.createElement('div');
   drop.className = 'bf-col-filter-drop open';
   drop.innerHTML = html2;
