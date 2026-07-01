@@ -1528,14 +1528,14 @@ tr.selected td { background: var(--accent-glow); }
 .bf-progress-bar-inner{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;width:0}
 .bf-status-text{font-size:12px;color:var(--text2);min-width:160px}
 /* ── BF: Results ── */
-.bf-results-section{padding:0;overflow:hidden}
+.bf-results-section{padding:0;overflow:visible;flex-shrink:0}
 .bf-results-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
 .bf-results-header h3{font-size:14px;font-weight:600;color:var(--text);margin:0}
 .bf-results-actions{display:flex;gap:8px;align-items:center}
 .bf-table-wrap{overflow-x:auto;overflow-y:auto;max-height:55vh}
 .bf-table{width:100%;border-collapse:collapse;font-size:12.5px}
-.bf-table th{position:sticky;top:0;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
-.bf-table th:hover{color:var(--text)}
+.bf-table th{position:sticky;top:0;background:var(--thead-bg,#2c3e5c);color:var(--thead-text,#ffffff);font-size:11px;font-weight:600;text-transform:none;letter-spacing:.03em;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+.bf-table th:hover{background:#0e83df;color:#fff}
 .bf-table td{padding:8px 10px;border-bottom:1px solid rgba(14,131,223,.08);color:var(--text);vertical-align:middle;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bf-table tr:hover td{background:var(--row-hover)}
 .bf-table td a{color:var(--accent);text-decoration:none}
