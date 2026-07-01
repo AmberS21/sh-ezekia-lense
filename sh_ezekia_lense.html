@@ -4345,6 +4345,8 @@ function BF_parseInput() {
   for (let i = 1; i < raw.length; i++) {
     const r = raw[i], name = col.name >= 0 ? (r[col.name]||'').trim() : '';
     if (!name) continue;
+    // Skip rows that look like a header row (e.g. "Name", "Full Name", "Candidate")
+    if (/^(name|full.?name|candidate|candidate.?name|first.?name|contact)$/i.test(name)) continue;
     out.push({
       inputName:    name,
       inputTitle:   col.title    >= 0 ? (r[col.title]   ||'').trim() : '',
