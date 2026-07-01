@@ -4808,7 +4808,7 @@ function BF_toggleSelectAll(cb) { document.querySelectorAll('.bf-row-cb:not(:dis
 async function BF_pushToProject() {
   const url = document.getElementById('bf-push-url').value.trim();
   if (!url) { alert('Please paste an Ezekia project or assignment URL.'); return; }
-  const parsed = (typeof parseEzekiaUrl === 'function') ? parseEzekiaUrl(url) : (function(){ const m=(url+'').match(/[/](assignments?|projects?)[/]([0-9]+)/i); return m?{entityType:m[1].replace(/s$/,'').toLowerCase(),entityId:m[2],entityName:''}:null; })();
+  const parsed = (typeof parseEzekiaUrl === 'function') ? parseEzekiaUrl(url) : (function(){ const m=(url+'').match(/[#/](assignments?|projects?|opportunities?|lists?)[/](\d+)/i); return m?{entityType:m[1].replace(/s$/,'').toLowerCase(),entityId:m[2],entityName:''}:null; })();
   if (!parsed) { alert('Could not read that URL.'); return; }
   const ids = Array.from(document.querySelectorAll('.bf-row-cb:checked')).map(function(c){ return parseInt(c.dataset.id); }).filter(Boolean);
   if (!ids.length) { alert('No candidates selected.'); return; }
@@ -4817,7 +4817,7 @@ async function BF_pushToProject() {
   const el = document.getElementById('bf-push-result');
   el.className = 'bf-push-result bf-visible'; el.textContent = 'Sending ' + ids.length + ' candidates...';
   try {
-    const r = await fetch(window._BF_BASE + '/v4/projects/candidates', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({candidates:ids, projectId:parseInt(parsed.entityId), projectName:parsed.entityName||'', label:parsed.entityType==='assignment'?'assignment':'project'})});
+    const r = await fetch(window._BF_BASE + '/v4/projects/candidates', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({candidates:ids, projectId:parseInt(parsed.entityId), projectName:parsed.entityName||'', label:parsed.entityType})});
     if (r.status===404) throw new Error('Project not found — check the URL');
     if (!r.ok) throw new Error('API error ' + r.status);
     const d = await r.json();
