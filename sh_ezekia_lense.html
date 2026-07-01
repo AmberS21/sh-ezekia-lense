@@ -4296,6 +4296,10 @@ function BF_onDrop(e) {
 }
 function BF_onFileSelect(e) { if (e.target.files[0]) BF_loadFile(e.target.files[0]); }
 function BF_loadFile(file) {
+  // Reset results area for fresh file
+  const _prevTb = document.getElementById('bf-tbody'); if (_prevTb) _prevTb.innerHTML = '';
+  document.getElementById('bf-results-section').style.display = 'none';
+  const _prevRt = document.getElementById('bf-results-title'); if (_prevRt) _prevRt.textContent = '';
   const reader = new FileReader();
   reader.onload = function(ev) {
     try {
@@ -4829,6 +4833,8 @@ function BF_clearAll() {
   document.getElementById('bf-textarea').value = ''; BF_fileData=null; BF_results=[];
   document.getElementById('bf-file-name').textContent='';
   document.getElementById('bf-results-section').style.display='none';
+  const _bfTb = document.getElementById('bf-tbody'); if (_bfTb) _bfTb.innerHTML = '';
+  const _bfRt = document.getElementById('bf-results-title'); if (_bfRt) _bfRt.textContent = '';
   document.getElementById('bf-push-section').style.display='none';
   document.getElementById('bf-status-text').textContent='';
   document.getElementById('bf-progress-bar').style.width='0%';
