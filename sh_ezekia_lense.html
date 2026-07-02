@@ -2667,10 +2667,8 @@ async function executePush() {
           }
 
         } else if (change.field === 'industry_codes') {
-          // POST /v4/people/{id}/current-status with full industry objects
-          const industries = (change.newValue || []).map(function(ind) {
-            return { id: ind.id, name: ind.name || '', value: ind.value || ind.name || '', parent_id: ind.parent_id || null };
-          });
+          // POST /v4/people/{id}/current-status — body: { industries: [id1, id2, ...] } (IDs only, per API spec)
+          const industries = (change.newValue || []).map(function(ind) { return ind.id; });
           const indResp = await fetch(BASE + '/v4/people/' + change.cid + '/current-status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
