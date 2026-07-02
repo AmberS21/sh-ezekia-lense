@@ -4380,7 +4380,7 @@ async function BF_matchOne(row) {
     let page = 1, all = [], lastPage = 1;
     do {
       const r = await fetch(_B + '/v4/people?q=' + encodeURIComponent(row.inputName) + '&per_page=15&page=' + page);
-      if (!r.ok) throw new Error('API ' + r.status);
+      if (!r.ok) { if(r.status===429){await new Promise(x=>setTimeout(x,1500)); const rr=await fetch(r.url); if(!rr.ok) throw new Error('API '+rr.status); const dd=await rr.json(); all=all.concat(dd.data||[]); lastPage=dd.meta?.lastPage||1; continue;} throw new Error('API '+r.status); }
       const d = await r.json();
       all = all.concat(d.data || []);
       lastPage = d.meta.lastPage || 1;
@@ -4455,10 +4455,10 @@ function BF_fuzzyScore(row, p) {
   // §5 fuzzy weights: Surname 35, Given 20, Company 25, Title 10, Location 10
   const iP = BF_splitName(row.inputName);
   const pos = p.positions && p.positions[0];
-  const addr = pos && pos.location;
+  const addr = (p.addresses||[])[0];
   const ezCompany = pos && pos.company ? (pos.company.name||'') : '';
   const ezTitle = pos ? (pos.title||'') : '';
-  const ezLoc = [addr ? addr.city : '', addr ? addr.country : ''].filter(Boolean).join(', ');
+  const ezLoc = [addr&&(addr.city||addr.state||''), addr&&(addr.country||'')].filter(Boolean).join(', ');
   const eP = BF_splitName(p.fullName||'');
   let score = 0;
   // Surname (35)
@@ -4563,15 +4563,15 @@ function BF_score(row, people, tooMany) {
 
   if (conflictFlag) {
     // Return the strongest match but flag the conflict
-    const pos = (tier1Person.positions && tier1Person.positions[0]) || null;
-    const addr = pos && pos.location;
+    const pos = ((tier1Person.profile&&tier1Person.profile.positions&&tier1Person.profile.positions[0])) || null;
+    const addr = (tier1Person.addresses||[])[0];
     const liL = (tier1Person.links||[]).find(l => /linkedin/i.test(l.url||''));
     const res = Object.assign({}, row, {
       ezekiaId:  tier1Person.id,
       matchName: tier1Person.fullName||'',
       title:     pos ? pos.title||'' : '',
       company:   pos && pos.company ? pos.company.name||'' : '',
-      location:  [addr ? addr.city : '', addr ? addr.country : ''].filter(Boolean).join(', '),
+      location:  [addr&&(addr.city||addr.state||''), addr&&(addr.country||'')].filter(Boolean).join(', '),
       linkedin:  liL ? liL.url||'' : '',
       email:     tier1Person.emails && tier1Person.emails[0] ? tier1Person.emails[0].address||'' : '',
       phone:     tier1Person.phones && tier1Person.phones[0] ? tier1Person.phones[0].number||'' : '',
@@ -4614,8 +4614,8 @@ function BF_score(row, people, tooMany) {
     if (multipleMatches) matchReason += ' — multiple candidates tied';
   }
 
-  const pos = (best.positions && best.positions[0]) || null;
-  const addr = pos && pos.location;
+  const pos = ((best.profile&&best.profile.positions&&best.profile.positions[0])) || null;
+  const addr = (best.addresses||[])[0];
   const liL = (best.links||[]).find(l => /linkedin/i.test(l.url||''));
   const status = BF_statusFromConf(confidence);
 
@@ -4624,7 +4624,7 @@ function BF_score(row, people, tooMany) {
     matchName: confidence >= 60 ? best.fullName||'' : '',
     title:     pos ? pos.title||'' : '',
     company:   pos && pos.company ? pos.company.name||'' : '',
-    location:  [addr ? addr.city : '', addr ? addr.country : ''].filter(Boolean).join(', '),
+    location:  [addr&&(addr.city||addr.state||''), addr&&(addr.country||'')].filter(Boolean).join(', '),
     linkedin:  liL ? liL.url||'' : '',
     email:     best.emails && best.emails[0] ? best.emails[0].address||'' : '',
     phone:     best.phones && best.phones[0] ? best.phones[0].number||'' : '',
