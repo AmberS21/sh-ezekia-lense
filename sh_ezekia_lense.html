@@ -1566,7 +1566,7 @@ tr.selected td { background: var(--accent-glow); }
 .bf-badge-action-review{background:rgba(245,166,35,.18);color:#f5a623;font-size:9.5px}
 .bf-badge-action-dna{background:rgba(240,78,78,.15);color:#f04e4e;font-size:9.5px}
 .bf-badge-action-new{background:rgba(14,131,223,.15);color:var(--accent);font-size:9.5px}
-.bf-dq-flag{display:inline-block;padding:1px 6px;border-radius:8px;font-size:9.5px;font-weight:600;background:rgba(240,78,78,.12);color:#f04e4e;margin:1px 2px}
+
 /* ── BF: Push ── */
 .bf-push-section{padding:16px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .bf-push-label{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
@@ -1671,7 +1671,6 @@ tr.selected td { background: var(--accent-glow); }
               <th onclick="BF_sortBy('matchType')">Match &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchType',this)">&#9660;</button></th>
               <th onclick="BF_sortBy('matchConfidence')" style="min-width:80px">Conf% &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchConfidence',this)">&#9660;</button></th>
               <th style="min-width:180px">Match Reason <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('matchReason',this)">&#9660;</button></th>
-              <th style="min-width:130px">Data Quality <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('dataQualityFlags',this)">&#9660;</button></th>
               <th onclick="BF_sortBy('recommendedAction')">Action &#8693; <button class="bf-col-filter-btn" onclick="event.stopPropagation();BF_openColFilter('recommendedAction',this)">&#9660;</button></th>
             </tr></thead>
           <tbody id="bf-tbody"></tbody>
@@ -4731,8 +4730,7 @@ function BF_renderTable() {
     const actionBadge = actionBadges[r.recommendedAction] || '';
     const dnaBadge = r.recommendedAction === 'DO_NOT_ADD' ? ' <span class="bf-badge bf-badge-action-dna" title="Do not add — review required">!</span>' : '';
     const confPct = r.matchConfidence ? r.matchConfidence + '%' : '&mdash;';
-    const flagsHtml = r.dataQualityFlags && r.dataQualityFlags.length ? r.dataQualityFlags.map(function(f){ return '<span class="bf-dq-flag" title="' + BF_esc(f) + '">' + BF_esc(f.replace(/_/g,' ')) + '</span>'; }).join(' ') : '&mdash;';
-    return '<tr><td class="bf-cb"><input type="checkbox" class="bf-row-cb" data-id="' + (r.ezekiaId||'') + '" ' + (!r.ezekiaId?'disabled title="No Ezekia ID"':'') + '></td><td title="' + BF_esc(r.inputName) + '">' + BF_esc(r.inputName) + '</td><td title="' + BF_esc(r.matchName) + '">' + (BF_esc(r.matchName)||'&mdash;') + '</td><td title="' + BF_esc(r.title) + '">' + (BF_esc(r.title)||'&mdash;') + '</td><td title="' + BF_esc(r.company) + '">' + (BF_esc(r.company)||'&mdash;') + '</td><td>' + (BF_esc(r.location)||'&mdash;') + '</td><td>' + li + '</td><td>' + (BF_esc(r.email)||'&mdash;') + '</td><td>' + (BF_esc(r.phone)||'&mdash;') + '</td><td>' + ez + '</td><td>' + badge + '</td><td style="text-align:center;font-weight:700">' + confPct + '</td><td style="font-size:11px;max-width:220px;overflow:hidden;text-overflow:ellipsis" title="' + BF_esc(r.matchReason) + '">' + (BF_esc(r.matchReason)||'&mdash;') + '</td><td>' + flagsHtml + '</td><td>' + actionBadge + dnaBadge + '</td></tr>';
+    return '<tr><td class="bf-cb"><input type="checkbox" class="bf-row-cb" data-id="' + (r.ezekiaId||'') + '" ' + (!r.ezekiaId?'disabled title="No Ezekia ID"':'') + '></td><td title="' + BF_esc(r.inputName) + '">' + BF_esc(r.inputName) + '</td><td title="' + BF_esc(r.matchName) + '">' + (BF_esc(r.matchName)||'&mdash;') + '</td><td title="' + BF_esc(r.title) + '">' + (BF_esc(r.title)||'&mdash;') + '</td><td title="' + BF_esc(r.company) + '">' + (BF_esc(r.company)||'&mdash;') + '</td><td>' + (BF_esc(r.location)||'&mdash;') + '</td><td>' + li + '</td><td>' + (BF_esc(r.email)||'&mdash;') + '</td><td>' + (BF_esc(r.phone)||'&mdash;') + '</td><td>' + ez + '</td><td>' + badge + '</td><td style="text-align:center;font-weight:700">' + confPct + '</td><td style="font-size:11px;max-width:220px;overflow:hidden;text-overflow:ellipsis" title="' + BF_esc(r.matchReason) + '">' + (BF_esc(r.matchReason)||'&mdash;') + '</td><td>' + actionBadge + dnaBadge + '</td></tr>';
   }).join('');
 }
 function BF_sortBy(key) { if (BF_sortKey===key) BF_sortDir=-BF_sortDir; else { BF_sortKey=key; BF_sortDir=1; } BF_renderTable(); }
@@ -4830,14 +4828,13 @@ async function BF_pushToProject() {
 
 function BF_exportExcel() {
   if (!BF_results.length) return;
-  const headers = ['Input Name','Matched Name','Current Position','Company','Location','LinkedIn','Email','Phone','Ezekia ID','Match Status','Confidence %','Match Reason','Data Quality Flags','Recommended Action'];
+  const headers = ['Input Name','Matched Name','Current Position','Company','Location','LinkedIn','Email','Phone','Ezekia ID','Match Status','Confidence %','Match Reason','Recommended Action'];
   const ws = XLSX.utils.aoa_to_sheet([headers].concat(BF_results.map(function(r){
     return [
       r.inputName, r.matchName, r.title, r.company, r.location,
       r.linkedin, r.email, r.phone, r.ezekiaId, r.matchType,
       r.matchConfidence || 0,
       r.matchReason || '',
-      r.dataQualityFlags ? r.dataQualityFlags.join('; ') : '',
       r.recommendedAction || ''
     ];
   })));
