@@ -4620,8 +4620,8 @@ function BF_score(row, people, tooMany) {
   const status = BF_statusFromConf(confidence);
 
   return Object.assign({}, row, {
-    ezekiaId:  best.id,
-    matchName: best.fullName||'',
+    ezekiaId:  confidence >= 60 ? best.id : '',
+    matchName: confidence >= 60 ? best.fullName||'' : '',
     title:     pos ? pos.title||'' : '',
     company:   pos && pos.company ? pos.company.name||'' : '',
     location:  [addr ? addr.city : '', addr ? addr.country : ''].filter(Boolean).join(', '),
