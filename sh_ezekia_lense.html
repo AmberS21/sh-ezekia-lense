@@ -4725,7 +4725,7 @@ function BF_renderTable() {
   };
   tbody.innerHTML = rows.map(function(r, idx){
     const li = r.linkedin ? '<a href="' + BF_esc(r.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>' : '&mdash;';
-    const ez = r.ezekiaId ? '<a href="https://app.ezekia.com/people/' + r.ezekiaId + '" target="_blank" rel="noopener">' + r.ezekiaId + '</a>' : '&mdash;';
+    const ez = r.ezekiaId ? '<a href="https://ezekia.com/#/people/' + r.ezekiaId + '" target="_blank" rel="noopener">' + r.ezekiaId + '</a>' : '&mdash;';
     const badge = badges[r.matchType] || '<span class="bf-badge bf-badge-skipped">' + BF_esc(r.matchType) + '</span>';
     const actionBadge = actionBadges[r.recommendedAction] || '';
     const dnaBadge = r.recommendedAction === 'DO_NOT_ADD' ? ' <span class="bf-badge bf-badge-action-dna" title="Do not add — review required">!</span>' : '';
