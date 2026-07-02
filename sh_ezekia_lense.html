@@ -4611,6 +4611,12 @@ function BF_score(row, people, tooMany) {
     matchedOn = ['name_fuzzy'];
     matchReason = 'Fuzzy name/company/title match (score ' + bestScore + ')';
     if (multipleMatches) matchReason += ' — multiple candidates tied';
+    // Sole exact-name match — only 1 candidate returned AND name normalises identically → escalate to Found (95)
+    if (people.length === 1 && !multipleMatches && BF_normName(best.fullName) === BF_normName(row.inputName)) {
+      confidence = 95;
+      matchedOn = ['name_sole_exact'];
+      matchReason = 'Sole exact name match (only record in Ezekia with this name)';
+    }
   }
 
   const pos = ((best.profile&&best.profile.positions&&best.profile.positions[0])) || null;
