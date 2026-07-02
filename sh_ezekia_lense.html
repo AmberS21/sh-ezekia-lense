@@ -4648,7 +4648,7 @@ async function BF_runMatch() {
   document.getElementById('bf-push-section').style.display = '';
   document.getElementById('bf-run-btn').disabled = true;
   document.getElementById('bf-progress-wrap').classList.add('bf-visible');
-  const BATCH = 6, total = rows.length;
+  const BATCH = 3, total = rows.length;
   let done = 0;
   for (let i = 0; i < rows.length; i += BATCH) {
     const batch = rows.slice(i, i + BATCH);
@@ -4658,7 +4658,7 @@ async function BF_runMatch() {
     document.getElementById('bf-progress-bar').style.width = Math.round((done/total)*100) + '%';
     document.getElementById('bf-status-text').textContent = done + ' / ' + total + ' processed';
     BF_renderTable();
-    if (i + BATCH < rows.length) await new Promise(function(r){ setTimeout(r, 250); });
+    if (i + BATCH < rows.length) await new Promise(function(r){ setTimeout(r, 400); });
   }
   document.getElementById('bf-run-btn').disabled = false;
   document.getElementById('bf-progress-wrap').classList.remove('bf-visible');
