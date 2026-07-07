@@ -1310,6 +1310,11 @@ tr.selected td { background: var(--accent-glow); }
   overflow: hidden; text-overflow: ellipsis;
 }
 .ind-tag-empty { color: var(--text3); background: transparent; border-style: dashed; }
+  /* Industry cell: collapse to fixed height, expand full detail on hover (same pattern as Notes/Summary) */
+  td:has(.ind-cell) { position: relative; }
+  td:has(.ind-cell) .ind-cell { max-height: 38px; overflow: hidden; }
+  td:has(.ind-cell):hover { overflow: visible; z-index: 200; }
+  td:has(.ind-cell):hover .ind-cell { max-height: 200px; overflow-y: auto; position: relative; background: var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.35); border-radius: 6px; padding: 4px; }
 
 /* \2500 \2500  Industry editor modal \2500 \2500  */
 .ind-modal-overlay {
