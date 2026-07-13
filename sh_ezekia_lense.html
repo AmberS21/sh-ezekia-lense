@@ -4340,7 +4340,7 @@ function BF_parseInput() {
     linkedin: hdr.findIndex(h => h.includes('linkedin') || (h.includes('link') && !h.includes('linked'))),
     email:    hdr.findIndex(h => h.includes('email') || h.includes('mail')),
     phone:    hdr.findIndex(h => h.includes('phone') || h.includes('mobile')),
-    location: hdr.findIndex(h => h.includes('location') || h.includes('city') || h.includes('country')),
+    location: hdr.findIndex(h => h.includes('location') || h.includes('city') || h.includes('country')), id: hdr.findIndex(h => h === 'id' || h.includes('ezekiaid') || h.includes('uniqueid') || h.includes('candidateid') || h.includes('personid')),
   };
   if (col.name < 0) { alert('No "Name" column found in header row. Please include a Name column.'); return []; }
   const out = [];
@@ -4356,7 +4356,7 @@ function BF_parseInput() {
       inputLinkedIn:col.linkedin >= 0 ? (r[col.linkedin]||'').trim() : '',
       inputEmail:   col.email    >= 0 ? (r[col.email]   ||'').trim() : '',
       inputPhone:   col.phone    >= 0 ? (r[col.phone]   ||'').trim() : '',
-      inputLocation:col.location >= 0 ? (r[col.location]||'').trim() : '',
+      inputLocation:col.location >= 0 ? (r[col.location]||'').trim() : '', inputId: col.id >= 0 ? (r[col.id]||'').trim() : '',
     });
   }
   return out;
@@ -4378,7 +4378,7 @@ function BF_esc(s) { return (s||'').toString().replace(/&/g,'&amp;').replace(/</
 async function BF_matchOne(row) {
   const _B = window._BF_BASE;
   try {
-    // Step 1: Search by name
+    if (row.inputId && /^\d+$/.test(String(row.inputId).trim())) { let p = null; try { const idR = await fetch(_B + '/v4/people/' + encodeURIComponent(row.inputId.trim())); if (idR.ok) { const raw = await idR.json(); p = (raw && raw.data) ? raw.data : raw; if (!p || !p.id) p = null; } } catch (eId) { p = null; } if (p) { const pos = (p.profile && p.profile.positions && p.profile.positions[0]) || null; const addr = (p.addresses||[])[0]; const liL = (p.links||[]).find(l => /linkedin/i.test(l.url||'')); return Object.assign({}, row, { ezekiaId: p.id, matchName: p.fullName || '', title: pos ? (pos.title||'') : '', company: (pos && pos.company) ? (pos.company.name||'') : '', location: [addr && (addr.city||addr.state||''), addr && (addr.country||'')].filter(Boolean).join(', '), linkedin: liL ? (liL.url||'') : '', email: (p.emails && p.emails[0]) ? (p.emails[0].address||'') : '', phone: (p.phones && p.phones[0]) ? (p.phones[0].number||'') : '', matchType: 'Found', matchConfidence: 100, matchReason: 'Matched directly via Ezekia ID already in your sheet', dataQualityFlags: [], matchedOn: ['ezekia_id'], recommendedAction: 'AUTO_ADD' }); } return Object.assign({}, row, { ezekiaId: '', matchName: '', title: '', company: '', location: '', linkedin: '', email: '', phone: '', matchType: 'Not Found', matchConfidence: 0, matchReason: 'Ezekia ID in sheet did not match any record', dataQualityFlags: [], matchedOn: [], recommendedAction: 'CREATE_NEW' }); } // Step 1: Search by name
     let page = 1, all = [], lastPage = 1;
     do {
       const r = await fetch(_B + '/v4/people?q=' + encodeURIComponent(row.inputName) + '&per_page=15&page=' + page);
