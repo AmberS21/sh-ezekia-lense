@@ -2166,13 +2166,14 @@ const COLUMNS = [
   { key: 'notes',           label: 'Progress Notes',   editable: true },
   { key: 'summary',         label: 'Summary',          editable: true },
   { key: 'industry_codes', label: 'Industry'                        },
-  { key: 'fit_to_profile', label: 'Fit to Profile', editable: true       },
+  { key: 'fit_to_profile', label: 'Fit to Profile', editable: true       }, { key: 'person_tag', label: 'Person Tag', badge: true, editable: true },
 ];
 
-let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender','fit_to_profile']);;
+let VISIBLE = new Set(['name','status','stage','current_title','current_company','location','consultant','rating','notes','summary','last_updated','gender','fit_to_profile','person_tag']);;
 
 // \u2500\u2500 PIPELINE TAGS \u2500\u2500
-const PIPELINE_TAGS = [
+const PERSON_TAGS = [{id:579,text:'BD Enrich - TEMP',color:'#000000'},{id:412,text:'Not Match',color:'#FF5722'},{id:396,text:'Fetch Contact Info - Zoominfo',color:'#673AB7'},{id:395,text:'Contact Info Not Found - Zoominfo',color:'#E91E63'},{id:394,text:'Contact Info Found - Zoominfo',color:'#4CAF50'},{id:377,text:'Enhance Profile',color:'#009688'},{id:363,text:'Fresh Profile',color:'#8BC34A'},{id:365,text:'Possible Match Not Found',color:'#7E57C2'},{id:364,text:'Possible Match',color:'#0288D1'},{id:198,text:'Placed',color:'#1565C0'},{id:195,text:'Candidate',color:'#BA68C8'},{id:71,text:'Client Contact',color:'#0097A7'},{id:197,text:'Partner',color:'#03A9F4'},{id:196,text:'Supplier',color:'#2196F3'},{id:70,text:'General Source',color:'#1e88e5'},{id:361,text:'Referral',color:'#03A9F4'},{id:360,text:'Deceased',color:'#78909C'},{id:359,text:'Ex-SH Employee',color:'#78909C'},{id:391,text:'GDPR - Informed',color:'#4CAF50'},{id:392,text:'GDPR - Not Yet Informed',color:'#FFA000'},{id:200,text:'Do Not Mailshot',color:'#C62828'},{id:199,text:'Do Not Contact',color:'#C62828'}];
+  const PIPELINE_TAGS = [
   'Longlist',
   'Short List and/or CV Sent to Client',
   'Carve out List',
@@ -2483,6 +2484,7 @@ async function enrichOne(_bc) {
     function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],    fit_to_profile: fitToProfile ? (fitToProfile.value || '') : '',
     _fitToProfileRecordId: fitToProfile ? fitToProfile.id : null,
     _fitToProfileFieldId: fitToProfile ? (fitToProfile.field && fitToProfile.field.id) : null,
+    person_tag: (function() { var _pt = (person.owner && person.owner.tags) || []; if (!_pt.length) return ''; var _sorted = _pt.slice().sort(function(a, b) { return new Date(b.addedAt || 0) - new Date(a.addedAt || 0); }); return _sorted[0].text || ''; })(),
 
   };
 }
@@ -2547,7 +2549,7 @@ function openPushModal() {
   if (PENDING.size === 0) return;
   const changes = [...PENDING.values()];
 
-  const fieldLabel = { notes: 'Progress Notes', summary: 'Summary', status: 'Pipeline Tag' };
+  const fieldLabel = { notes: 'Progress Notes', summary: 'Summary', status: 'Pipeline Tag', person_tag: 'Person Tag' };
   const listHtml = changes.map(c => {
     const origV = c.oldValue !== undefined ? c.oldValue : '';
     const newV  = c.newValue || '';
@@ -2721,7 +2723,7 @@ async function executePush() {
             body: JSON.stringify({ customValues: [gdrEntry] })
           });
           if (!gdrPutResp.ok) throw new Error('PUT gender failed: ' + gdrPutResp.status);
-        }
+        } else if (change.field === 'person_tag') { if (!change.newValue) { console.warn('[executePush] person_tag change has no newValue, skipping', change.cid); } else { var ptTag = PERSON_TAGS.find(function(t) { return t.text === change.newValue; }); if (!ptTag) throw new Error('Unknown person tag: ' + change.newValue); var ptResp = await fetch(BASE + '/people/tags', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ people: [change.cid], tags: [ptTag.id] }) }); if (!ptResp.ok) throw new Error('POST people/tags failed: ' + ptResp.status); } }
 
         // Clear stored original so next edit tracks from the new value
         const cand = ALL.find(function(c) { return c.id === change.cid; });
@@ -2842,7 +2844,10 @@ function tagColor(tag) {
   return map[tag] || '#888';
 }
 
-function toggleTagDropdown(cid, event) {
+function personTagColor(tag){const found=PERSON_TAGS.find(function(t){return t.text===tag;});return found?found.color:'#888';}
+  function togglePersonTagDropdown(cid,event){event.stopPropagation();const dd=document.getElementById('ptag-dd-'+cid);if(!dd)return;const wasOpen=dd.classList.contains('open');document.querySelectorAll('.tag-dropdown.open').forEach(function(d){d.classList.remove('open');});if(!wasOpen)dd.classList.add('open');}
+  function selectPersonTag(cid,newTag,event){event.stopPropagation();const dd=document.getElementById('ptag-dd-'+cid);if(dd)dd.classList.remove('open');const cand=ALL.find(function(c){return c.id===cid;});if(!cand||cand.person_tag===newTag)return;markPending(cid,'person_tag',newTag,cand.name);const btn=document.querySelector('#ptag-wrap-'+cid+' .tag-edit-btn');if(btn){var _c=personTagColor(newTag);btn.innerHTML=newTag?('<span class="badge" style="background:'+_c+'22;color:'+_c+';border:1px solid '+_c+'55">'+escHtml(newTag)+'</span>'):('<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set tag</span>');}document.querySelectorAll('#ptag-dd-'+cid+' .tag-dropdown-item').forEach(function(item){item.classList.toggle('active',item.textContent.trim()===newTag);});}
+  function toggleTagDropdown(cid, event) {
   event.stopPropagation();
   const dd = document.getElementById(`tag-dd-${cid}`);
   if (!dd) return;
@@ -3403,6 +3408,7 @@ function escHtml(s) {
 }
 
 function renderCell(key, c) {
+  if(key==='person_tag'){var v_pt=c[key]||'';var isPending_pt=PENDING.has(c.id+':'+key);var ptColor=v_pt?personTagColor(v_pt):'#888';var badgeHtml_pt=v_pt?('<span class="badge" style="background:'+ptColor+'22;color:'+ptColor+';border:1px solid '+ptColor+'55">'+escHtml(v_pt)+'</span>'):('<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set tag</span>');var origVal_pt=c['_orig_person_tag'];var oldTag_pt=(isPending_pt&&origVal_pt!==undefined&&origVal_pt!==v_pt)?origVal_pt:null;var oldHtml_pt=oldTag_pt?('<span class="tag-old-val"><span class="tag-old-name">'+escHtml(oldTag_pt)+'</span><span class="tag-arrow"> → </span>'+escHtml(v_pt)+'</span><button class="tag-undo-btn" onclick="undoChange('+c.id+',\'person_tag\',event)">↩ Undo</button>'):'';return '<div class="tag-edit-wrap" id="ptag-wrap-'+c.id+'"><div class="tag-edit-btn" onclick="togglePersonTagDropdown('+c.id+', event)">'+badgeHtml_pt+'</div>'+oldHtml_pt+'<div class="tag-dropdown" id="ptag-dd-'+c.id+'">'+PERSON_TAGS.map(function(pt){return '<div class="tag-dropdown-item'+(pt.text===v_pt?' active':'')+'" onclick="selectPersonTag('+c.id+', \''+pt.text.replace(/'/g,"\\'")+'\', event)"><span class="tag-dot" style="background:'+pt.color+'"></span>'+escHtml(pt.text)+'</div>';}).join('')+'</div></div>';}
   const v = c[key] || '';
   const isPending = PENDING.has(`${c.id}:${key}`);
 
