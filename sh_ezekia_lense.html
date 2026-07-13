@@ -2430,10 +2430,10 @@ async function enrichOne(_bc) {
   let notesField = null;
   try {
     const [pResp, aResp] = await Promise.all([
-      fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus&fields[]=profile`),
+      fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus&fields[]=profile&fields[]=manager.tags`),
       fetch(`${BASE}/v4/people/${personId}/additional-info`)
     ]);
-    let _pR = pResp; if (_pR.status === 429) { await new Promise(r => setTimeout(r, 600)); _pR = await fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus`); } if (_pR.ok) { const pd = await _pR.json(); person = pd.data || pd; }
+    let _pR = pResp; if (_pR.status === 429) { await new Promise(r => setTimeout(r, 600)); _pR = await fetch(`${BASE}/v4/people/${personId}?fieldsWithCandidate[]=manager.tags&fieldsWithCandidate[]=manager.customValues&fieldsWithCandidate[]=manager.researchNotes&fields[]=meta.candidate&fields[]=profile.currentStatus&fields[]=manager.tags`); } if (_pR.ok) { const pd = await _pR.json(); person = pd.data || pd; }
     let _aR = aResp; if (_aR.status === 429) { await new Promise(r => setTimeout(r, 600)); _aR = await fetch(`${BASE}/v4/people/${personId}/additional-info`); } if (_aR.ok) { const ad = await _aR.json(); additionalInfo = ad.data || ad || []; }
       const _fitAll = (ad.data || []).filter(function(f) { return ((f.field && f.field.label) || f.label || '').toLowerCase().includes('fit to profile'); });
     fitToProfile = _fitAll.find(function(f) { return f.project && String(f.project.id) === String(CURRENT_PROJECT_ID); }) || _fitAll[0] || null;
@@ -2484,7 +2484,7 @@ async function enrichOne(_bc) {
     function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],    fit_to_profile: fitToProfile ? (fitToProfile.value || '') : '',
     _fitToProfileRecordId: fitToProfile ? fitToProfile.id : null,
     _fitToProfileFieldId: fitToProfile ? (fitToProfile.field && fitToProfile.field.id) : null,
-    person_tag: (function() { var _pt = (person.owner && person.owner.tags) || []; if (!_pt.length) return ''; var _sorted = _pt.slice().sort(function(a, b) { return new Date(b.addedAt || 0) - new Date(a.addedAt || 0); }); return _sorted[0].text || ''; })(),
+    person_tag: (function() { var _pt = (person.manager && person.manager.tags) || []; if (!_pt.length) return ''; var _sorted = _pt.slice().sort(function(a, b) { return new Date(b.addedAt || 0) - new Date(a.addedAt || 0); }); return _sorted[0].text || ''; })(),
 
   };
 }
