@@ -4356,7 +4356,7 @@ function BF_parseInput() {
       inputLinkedIn:col.linkedin >= 0 ? (r[col.linkedin]||'').trim() : '',
       inputEmail:   col.email    >= 0 ? (r[col.email]   ||'').trim() : '',
       inputPhone:   col.phone    >= 0 ? (r[col.phone]   ||'').trim() : '',
-      inputLocation:col.location >= 0 ? (r[col.location]||'').trim() : '', inputId: col.id >= 0 ? (r[col.id]||'').trim() : '',
+      inputLocation:col.location >= 0 ? (r[col.location]||'').trim() : '', inputId: col.id >= 0 ? String(r[col.id]||'').trim() : '',
     });
   }
   return out;
