@@ -2484,7 +2484,9 @@ async function enrichOne(_bc) {
     function_codes:  ((person.profile || {}).currentStatus || {}).careers || [],    fit_to_profile: fitToProfile ? (fitToProfile.value || '') : '',
     _fitToProfileRecordId: fitToProfile ? fitToProfile.id : null,
     _fitToProfileFieldId: fitToProfile ? (fitToProfile.field && fitToProfile.field.id) : null,
-    person_tag: (function() { var _pt = (person.manager && person.manager.tags) || []; if (!_pt.length) return ''; var _sorted = _pt.slice().sort(function(a, b) { return new Date(b.addedAt || 0) - new Date(a.addedAt || 0); }); return _sorted[0].text || ''; })(),
+    person_tag: (function() { var _pt = (person.manager && person.manager.tags) || []; var _sorted = _pt.slice().sort(function(a, b) { return new Date(b.addedAt || 0) - new Date(a.addedAt || 0); }); return _sorted.length ? _sorted[0].text : ''; })(),
+        person_tag_list: (function() { var _pt = (person.manager && person.manager.tags) || []; return _pt.slice().sort(function(a, b) { return new Date(b.addedAt || 0) - new Date(a.addedAt || 0); }).map(function(t) { return { id: t.id, text: t.text, color: t.color }; }); })(),
+        ...(function() { var _pt = (person.manager && person.manager.tags) || []; var out = {}; _pt.forEach(function(t) { out['person_tag__' + t.id] = t.text; }); return out; })(),
 
   };
 }
@@ -2560,7 +2562,7 @@ function openPushModal() {
     <div class="push-change-row">
       <div style="flex:1;min-width:0">
         <span class="push-change-name">${escHtml(c.candidateName)}</span>
-        <span class="push-change-field">${fieldLabel[c.field] || c.field}</span>
+        <span class="push-change-field">${(c.field.indexOf('person_tag__')===0 ? 'Person Tag' : (fieldLabel[c.field] || c.field))}</span>
         ${valHtml}
       </div>
       <button class="push-change-undo" onclick="undoChange(${c.cid},'${c.field}',event)">↩ Undo</button>
@@ -2723,7 +2725,7 @@ async function executePush() {
             body: JSON.stringify({ customValues: [gdrEntry] })
           });
           if (!gdrPutResp.ok) throw new Error('PUT gender failed: ' + gdrPutResp.status);
-        } else if (change.field === 'person_tag') { if (!change.newValue) { console.warn('[executePush] person_tag change has no newValue, skipping', change.cid); } else { var ptTag = PERSON_TAGS.find(function(t) { return t.text === change.newValue; }); if (!ptTag) throw new Error('Unknown person tag: ' + change.newValue); var ptResp = await fetch(BASE + '/people/tags', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ people: [change.cid], tags: [ptTag.id] }) }); if (!ptResp.ok) throw new Error('POST people/tags failed: ' + ptResp.status); } }
+        } else if (change.field === 'person_tag') { if (!change.newValue) { console.warn('[executePush] person_tag change has no newValue, skipping', change.cid); } else { var ptTag = PERSON_TAGS.find(function(t) { return t.text === change.newValue; }); if (!ptTag) throw new Error('Unknown person tag: ' + change.newValue); var ptResp = await fetch(BASE + '/people/tags', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ people: [change.cid], tags: [ptTag.id] }) }); if (!ptResp.ok) throw new Error('POST people/tags failed: ' + ptResp.status); } } else if (change.field.indexOf('person_tag__') === 0) { var ptId2 = parseInt(change.field.slice('person_tag__'.length), 10); var ptTag2 = PERSON_TAGS.find(function(t) { return t.id === ptId2; }); if (!ptTag2) throw new Error('Unknown person tag id: ' + ptId2); if (change.newValue) { var ptAddResp = await fetch(BASE + '/people/tags', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ people: [change.cid], tags: [ptId2] }) }); if (!ptAddResp.ok) throw new Error('POST people/tags failed: ' + ptAddResp.status); } else { var ptDelResp = await fetch(BASE + '/people/tags', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ people: [change.cid], tags: [ptId2] }) }); if (!ptDelResp.ok) throw new Error('DELETE people/tags failed: ' + ptDelResp.status); } }
 
         // Clear stored original so next edit tracks from the new value
         const cand = ALL.find(function(c) { return c.id === change.cid; });
@@ -2846,7 +2848,8 @@ function tagColor(tag) {
 
 function personTagColor(tag){const found=PERSON_TAGS.find(function(t){return t.text===tag;});return found?found.color:'#888';}
   function togglePersonTagDropdown(cid,event){event.stopPropagation();const dd=document.getElementById('ptag-dd-'+cid);if(!dd)return;const wasOpen=dd.classList.contains('open');document.querySelectorAll('.tag-dropdown.open').forEach(function(d){d.classList.remove('open');});if(!wasOpen)dd.classList.add('open');}
-  function selectPersonTag(cid,newTag,event){event.stopPropagation();const dd=document.getElementById('ptag-dd-'+cid);if(dd)dd.classList.remove('open');const cand=ALL.find(function(c){return c.id===cid;});if(!cand||cand.person_tag===newTag)return;markPending(cid,'person_tag',newTag,cand.name);const btn=document.querySelector('#ptag-wrap-'+cid+' .tag-edit-btn');if(btn){var _c=personTagColor(newTag);btn.innerHTML=newTag?('<span class="badge" style="background:'+_c+'22;color:'+_c+';border:1px solid '+_c+'55">'+escHtml(newTag)+'</span>'):('<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set tag</span>');}document.querySelectorAll('#ptag-dd-'+cid+' .tag-dropdown-item').forEach(function(item){item.classList.toggle('active',item.textContent.trim()===newTag);});}
+  function addPersonTag(cid,tagId,event){event.stopPropagation();const dd=document.getElementById('ptag-dd-'+cid);if(dd)dd.classList.remove('open');const cand=ALL.find(function(c){return c.id===cid;});if(!cand)return;const pt=PERSON_TAGS.find(function(t){return t.id===tagId;});if(!pt)return;markPending(cid,'person_tag__'+tagId,pt.text,cand.name);renderTable();}
+    function removePersonTag(cid,tagId,event){if(event)event.stopPropagation();const cand=ALL.find(function(c){return c.id===cid;});if(!cand)return;markPending(cid,'person_tag__'+tagId,'',cand.name);renderTable();}
   function toggleTagDropdown(cid, event) {
   event.stopPropagation();
   const dd = document.getElementById(`tag-dd-${cid}`);
@@ -3408,7 +3411,7 @@ function escHtml(s) {
 }
 
 function renderCell(key, c) {
-  if(key==='person_tag'){var v_pt=c[key]||'';var isPending_pt=PENDING.has(c.id+':'+key);var ptColor=v_pt?personTagColor(v_pt):'#888';var badgeHtml_pt=v_pt?('<span class="badge" style="background:'+ptColor+'22;color:'+ptColor+';border:1px solid '+ptColor+'55">'+escHtml(v_pt)+'</span>'):('<span style="color:var(--text3);font-size:11px;font-style:italic">+ Set tag</span>');var origVal_pt=c['_orig_person_tag'];var oldTag_pt=(isPending_pt&&origVal_pt!==undefined&&origVal_pt!==v_pt)?origVal_pt:null;var oldHtml_pt=oldTag_pt?('<span class="tag-old-val"><span class="tag-old-name">'+escHtml(oldTag_pt)+'</span><span class="tag-arrow"> → </span>'+escHtml(v_pt)+'</span><button class="tag-undo-btn" onclick="undoChange('+c.id+',\'person_tag\',event)">↩ Undo</button>'):'';return '<div class="tag-edit-wrap" id="ptag-wrap-'+c.id+'"><div class="tag-edit-btn" onclick="togglePersonTagDropdown('+c.id+', event)">'+badgeHtml_pt+'</div>'+oldHtml_pt+'<div class="tag-dropdown" id="ptag-dd-'+c.id+'">'+PERSON_TAGS.map(function(pt){return '<div class="tag-dropdown-item'+(pt.text===v_pt?' active':'')+'" onclick="selectPersonTag('+c.id+', \''+pt.text.replace(/'/g,"\\'")+'\', event)"><span class="tag-dot" style="background:'+pt.color+'"></span>'+escHtml(pt.text)+'</div>';}).join('')+'</div></div>';}
+  if(key==='person_tag'){var appliedList_pt=c.person_tag_list||[];var tagMap_pt={};appliedList_pt.forEach(function(t){tagMap_pt[t.id]={id:t.id,text:t.text,color:t.color,state:'applied'};});PERSON_TAGS.forEach(function(pt){var pk_pt=c.id+':person_tag__'+pt.id;if(PENDING.has(pk_pt)){var chg_pt=PENDING.get(pk_pt);if(chg_pt.newValue){if(!tagMap_pt[pt.id])tagMap_pt[pt.id]={id:pt.id,text:pt.text,color:pt.color,state:'pending-add'};}else{if(tagMap_pt[pt.id])tagMap_pt[pt.id].state='pending-remove';}}});var chipsHtml_pt=Object.keys(tagMap_pt).map(function(idStr){var t=tagMap_pt[idStr];var isRem=t.state==='pending-remove';var isAdd=t.state==='pending-add';var st=(isRem?'opacity:.5;text-decoration:line-through;':'')+(isAdd?'border-style:dashed;':'')+'background:'+t.color+'22;color:'+t.color+';border:1px solid '+t.color+'55';var actionBtn=isRem?('<span class="ptag-chip-btn" style="cursor:pointer;margin-left:4px;font-weight:600" title="Undo remove" onclick="undoChange('+c.id+',\'person_tag__'+t.id+'\',event)">↩</span>'):('<span class="ptag-chip-btn" style="cursor:pointer;margin-left:4px;font-weight:600" title="Remove tag" onclick="removePersonTag('+c.id+','+t.id+',event)">×</span>');return '<span class="badge ptag-chip" style="'+st+'">'+escHtml(t.text)+actionBtn+'</span>';}).join('');if(!chipsHtml_pt)chipsHtml_pt='<span style="color:var(--text3);font-size:11px;font-style:italic">No tags</span>';return '<div class="tag-edit-wrap ptag-multi" id="ptag-wrap-'+c.id+'"><div class="ptag-chip-row" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">'+chipsHtml_pt+'<span class="tag-edit-btn ptag-add-btn" title="Add tag" onclick="togglePersonTagDropdown('+c.id+', event)" style="cursor:pointer;padding:1px 6px;border-radius:4px;border:1px dashed var(--border2);font-size:12px">+</span></div><div class="tag-dropdown" id="ptag-dd-'+c.id+'">'+PERSON_TAGS.map(function(pt){return '<div class="tag-dropdown-item'+(tagMap_pt[pt.id]?' active':'')+'" onclick="addPersonTag('+c.id+','+pt.id+',event)"><span class="tag-dot" style="background:'+pt.color+'"></span>'+escHtml(pt.text)+'</div>';}).join('')+'</div></div>';}
   const v = c[key] || '';
   const isPending = PENDING.has(`${c.id}:${key}`);
 
@@ -3570,7 +3573,7 @@ function renderTable() {
         <td style="text-align:center"><input type="checkbox" class="row-chk" data-id="${c.id}" onchange="updateSelection()" style="cursor:pointer"></td>
         ${cols.map(col => {
           if (col.key === 'name') return `<td class="td-name${rowHasPending?' dirty-cell':''}"><div class="name-cell"><div class="td-avatar" style="background:${bg};color:${fg}">${initials(c.name)}</div>${c.name}${rowHasPending?'<span title="Pending changes" style="margin-left:6px;color:var(--amber);font-size:9px">\u25cf</span>':''}</div></td>`;
-          return `<td class="${PENDING.has(c.id+':'+col.key)?'dirty-cell':''}">${renderCell(col.key, c)}</td>`;
+          return `<td class="${(col.key==='person_tag'?[...PENDING.keys()].some(k=>k.startsWith(c.id+':person_tag__')):PENDING.has(c.id+':'+col.key))?'dirty-cell':''}">${renderCell(col.key, c)}</td>`;
         }).join('')}
         <td><div class="row-actions">
           <button class="row-btn ai" onclick="openAI(${c.id})">\u2726 AI</button>
