@@ -1314,7 +1314,7 @@ tr.selected td { background: var(--accent-glow); }
   td:has(.ind-cell) { position: relative; }
   td:has(.ind-cell) .ind-cell { max-height: 38px; overflow: hidden; }
   td:has(.ind-cell):hover { overflow: visible; z-index: 200; }
-  td:has(.ind-cell):hover .ind-cell { max-height: 200px; overflow-y: auto; position: relative; background: var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.35); border-radius: 6px; padding: 4px; }
+  td:has(.ind-cell):hover .ind-cell { max-height: 200px; overflow-y: auto; position: relative; background: var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.35); border-radius: 6px; padding: 4px; } /* Person Tag cell: collapse to fixed height, expand full detail on hover (same pattern as Industry) */ td:has(.ptag-chip-row) { position: relative; } td:has(.ptag-chip-row) .ptag-chip-row { max-height: 24px; overflow: hidden; } td:has(.ptag-chip-row):hover { overflow: visible; z-index: 200; } td:has(.ptag-chip-row):hover .ptag-chip-row { max-height: 200px; overflow-y: auto; position: relative; background: var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.35); border-radius: 6px; padding: 4px; }
 
 /* \2500 \2500  Industry editor modal \2500 \2500  */
 .ind-modal-overlay {
