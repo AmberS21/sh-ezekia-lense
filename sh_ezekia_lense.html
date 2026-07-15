@@ -4024,8 +4024,8 @@ function saveRecentProject(name, url, entityType) {
   if (!url || !name || name === 'Demo Project') return;
   try {
     let recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
-    recent = recent.filter(function(r) { return r.url !== url; });
-    recent.unshift({ name: name, url: url, type: entityType || 'project', ts: Date.now() });
+    const parsed = parseEzekiaUrl(url); const entId = parsed ? parsed.entityId : null; recent = recent.filter(function(r) { if (entId && r.entityId && String(r.entityId) === String(entId)) return false; if (r.url === url) return false; if (!r.entityId && r.name === name) return false; return true; });
+    recent.unshift({ name: name, url: url, type: entityType || 'project', entityId: entId, ts: Date.now() });
     if (recent.length > MAX_RECENT) recent = recent.slice(0, MAX_RECENT);
     localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
     renderRecentProjects();
@@ -4034,7 +4034,7 @@ function saveRecentProject(name, url, entityType) {
 
 function renderRecentProjects() {
   try {
-    const recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    let recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); const _seenRecent = new Set(); const _dedupedRecent = []; recent.forEach(function(r) { const key = r.entityId ? ('id:' + r.entityId) : ('name:' + (r.name||'').toLowerCase().trim()); if (_seenRecent.has(key)) return; _seenRecent.add(key); _dedupedRecent.push(r); }); if (_dedupedRecent.length !== recent.length) { recent = _dedupedRecent; try { localStorage.setItem(RECENT_KEY, JSON.stringify(recent)); } catch(e) {} }
     const section = document.getElementById('recentSection');
     const list = document.getElementById('recentList');
     if (!section || !list) return;
