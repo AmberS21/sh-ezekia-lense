@@ -2350,12 +2350,14 @@ async function connectFromUrl() {
       const _totalPages = (_page1Data.meta || {}).lastPage || 1;
       const rawCandidates = [...(_page1Data.data || [])];
       for (let _p = 2; _p <= _totalPages; _p++) {
-        if (_p % 5 === 0 || _p === 2) { const _sub = document.getElementById('sidebarSub'); if (_sub) _sub.textContent = `Loading page ${_p} of ${_totalPages}\u2026`; }
-        const _pr = await fetch(_candBaseUrl + '&page=' + _p);
-        if (!_pr.ok) break; // skip failed pages but keep what we have
-        const _pd = await _pr.json();
-        rawCandidates.push(...(_pd.data || []));
-      }
+  if (_p % 5 === 0 || _p === 2) { const _sub = document.getElementById('sidebarSub'); if (_sub) _sub.textContent = `Loading page ${_p} of ${_totalPages}…`; }
+  let _pr = await fetch(_candBaseUrl + '&page=' + _p);
+  let _pageRetries = 0;
+        while (!_pr.ok && _pageRetries < 4) { await new Promise(r => setTimeout(r, 800 * (_pageRetries + 1))); _pr = await fetch(_candBaseUrl + '&page=' + _p); _pageRetries++; }
+  if (!_pr.ok) { console.warn('[SH Lens] page ' + _p + ' failed after retries (status ' + _pr.status + ') - skipping this page only'); continue; }
+  const _pd = await _pr.json();
+      rawCandidates.push(...(_pd.data || []));
+  }
 
     // 3. Enrich in batches of 5
     // Build tag ID catalogue from the first candidate's full pipelineTags array.
