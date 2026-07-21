@@ -2389,7 +2389,8 @@ async function connectFromUrl() {
           _showCacheBadge(false, null);
         }
 
-    buildColToggles();
+    document.getElementById('sidebarSub').textContent = CURRENT_PROJECT_NAME;
+  buildColToggles();
     buildFilterOptions();    document.getElementById('globalSearch').value = '';
     applyFilters();
     showToast(`Loaded ${ALL.length} candidates from Ezekia ${parsed.entityType}.`, 'success');
@@ -3144,6 +3145,7 @@ function openColFilter(evt, key) {
   const vals = fc.fixedList
     ? fc.fixedList.filter(function(v) { return _pool.length === 0 || _pool.some(function(c) { return key === 'person_tag' ? (Array.isArray(c.person_tag_list) && c.person_tag_list.some(function(t){ return t.text === v; })) : c[key] === v; }); })
     : [...new Set(_pool.map(function(c) { return c[key]; }).filter(function(v) { return v && v !== '—'; }))]
+  if (key === 'person_tag' && _pool.some(function(c) { return !(Array.isArray(c.person_tag_list) && c.person_tag_list.length); })) { vals.push('(Blank)'); }
   if (vals.length === 0) return;
 
   if (!FILTER_SETS[key]) FILTER_SETS[key] = new Set();
@@ -3241,7 +3243,7 @@ function applyFilters() {
     // Dynamic: for each filter that has selections, candidate must match at least one value
     for (const _fk of Object.keys(FILTER_SETS)) {
       const _fs = FILTER_SETS[_fk];
-      if (!_fs || _fs.size === 0) { continue; } if (_fk === 'person_tag') { if (!(Array.isArray(c.person_tag_list)?c.person_tag_list:[]).some(function(t){ return _fs.has(t.text); })) return false; } else if (!_fs.has(c[_fk])) { return false; }
+            if (!_fs || _fs.size === 0) { continue; } if (_fk === 'person_tag') { const _ptL = Array.isArray(c.person_tag_list) ? c.person_tag_list : []; const _isBlankTag = _ptL.length === 0; if (!((_isBlankTag && _fs.has('(Blank)')) || _ptL.some(function(t){ return _fs.has(t.text); }))) return false; } else if (!_fs.has(c[_fk])) { return false; }
     }
     if (q) {
       const blob = Object.values(c).join(' ').toLowerCase();
