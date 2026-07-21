@@ -4525,8 +4525,7 @@ function BF_statusFromConf(conf) {
 }
 function BF_recommendedAction(status, flags) {
   if (status === 'Found') return 'AUTO_ADD';
-  if (status === 'Found – Review') return 'REVIEW_BEFORE_ADD';
-  if (flags && flags.some(f => f === 'conflicting_identifiers' || f === 'multiple_matches')) return 'DO_NOT_ADD';
+  if (flags && flags.some(f => f === 'conflicting_identifiers' || f === 'multiple_matches' || f === 'identifier_mismatch')) return 'DO_NOT_ADD';
   if (status === 'Fuzzy') return 'REVIEW_BEFORE_ADD';
   return 'CREATE_NEW';
 }
@@ -4622,17 +4621,33 @@ function BF_score(row, people, tooMany) {
     if (multipleMatches) flags.push('multiple_matches');
     if (!bestPerson || bestScore < 30) return blank;
     if (tooMany && bestScore < 50) return Object.assign({}, blank, {matchType:'Not Found', matchReason:'Too many candidates, no confident fuzzy match'});
-    confidence = bestScore;
-    best = bestPerson;
-    matchedOn = ['name_fuzzy'];
-    matchReason = 'Fuzzy name/company/title match (score ' + bestScore + ')';
-    if (multipleMatches) matchReason += ' — multiple candidates tied';
-    // Sole exact-name match — only 1 candidate returned AND name normalises identically → escalate to Found (95)
-    if (people.length === 1 && !multipleMatches && BF_normName(best.fullName) === BF_normName(row.inputName)) {
-      confidence = 95;
-      matchedOn = ['name_sole_exact'];
-      matchReason = 'Sole exact name match (only record in Ezekia with this name)';
-    }
+confidence = bestScore;
+        best = bestPerson;
+        matchedOn = ['name_fuzzy'];
+        matchReason = 'Fuzzy name/company/title match (score ' + bestScore + ')';
+        if (multipleMatches) matchReason += ' — multiple candidates tied';
+        // Robustness check: a matching name is not proof of identity. If the candidate has a
+        // LinkedIn URL or company on file that actively CONTRADICTS the input row, never trust
+        // the name match alone — flag it and cap confidence so it cannot be auto-added.
+        const _bestLI = (best2 => (best2.links || []).find(function(l){ return /linkedin/i.test(l.url || ''); }))(bestPerson);
+        const _bestLINorm = _bestLI ? BF_normLI(_bestLI.url) : '';
+        const _liConflict = !!(inLI && _bestLINorm && _bestLINorm !== inLI && !_bestLINorm.includes(inLI) && !inLI.includes(_bestLINorm));
+        const _bestPos2 = (bestPerson.positions && bestPerson.positions[0]) || null;
+        const _bestCo = (((_bestPos2 && _bestPos2.company && _bestPos2.company.name) || '')).toLowerCase().replace(/[^a-z0-9]/g,'');
+        const _inCo = (row.inputCompany || '').toLowerCase().replace(/[^a-z0-9]/g,'');
+        const _coConflict = !!(_inCo && _bestCo && _inCo !== _bestCo && !_inCo.includes(_bestCo) && !_bestCo.includes(_inCo));
+        if (_liConflict || _coConflict) {
+          flags.push('identifier_mismatch');
+          confidence = Math.min(confidence, 65);
+          matchReason += ' — but ' + (_liConflict ? 'LinkedIn on file does not match input' : 'company on file does not match input') + ', verify before adding';
+  }
+        // Sole exact-name match — only 1 candidate returned AND name normalises identically → escalate to Found (95),
+        // unless the conflict check above already flagged a contradicting LinkedIn/company.
+        if (!_liConflict && !_coConflict && people.length === 1 && !multipleMatches && BF_normName(best.fullName) === BF_normName(row.inputName)) {
+          confidence = 95;
+          matchedOn = ['name_sole_exact'];
+          matchReason = 'Sole exact name match (only record in Ezekia with this name)';
+  }
   }
 
   const pos = ((best.profile&&best.profile.positions&&best.profile.positions[0])) || null;
