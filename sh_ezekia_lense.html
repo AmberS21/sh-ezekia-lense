@@ -2135,6 +2135,19 @@ let CURRENT_PROJECT_ID = null;
 let CURRENT_PROJECT_NAME = '';
 let CURRENT_ENTITY_TYPE = null;
 
+  const SH_LENS_ACCESS_KEY = "shlens_b2b4dbcf4350c17a67b5994655b6836cac2da268260b9cf9";
+  (function(){
+    var _origFetch = window.fetch.bind(window);
+    window.fetch = function(input, init) {
+      init = init || {};
+      var urlStr = (typeof input === 'string') ? input : ((input && input.url) || '');
+      if (urlStr.indexOf(BASE) === 0) {
+        init.headers = Object.assign({}, init.headers, { "X-Sh-Access-Key": SH_LENS_ACCESS_KEY });
+  }
+          return _origFetch(input, init);
+  };
+  })();
+
 // Usage log array \u2014 persists for the browser session
 const USAGE_LOG = [];
 
