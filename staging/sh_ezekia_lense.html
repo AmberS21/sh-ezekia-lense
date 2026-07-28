@@ -1915,6 +1915,14 @@ tr.selected td { background: var(--accent-glow); }
         </button>
       </div>
     </div>
+    <div class="admin-section">
+      <div class="admin-section-title">Usage Dashboard (All Users)</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Server-side activity across everyone using this tool: project loads, edit counts, Bulk Finder searches, and pushes.</div>
+      <div id="usageDashboardContainer"><div class="log-empty">Click "Refresh" to load.</div></div>
+      <div class="admin-action-row">
+        <button class="admin-save-btn" onclick="loadUsageDashboard()">Refresh</button>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -3775,6 +3783,8 @@ function runExport() {
 // ADMIN PAGE
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function openAdmin() {
+  var _adminPass = prompt('Enter admin passcode:');
+  if (_adminPass !== "bb@8764") { if (_adminPass !== null) showToast('Incorrect passcode.', 'error'); return; }
   // Pre-fill saved config
   try {
     const cfg = JSON.parse(localStorage.getItem('sh.ezekia.config') || '{}');
@@ -3827,6 +3837,9 @@ function logUsage(action, detail, project) {
     project: project || CURRENT_PROJECT_NAME || '\u2014',
     detail,
   });
+  try {
+    fetch(BASE + '/v4/_usage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: getDisplayName(), action: action, detail: ((project || CURRENT_PROJECT_NAME) ? '[' + (project || CURRENT_PROJECT_NAME) + '] ' : '') + (detail || '') }) }).catch(function(){});
+  } catch(e) {}
 }
 
 function renderUsageLogTable() {
@@ -3875,6 +3888,31 @@ function exportUsageLog() {
   a.click();
   showToast('Usage log exported.', 'success');
 }
+
+  function loadUsageDashboard() {
+    var container = document.getElementById('usageDashboardContainer');
+    container.innerHTML = '<div class="log-empty">Loading...</div>';
+    fetch(BASE + '/v4/_usage').then(function(res){ if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); }).then(function(data){
+      var rows = data.rows || [];
+      if (!rows.length) { container.innerHTML = '<div class="log-empty">No activity recorded yet.</div>'; return; }
+  var counts = {};
+  rows.forEach(function(r){
+  if (!counts[r.user]) counts[r.user] = {};
+  counts[r.user][r.action] = (counts[r.user][r.action] || 0) + 1;
+  });
+  var summaryHtml = Object.keys(counts).map(function(u){
+  var parts = Object.keys(counts[u]).map(function(a){ return a + ': ' + counts[u][a]; }).join(', ');
+  return '<div style="font-size:12px;color:var(--text2);margin-bottom:4px"><strong style="color:var(--text)">' + escHtml(u) + '</strong> - ' + escHtml(parts) + '</div>';
+  }).join('');
+  var tableRows = rows.map(function(r){
+  return '<tr><td style="font-family:var(--mono);font-size:10px;color:var(--text3)">' + escHtml((r.ts||'').replace('T',' ').slice(0,19)) + '</td><td>' + escHtml(r.user) + '</td><td><span class="log-action-badge log-action-push">' + escHtml(r.action) + '</span></td><td title="' + escHtml(r.detail) + '">' + escHtml(r.detail) + '</td></tr>';
+  }).join('');
+  var tableHtml = '<table class="log-table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Detail</th></tr></thead><tbody>' + tableRows + '</tbody></table>';
+  container.innerHTML = '<div style="margin-bottom:12px">' + summaryHtml + '</div>' + tableHtml;
+  }).catch(function(e){
+  container.innerHTML = '<div class="log-empty">Failed to load: ' + escHtml(e.message) + '</div>';
+  });
+  }
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // TOAST
@@ -4733,6 +4771,7 @@ async function BF_runMatch() {
   });
   document.getElementById('bf-status-text').textContent = 'Done — ' + total + ' rows';
   document.getElementById('bf-results-title').textContent = 'Results (' + total + ' rows / ' + BF_results.filter(function(r){ return r.matchType==='Found'; }).length + ' found / ' + BF_results.filter(function(r){ return r.matchType==='Found – Review'; }).length + ' review / ' + BF_results.filter(function(r){ return r.matchType==='Fuzzy'; }).length + ' fuzzy)';
+  logUsage('bf_search', total + ' name(s) searched');
   BF_running = false;
 }
 
@@ -4870,6 +4909,7 @@ async function BF_pushToProject() {
     const added = (d.updated||[]).length, skip = (d.notUpdated||[]).length;
     el.className = 'bf-push-result bf-visible bf-ok';
     el.textContent = added + ' candidate' + (added!==1?'s':'') + ' added' + (skip?' · '+skip+' already on this project':'');
+    logUsage('bf_push', added + ' candidate(s) pushed', url);
   } catch(e) { el.className='bf-push-result bf-visible bf-err'; el.textContent='Error: '+e.message; }
   finally { btn.disabled=false; btn.textContent='Push to Project'; }
 }
