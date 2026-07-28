@@ -4824,8 +4824,7 @@ function BF_applyColFilter(key, btn) {
   const total = drop.querySelectorAll('input[type=checkbox]').length;
   // If all checked = no filter; if none checked = no filter (show all)
   if (checked.length === 0 || checked.length === total) {
-    delete BF_colFilters[key];
-  } else {
+ } else {
     BF_colFilters[key] = checked;
   }
   // Update filter button visual
@@ -4852,8 +4851,8 @@ async function BF_pushToProject() {
   const el = document.getElementById('bf-push-result');
   el.className = 'bf-push-result bf-visible'; el.textContent = 'Sending ' + ids.length + ' candidates...';
   try {
-    const r = await fetch(window._BF_BASE + '/v4/projects/candidates', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({candidates:ids, projectId:parseInt(parsed.entityId), projectName:parsed.entityName||'', label:parsed.entityType==='assignment'?'assignment':'project'})});
-    if (r.status===404) throw new Error('Project not found — check the URL');
+    const r = await fetch(window._BF_BASE + '/v4/projects/candidates', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({candidates:ids, projectId:parseInt(parsed.entityId), projectName:parsed.entityName||'', label:parsed.entityType==='list'?'list':(parsed.entityType==='assignment'?'assignment':'project')})});
+      if (r.status===404) throw new Error('Project not found — check the URL');
     if (!r.ok) throw new Error('API error ' + r.status);
     const d = await r.json();
     const added = (d.updated||[]).length, skip = (d.notUpdated||[]).length;
