@@ -1856,6 +1856,23 @@ tr.selected td { background: var(--accent-glow); }
   </div>
 </div>
   
+  <!-- TEMPORARY: manual user identification modal. To replace with SSO/MS365 login later, edit inside ensureUserIdentified() to pull the name/email from the MS365 session instead of showing this modal, then delete this HTML block. Nothing else changes - all other code keeps calling getDisplayName() as it does today. -->
+  <div class="modal-overlay" id="userIdModal">
+      <div class="modal" onclick="event.stopPropagation()" style="width:340px">
+            <div class="modal-header">
+                    <div class="modal-title">Welcome</div>
+            </div>
+            <div class="modal-body">
+                    <div class="admin-note" style="margin-bottom:10px">Please enter your name to continue. This is used to attribute usage in the admin dashboard.</div>
+                    <input class="admin-input" id="userIdInput" type="text" placeholder="Your name" style="width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')submitUserId()" />
+                    <div id="userIdError" style="display:none;color:var(--red);font-size:12px;margin-top:8px">Please enter your name.</div>
+                    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+                              <button class="admin-save-btn" onclick="submitUserId()">Continue</button>
+                    </div>
+            </div>
+      </div>
+  </div>
+  
   <div class="admin-overlay" id="adminOverlay">
   <div class="admin-topbar">
     <div class="admin-title">
@@ -3851,15 +3868,42 @@ function saveAdminConfig() {
 
 function saveDisplayName() {
   const name = document.getElementById('adminDisplayName').value.trim();
-  try {
-    if (name) localStorage.setItem('sh.ezekia.user', name);
-    showToast(`Display name set to "${name}".`, 'success');
-  } catch(e) {}
+    try {
+        if (name) localStorage.setItem('sh.ezekia.user', name);
+        showToast(`Display name set to "${name}".`, 'success');
+    } catch (e) {}
 }
 
 function getDisplayName() {
-  try { return localStorage.getItem('sh.ezekia.user') || 'Anonymous'; } catch(e) { return 'Anonymous'; }
+    try { return localStorage.getItem('sh.ezekia.user') || 'Anonymous'; } catch (e) { return 'Anonymous'; }
 }
+
+      // TEMPORARY - manual name entry, replace with SSO / MS365 login. To swap in SSO: change the inside of ensureUserIdentified() to pull the user's name/email from the MS365 auth session instead of showing #userIdModal, then delete the #userIdModal HTML block. Nothing else needs to change - every other function still just calls getDisplayName() exactly as it does today.
+      function ensureUserIdentified(onReady) {
+        const existing = getDisplayName();
+        if (existing && existing !== 'Anonymous') { onReady(); return; }
+        window.__sh_userIdCallback = onReady;
+        const modal = document.getElementById('userIdModal');
+        const inp = document.getElementById('userIdInput');
+        const err = document.getElementById('userIdError');
+        if (inp) inp.value = '';
+        if (err) err.style.display = 'none';
+        if (modal) modal.classList.add('open');
+        setTimeout(function(){ if (inp) inp.focus(); }, 50);
+      }
+
+      function submitUserId() {
+        const inp = document.getElementById('userIdInput');
+        const val = inp ? inp.value.trim() : '';
+        if (!val) { const err = document.getElementById('userIdError'); if (err) err.style.display = 'block'; return; }
+        try { localStorage.setItem('sh.ezekia.user', val); } catch (e) {}
+        const modal = document.getElementById('userIdModal');
+        if (modal) modal.classList.remove('open');
+        const cb = window.__sh_userIdCallback;
+        window.__sh_userIdCallback = null;
+        if (cb) cb();
+      }
+      
 
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // USAGE LOG
@@ -4361,7 +4405,9 @@ function toggleSidebar() {
 // ============================================================
 let BF_results = [], BF_sortKey = '', BF_sortDir = 1, BF_fileData = null, BF_running = false, BF_colFilters = {};
 
-function BF_goMode(mode) {
+function BF_goMode(mode) { ensureUserIdentified(function(){ BF_goModeInner(mode); }); }
+    
+    function BF_goModeInner(mode) {
   const landing = document.getElementById('bf-landing');
   const bfPage  = document.getElementById('bf-page');
   const shell   = document.querySelector('.shell');
