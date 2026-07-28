@@ -4358,18 +4358,18 @@ function BF_parseInput() {
   if (col.name < 0) { alert('No "Name" column found in header row. Please include a Name column.'); return []; }
   const out = [];
   for (let i = 1; i < raw.length; i++) {
-    const r = raw[i], name = col.name >= 0 ? (r[col.name]||'').trim() : '';
+    const r = raw[i], name = col.name >= 0 ? String(r[col.name]||'').trim() : '';
     if (!name) continue;
     // Skip rows that look like a header row (e.g. "Name", "Full Name", "Candidate")
     if (/^(name|full.?name|candidate|candidate.?name|first.?name|contact)$/i.test(name)) continue;
     out.push({
       inputName:    name,
-      inputTitle:   col.title    >= 0 ? (r[col.title]   ||'').trim() : '',
-      inputCompany: col.company  >= 0 ? (r[col.company] ||'').trim() : '',
-      inputLinkedIn:col.linkedin >= 0 ? (r[col.linkedin]||'').trim() : '',
-      inputEmail:   col.email    >= 0 ? (r[col.email]   ||'').trim() : '',
-      inputPhone:   col.phone    >= 0 ? (r[col.phone]   ||'').trim() : '',
-      inputLocation:col.location >= 0 ? (r[col.location]||'').trim() : '', inputId: col.id >= 0 ? String(r[col.id]||'').trim() : '',
+      inputTitle:   col.title    >= 0 ? String(r[col.title]   ||'').trim() : '',
+      inputCompany: col.company  >= 0 ? String(r[col.company] ||'').trim() : '',
+      inputLinkedIn:col.linkedin >= 0 ? String(r[col.linkedin]||'').trim() : '',
+      inputEmail:   col.email    >= 0 ? String(r[col.email]   ||'').trim() : '',
+      inputPhone:   col.phone    >= 0 ? String(r[col.phone]   ||'').trim() : '',
+      inputLocation:col.location >= 0 ? String(r[col.location]||'').trim() : '', inputId: col.id >= 0 ? String(r[col.id]||'').trim() : '',
     });
   }
   return out;
