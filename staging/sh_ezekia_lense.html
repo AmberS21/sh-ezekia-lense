@@ -1840,7 +1840,23 @@ tr.selected td { background: var(--accent-glow); }
 <!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;
      ADMIN PAGE
 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
-<div class="admin-overlay" id="adminOverlay">
+<div class="modal-overlay" id="adminPassModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" onclick="event.stopPropagation()" style="width:340px">
+    <div class="modal-header">
+      <div class="modal-title">Admin Access</div>
+    </div>
+    <div class="modal-body">
+      <input class="admin-input" id="adminPassInput" type="password" placeholder="Enter passcode" style="width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')submitAdminPass()" />
+      <div id="adminPassError" style="display:none;color:var(--red);font-size:12px;margin-top:8px">Incorrect passcode.</div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+        <button class="top-btn" onclick="document.getElementById('adminPassModal').classList.remove('open')">Cancel</button>
+        <button class="admin-save-btn" onclick="submitAdminPass()">Unlock</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <div class="admin-overlay" id="adminOverlay">
   <div class="admin-topbar">
     <div class="admin-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>
@@ -3783,8 +3799,27 @@ function runExport() {
 // ADMIN PAGE
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 function openAdmin() {
-  var _adminPass = prompt('Enter admin passcode:');
-  if (_adminPass !== "bb@8764") { if (_adminPass !== null) showToast('Incorrect passcode.', 'error'); return; }
+  var _inp = document.getElementById('adminPassInput');
+  if (_inp) _inp.value = '';
+  var _err = document.getElementById('adminPassError');
+  if (_err) _err.style.display = 'none';
+  document.getElementById('adminPassModal').classList.add('open');
+  setTimeout(function(){ if (_inp) _inp.focus(); }, 50);
+}
+
+  function submitAdminPass() {
+    var _inp = document.getElementById('adminPassInput');
+    var _val = _inp ? _inp.value : '';
+    if (_val !== "bb@8764") {
+      var _err = document.getElementById('adminPassError');
+      if (_err) _err.style.display = 'block';
+      return;
+    }
+    document.getElementById('adminPassModal').classList.remove('open');
+    openAdminReal();
+  }
+
+  function openAdminReal() {
   // Pre-fill saved config
   try {
     const cfg = JSON.parse(localStorage.getItem('sh.ezekia.config') || '{}');
