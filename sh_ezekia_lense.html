@@ -3872,6 +3872,9 @@ function logUsage(action, detail, project) {
     project: project || CURRENT_PROJECT_NAME || '\u2014',
     detail,
   });
+      try {
+      fetch(BASE + "/v4/_usage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: getDisplayName(), action: action, project: project || CURRENT_PROJECT_NAME || "", detail: detail || "" }) }).catch(function(){});
+    } catch (e) {}
 }
 
 function renderUsageLogTable() {
@@ -4978,3 +4981,4 @@ function BF_clearAll() {
 
 </body>
 </html>
+testBracket() { console.log("hi"); }
