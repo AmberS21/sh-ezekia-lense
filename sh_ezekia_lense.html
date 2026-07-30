@@ -3947,7 +3947,7 @@ function exportUsageLog() {
         return '<div style="font-size:12px;color:var(--text2);margin-bottom:4px"><strong style="color:var(--text)">' + escHtml(u) + '</strong> - ' + escHtml(parts) + '</div>';
       }).join('');
       var tableRows = rows.map(function(r) {
-        return '<tr><td style="font-family:var(--mono);font-size:10px;color:var(--text3)">' + escHtml((r.ts||'').replace('T',' ').slice(0,19)) + '</td><td>' + escHtml(r.user) + '</td><td><span class="log-action-badge log-action-push">' + escHtml(r.action) + '</span></td><td title="' + escHtml(r.detail) + '">' + escHtml(r.detail) + '</td></tr>';
+        return '<tr><td style="font-family:var(--mono);font-size:10px;color:var(--text3)">' + escHtml((r.timestamp||'').replace('T',' ').slice(0,19)) + '</td><td>' + escHtml(r.user) + '</td><td><span class="log-action-badge log-action-push">' + escHtml(r.action) + '</span></td><td title="' + escHtml(r.detail) + '">' + escHtml(r.detail) + '</td></tr>';
       }).join('');
       var tableHtml = '<table class="log-table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Detail</th></tr></thead><tbody>' + tableRows + '</tbody></table>';
       container.innerHTML = '<div style="margin-bottom:12px">' + summaryHtml + '</div>' + tableHtml;
