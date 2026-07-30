@@ -904,6 +904,7 @@ th.active .sort-icon { opacity: 1; color: #87CEEB; }
   box-shadow: 0 6px 24px rgba(0,0,0,0.45);
 }
 .col-filter-drop.open { display: block; }
+  .col-filter-search { width: calc(100% - 12px); margin: 4px 6px 6px; padding: 5px 8px; border-radius: 5px; border: 1px solid var(--border2); background: var(--bg3); color: var(--text); font-size: 12px; font-family: var(--font); outline: none; }
 .col-filter-opt {
   display: flex; align-items: center; gap: 8px;
   padding: 7px 12px; cursor: pointer; font-size: 13px;
@@ -3195,6 +3196,12 @@ function openColFilter(evt, key) {
   drop.className = 'col-filter-drop';
   drop.id = 'cf-' + key + '-Drop';
   drop.setAttribute('data-cf-key', key);
+  const searchInp = document.createElement('input');
+  searchInp.type = 'text';
+  searchInp.className = 'col-filter-search';
+  searchInp.placeholder = 'Search...';
+  searchInp.oninput = function() { filterColDropSearch(this); };
+  drop.appendChild(searchInp);
 
   vals.forEach(function(v) {
     const label = document.createElement('label');
@@ -3235,6 +3242,13 @@ function openColFilter(evt, key) {
   }
 }
 
+function filterColDropSearch(inp) {
+  const q = inp.value.toLowerCase();
+  inp.closest('.col-filter-drop').querySelectorAll('.col-filter-opt').forEach(function(opt) {
+    opt.style.display = opt.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+  
 function clearColFilter(key) {
   if (FILTER_SETS[key]) FILTER_SETS[key].clear();
   const drop = document.getElementById('cf-' + key + '-Drop');
