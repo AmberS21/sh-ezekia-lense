@@ -459,6 +459,17 @@ body {
 }
 .topbar-search:focus { border-color: var(--accent); }
 .topbar-search::placeholder { color: var(--text3); }
+  .search-wrap .topbar-search { padding-right: 74px; }
+  .adv-search-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 600; color: var(--accent); background: var(--bg2); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; }
+  .adv-search-btn:hover { background: var(--bg4); }
+  .adv-search-panel { display: none; position: absolute; top: calc(100% + 6px); left: 0; width: 380px; background: var(--bg3); border: 1px solid var(--accent); border-radius: 8px; z-index: 99999; padding: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.45); }
+  .adv-search-panel.open { display: block; }
+  .adv-search-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .adv-search-grid label { font-size: 11px; color: var(--text2); display: flex; flex-direction: column; gap: 3px; }
+  .adv-search-input { padding: 5px 8px; border-radius: 5px; border: 1px solid var(--border2); background: var(--bg2); color: var(--text); font-size: 12px; font-family: var(--font); outline: none; }
+  .adv-search-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+  .adv-search-apply, .adv-search-clear { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); }
+  .adv-search-apply { background: var(--accent); color: #08131f; border-color: var(--accent); }
 .topbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .top-btn {
   display: flex; align-items: center; gap: 6px;
@@ -1771,6 +1782,24 @@ tr.selected td { background: var(--accent-glow); }
       <div class="search-wrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
        <input class="topbar-search" id="globalSearch" autocomplete="off" placeholder="Search name, company, title, location, progress notes, summary&#8230;" oninput="applyFilters()" />
+        <button type="button" class="adv-search-btn" id="advSearchBtn" onclick="toggleAdvSearchPanel()" title="Advanced search - filter by multiple fields at once">Advanced</button>
+        <div class="adv-search-panel" id="advSearchPanel">
+          <div class="adv-search-grid">
+            <label>Name<input type="text" id="advSearchName" class="adv-search-input" placeholder="e.g. Ahmed"></label>
+            <label>Location<input type="text" id="advSearchLocation" class="adv-search-input" placeholder="e.g. Frankfurt"></label>
+            <label>Current Title<input type="text" id="advSearchTitle" class="adv-search-input" placeholder="e.g. Director"></label>
+            <label>Current Company<input type="text" id="advSearchCompany" class="adv-search-input" placeholder="e.g. HSBC"></label>
+            <label>Pipeline Tag<input type="text" id="advSearchStatus" class="adv-search-input" placeholder="e.g. On Hold"></label>
+            <label>Gender<input type="text" id="advSearchGender" class="adv-search-input" placeholder="e.g. Male"></label>
+            <label>Progress Notes<input type="text" id="advSearchNotes" class="adv-search-input" placeholder="keyword"></label>
+            <label>Summary<input type="text" id="advSearchSummary" class="adv-search-input" placeholder="keyword"></label>
+            <label>Industry<input type="text" id="advSearchIndustry" class="adv-search-input" placeholder="e.g. Finance"></label>
+          </div>
+          <div class="adv-search-actions">
+            <button type="button" class="adv-search-clear" onclick="clearAdvSearch()">Clear</button>
+            <button type="button" class="adv-search-apply" onclick="applyAdvSearch()">Apply</button>
+          </div>
+        </div>
       </div>
       <div class="topbar-right">
         <span id="selectionInfo" style="font-size:12px;color:var(--text3);display:none"></span><button class="top-btn" id="bulkEditBtn" onclick="openBulkEditModal()" title="Edit selected candidates in bulk">Bulk Edit</button>
@@ -3149,6 +3178,7 @@ function buildColToggles() {
 // \u2500\u2500 Multi-select filter state: each key \u2192 Set of selected values \u2500\u2500
 // ── Dynamic filter state: colKey → Set<value> ──
 const FILTER_SETS = {};
+let ADV_SEARCH = {};
 
 const FILTERABLE_COLS = [
   { key: 'status',          label: 'Pipeline Tag',    fixedList: null },
@@ -3298,6 +3328,10 @@ function applyFilters() {
       const _fs = FILTER_SETS[_fk];
             if (!_fs || _fs.size === 0) { continue; } if (_fk === 'person_tag') { const _ptL = Array.isArray(c.person_tag_list) ? c.person_tag_list : []; const _isBlankTag = _ptL.length === 0; if (!((_isBlankTag && _fs.has('(Blank)')) || _ptL.some(function(t){ return _fs.has(t.text); }))) return false; } else if (!_fs.has(c[_fk])) { return false; }
     }
+    for (const _ak of Object.keys(ADV_SEARCH)) {
+      const _av = String(c[_ak] || '').toLowerCase();
+      if (!_av.includes(ADV_SEARCH[_ak])) { return false; }
+    }
     if (q) {
       const blob = Object.values(c).join(' ').toLowerCase();
       if (!blob.includes(q)) return false;
@@ -3317,6 +3351,49 @@ function applyFilters() {
   renderTable();
 }
 
+const ADV_SEARCH_MAP = {
+  advSearchName: 'name',
+  advSearchLocation: 'location',
+  advSearchTitle: 'current_title',
+  advSearchCompany: 'current_company',
+  advSearchStatus: 'status',
+  advSearchGender: 'gender',
+  advSearchNotes: 'notes',
+  advSearchSummary: 'summary',
+  advSearchIndustry: 'industry_codes'
+};
+
+function toggleAdvSearchPanel() {
+  const p = document.getElementById('advSearchPanel');
+  if (p) p.classList.toggle('open');
+}
+
+function applyAdvSearch() {
+  ADV_SEARCH = {};
+  Object.keys(ADV_SEARCH_MAP).forEach(function(id) {
+    const el = document.getElementById(id);
+    const v = el ? el.value.trim().toLowerCase() : '';
+    if (v) ADV_SEARCH[ADV_SEARCH_MAP[id]] = v;
+  });
+  applyFilters();
+  const p = document.getElementById('advSearchPanel');
+  if (p) p.classList.remove('open');
+}
+
+function clearAdvSearch() {
+  Object.keys(ADV_SEARCH_MAP).forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ADV_SEARCH = {};
+  applyFilters();
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.adv-search-panel') && !e.target.closest('.adv-search-btn')) {
+    document.querySelectorAll('.adv-search-panel.open').forEach(function(d) { d.classList.remove('open'); });
+  }
+});
 function clearFilters() {
   Object.keys(FILTER_SETS).forEach(function(key) {
     FILTER_SETS[key].clear();
