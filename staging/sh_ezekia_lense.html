@@ -3356,6 +3356,11 @@ function applyFilters() {
         if (!_ptL2.some(function(t){ return String(t.text || '').toLowerCase() === ADV_SEARCH[_ak]; })) { return false; }
         continue;
       }
+      if (_ak === 'status' || _ak === 'gender') {
+        const _av2 = String(c[_ak] || '').toLowerCase();
+        if (_av2 !== ADV_SEARCH[_ak]) { return false; }
+        continue;
+      }
       const _av = String(c[_ak] || '').toLowerCase();
       if (!_av.includes(ADV_SEARCH[_ak])) { return false; }
     }
