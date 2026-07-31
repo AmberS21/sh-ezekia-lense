@@ -461,6 +461,8 @@ body {
 .topbar-search::placeholder { color: var(--text3); }
   .adv-search-btn { font-size: 12px; font-weight: 600; color: var(--accent); background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; cursor: pointer; white-space: nowrap; }
   .adv-search-btn:hover { background: var(--bg4); }
+  .adv-search-btn.active { background: var(--accent); color: #08131f; border-color: var(--accent); }
+  .adv-search-badge { display: none; margin-left: 6px; background: #08131f; color: var(--accent); border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700; vertical-align: middle; }
   .adv-search-panel { display: none; position: fixed; top: 70px; left: 20px; width: 480px; background: var(--bg3); border: 1px solid var(--accent); border-radius: 8px; z-index: 99999; padding: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.45); }
   .adv-search-panel.open { display: block; }
   .adv-search-header { display: flex; align-items: center; justify-content: space-between; cursor: move; font-size: 13px; font-weight: 600; color: var(--text); padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border); user-select: none; }
@@ -1788,7 +1790,7 @@ tr.selected td { background: var(--accent-glow); }
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
        <input class="topbar-search" id="globalSearch" autocomplete="off" placeholder="Search name, company, title, location, progress notes, summary&#8230;" oninput="applyFilters()" />
       </div>
-      <button type="button" class="adv-search-btn" id="advSearchBtn" onclick="toggleAdvSearchPanel()" title="Advanced search - filter by multiple fields at once">Advance Search</button>
+      <button type="button" class="adv-search-btn" id="advSearchBtn" onclick="toggleAdvSearchPanel()" title="Advanced search - filter by multiple fields at once">Advance Search<span class="adv-search-badge" id="advSearchBadge"></span></button>
       <div class="adv-search-panel" id="advSearchPanel">
         <div class="adv-search-header" id="advSearchHeader">Advance Search<span class="adv-search-close" onclick="toggleAdvSearchPanel()">&times;</span></div>
         <div class="adv-search-grid">
@@ -2373,7 +2375,7 @@ function loadDemo() {
   ALL = generateDemo();
   buildColToggles();
   buildFilterOptions();    document.getElementById('globalSearch').value = '';
-  applyFilters();
+  clearAdvSearch();
   document.getElementById('sidebarSub').textContent = 'Demo \u00b7 60 sample candidates';
   showToast('Demo data loaded \u2014 60 candidates.', 'info');
 }
@@ -2481,7 +2483,7 @@ async function connectFromUrl() {
     document.getElementById('sidebarSub').textContent = CURRENT_PROJECT_NAME;
   buildColToggles();
     buildFilterOptions();    document.getElementById('globalSearch').value = '';
-    applyFilters();
+    clearAdvSearch();
     showToast(`Loaded ${ALL.length} candidates from Ezekia ${parsed.entityType}.`, 'success');
     saveRecentProject(CURRENT_PROJECT_NAME, raw, parsed.entityType);
     _updateLoadBtn();
@@ -3429,6 +3431,7 @@ function applyAdvSearch() {
     if (v) ADV_SEARCH[ADV_SEARCH_MAP[id]] = v;
   });
   applyFilters();
+  updateAdvSearchIndicator();
   const p = document.getElementById('advSearchPanel');
   if (p) p.classList.remove('open');
 }
@@ -3440,6 +3443,18 @@ function clearAdvSearch() {
   });
   ADV_SEARCH = {};
   applyFilters();
+  updateAdvSearchIndicator();
+}
+
+function updateAdvSearchIndicator() {
+  const btn = document.getElementById('advSearchBtn');
+  const badge = document.getElementById('advSearchBadge');
+  const count = Object.keys(ADV_SEARCH).length;
+  if (btn) btn.classList.toggle('active', count > 0);
+  if (badge) {
+    if (count > 0) { badge.textContent = count; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; badge.textContent = ''; }
+  }
 }
 
 document.addEventListener('click', function(e) {
