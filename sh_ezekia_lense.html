@@ -458,6 +458,23 @@ body {
   transition: border-color 0.15s;
 }
 .topbar-search:focus { border-color: var(--accent); }
+  .adv-search-btn { font-size: 12px; font-weight: 600; color: var(--accent); background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; cursor: pointer; white-space: nowrap; }
+  .adv-search-btn:hover { background: var(--bg4); }
+  .adv-search-btn.active { background: var(--accent); color: #08131f; border-color: var(--accent); }
+  .adv-search-badge { display: none; margin-left: 6px; background: #08131f; color: var(--accent); border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700; vertical-align: middle; }
+  .adv-search-panel { display: none; position: fixed; top: 70px; left: 20px; width: 480px; background: var(--bg3); border: 1px solid var(--accent); border-radius: 8px; z-index: 99999; padding: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.45); }
+  .adv-search-panel.open { display: block; }
+  .adv-search-header { display: flex; align-items: center; justify-content: space-between; cursor: move; font-size: 13px; font-weight: 600; color: var(--text); padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border); user-select: none; }
+  .adv-search-close { cursor: pointer; color: var(--text2); font-size: 16px; line-height: 1; padding: 0 4px; }
+  .adv-search-close:hover { color: var(--text); }
+  .adv-search-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 16px; }
+  .adv-search-grid label { font-size: 11px; color: var(--text2); display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .adv-search-input { width: 100%; min-width: 0; box-sizing: border-box; padding: 5px 8px; border-radius: 5px; border: 1px solid var(--border2); background: var(--bg2); color: var(--text); font-size: 12px; font-family: var(--font); outline: none; }
+  select.adv-search-input { cursor: pointer; text-overflow: ellipsis; }
+  .adv-search-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+  .adv-search-apply, .adv-search-clear { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); }
+  .adv-search-apply { background: var(--accent); color: #08131f; border-color: var(--accent); }
+  .adv-search-clear { background: var(--bg2); color: var(--text2); }
 .topbar-search::placeholder { color: var(--text3); }
 .topbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .top-btn {
@@ -1773,6 +1790,25 @@ tr.selected td { background: var(--accent-glow); }
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
        <input class="topbar-search" id="globalSearch" autocomplete="off" placeholder="Search name, company, title, location, progress notes, summary&#8230;" oninput="applyFilters()" />
       </div>
+      <button type="button" class="adv-search-btn" id="advSearchBtn" onclick="toggleAdvSearchPanel()" title="Advanced search - filter by multiple fields at once">Advance Search<span class="adv-search-badge" id="advSearchBadge"></span></button>
+      <div class="adv-search-panel" id="advSearchPanel">
+        <div class="adv-search-header" id="advSearchHeader">Advance Search<span class="adv-search-close" onclick="toggleAdvSearchPanel()">&times;</span></div>
+        <div class="adv-search-grid">
+          <label>Name<input type="text" id="advSearchName" class="adv-search-input" placeholder="e.g. Ahmed"></label>
+          <label>Location<input type="text" id="advSearchLocation" class="adv-search-input" placeholder="e.g. Frankfurt"></label>
+          <label>Current Title<input type="text" id="advSearchTitle" class="adv-search-input" placeholder="e.g. Director"></label>
+          <label>Current Company<input type="text" id="advSearchCompany" class="adv-search-input" placeholder="e.g. HSBC"></label>
+          <label>Pipeline Tag<select id="advSearchStatus" class="adv-search-input"><option value="">Any</option></select></label>
+          <label>Gender<select id="advSearchGender" class="adv-search-input"><option value="">Any</option><option value="Male">Male</option><option value="Female">Female</option><option value="Non-binary">Non-binary</option><option value="Prefer not to say">Prefer not to say</option><option value="Other">Other</option></select></label>
+          <label>Progress Notes<input type="text" id="advSearchNotes" class="adv-search-input" placeholder="keyword"></label>
+          <label>Summary<input type="text" id="advSearchSummary" class="adv-search-input" placeholder="keyword"></label>
+          <label>Industry<input type="text" id="advSearchIndustry" class="adv-search-input" placeholder="e.g. Finance"></label>
+          <label>Person Tag<select id="advSearchPersonTag" class="adv-search-input"><option value="">Any</option></select></label>
+        </div>
+        <div class="adv-search-actions">
+          <button type="button" class="adv-search-clear" onclick="clearAdvSearch()">Clear</button>
+          <button type="button" class="adv-search-apply" onclick="applyAdvSearch()">Apply</button>
+        </div>
       <div class="topbar-right">
         <span id="selectionInfo" style="font-size:12px;color:var(--text3);display:none"></span><button class="top-btn" id="bulkEditBtn" onclick="openBulkEditModal()" title="Edit selected candidates in bulk">Bulk Edit</button>
         <button class="top-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle day / night mode" aria-label="Toggle theme">
@@ -2323,7 +2359,7 @@ function loadDemo() {
   ALL = generateDemo();
   buildColToggles();
   buildFilterOptions();    document.getElementById('globalSearch').value = '';
-  applyFilters();
+  clearAdvSearch();
   document.getElementById('sidebarSub').textContent = 'Demo \u00b7 60 sample candidates';
   showToast('Demo data loaded \u2014 60 candidates.', 'info');
 }
@@ -2431,7 +2467,7 @@ async function connectFromUrl() {
     document.getElementById('sidebarSub').textContent = CURRENT_PROJECT_NAME;
   buildColToggles();
     buildFilterOptions();    document.getElementById('globalSearch').value = '';
-    applyFilters();
+    clearAdvSearch();
     showToast(`Loaded ${ALL.length} candidates from Ezekia ${parsed.entityType}.`, 'success');
     saveRecentProject(CURRENT_PROJECT_NAME, raw, parsed.entityType);
     _updateLoadBtn();
@@ -3297,6 +3333,20 @@ function applyFilters() {
       const _fs = FILTER_SETS[_fk];
             if (!_fs || _fs.size === 0) { continue; } if (_fk === 'person_tag') { const _ptL = Array.isArray(c.person_tag_list) ? c.person_tag_list : []; const _isBlankTag = _ptL.length === 0; if (!((_isBlankTag && _fs.has('(Blank)')) || _ptL.some(function(t){ return _fs.has(t.text); }))) return false; } else if (!_fs.has(c[_fk])) { return false; }
     }
+    for (const _ak of Object.keys(ADV_SEARCH)) {
+      if (_ak === 'person_tag') {
+        const _ptL2 = Array.isArray(c.person_tag_list) ? c.person_tag_list : [];
+        if (!_ptL2.some(function(t){ return String(t.text || '').toLowerCase() === ADV_SEARCH[_ak]; })) { return false; }
+        continue;
+      }
+      if (_ak === 'status' || _ak === 'gender') {
+        const _av2 = String(c[_ak] || '').toLowerCase();
+        if (_av2 !== ADV_SEARCH[_ak]) { return false; }
+        continue;
+      }
+      const _av = String(c[_ak] || '').toLowerCase();
+      if (!_av.includes(ADV_SEARCH[_ak])) { return false; }
+    }
     if (q) {
       const blob = Object.values(c).join(' ').toLowerCase();
       if (!blob.includes(q)) return false;
@@ -3315,6 +3365,115 @@ function applyFilters() {
   renderActiveTags();
   renderTable();
 }
+
+const ADV_SEARCH_MAP = {
+  advSearchName: 'name',
+  advSearchLocation: 'location',
+  advSearchTitle: 'current_title',
+  advSearchCompany: 'current_company',
+  advSearchStatus: 'status',
+  advSearchGender: 'gender',
+  advSearchNotes: 'notes',
+  advSearchSummary: 'summary',
+  advSearchIndustry: 'industry_codes',
+  advSearchPersonTag: 'person_tag'
+};
+
+function populateAdvSearchDropdowns() {
+  const statusSel = document.getElementById('advSearchStatus');
+  if (statusSel) {
+    const cur = statusSel.value;
+    const pool = (typeof ALL !== 'undefined' && ALL.length) ? ALL : [];
+    const vals = [...new Set(pool.map(function(c) { return c.status; }).filter(function(v) { return v && v !== '—'; }))].sort();
+    statusSel.innerHTML = '<option value="">Any</option>' + vals.map(function(v) { return '<option value="' + v.replace(/"/g, '&quot;') + '"' + (v === cur ? ' selected' : '') + '>' + v + '</option>'; }).join('');
+  }
+  const ptSel = document.getElementById('advSearchPersonTag');
+  if (ptSel) {
+    const cur = ptSel.value;
+    const vals = (typeof PERSON_TAGS !== 'undefined' ? PERSON_TAGS : []).map(function(t) { return t.text; });
+    ptSel.innerHTML = '<option value="">Any</option>' + vals.map(function(v) { return '<option value="' + v.replace(/"/g, '&quot;') + '"' + (v === cur ? ' selected' : '') + '>' + v + '</option>'; }).join('');
+  }
+}
+
+function toggleAdvSearchPanel() {
+  const p = document.getElementById('advSearchPanel');
+  if (!p) return;
+  const opening = !p.classList.contains('open');
+  p.classList.toggle('open');
+  if (opening) {
+    populateAdvSearchDropdowns();
+    if (!p.style.left && !p.style.top) {
+      const btn = document.getElementById('advSearchBtn');
+      const r = btn ? btn.getBoundingClientRect() : { left: 20, bottom: 70 };
+      p.style.left = Math.max(0, r.left) + 'px';
+      p.style.top = (r.bottom + 6) + 'px';
+    }
+  }
+}
+
+function applyAdvSearch() {
+  ADV_SEARCH = {};
+  Object.keys(ADV_SEARCH_MAP).forEach(function(id) {
+    const el = document.getElementById(id);
+    const v = el ? el.value.trim().toLowerCase() : '';
+    if (v) ADV_SEARCH[ADV_SEARCH_MAP[id]] = v;
+  });
+  applyFilters();
+  updateAdvSearchIndicator();
+  const p = document.getElementById('advSearchPanel');
+  if (p) p.classList.remove('open');
+}
+
+function clearAdvSearch() {
+  Object.keys(ADV_SEARCH_MAP).forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ADV_SEARCH = {};
+  applyFilters();
+  updateAdvSearchIndicator();
+}
+
+function updateAdvSearchIndicator() {
+  const btn = document.getElementById('advSearchBtn');
+  const badge = document.getElementById('advSearchBadge');
+  const count = Object.keys(ADV_SEARCH).length;
+  if (btn) btn.classList.toggle('active', count > 0);
+  if (badge) {
+    if (count > 0) { badge.textContent = count; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; badge.textContent = ''; }
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.adv-search-panel') && !e.target.closest('.adv-search-btn')) {
+    document.querySelectorAll('.adv-search-panel.open').forEach(function(d) { d.classList.remove('open'); });
+  }
+});
+(function() {
+  const advHeader = document.getElementById('advSearchHeader');
+  const advPanel = document.getElementById('advSearchPanel');
+  if (!advHeader || !advPanel) return;
+  let advDragging = false, advOffX = 0, advOffY = 0;
+  advHeader.addEventListener('mousedown', function(e) {
+    if (e.target.closest('.adv-search-close')) return;
+    advDragging = true;
+    const rect = advPanel.getBoundingClientRect();
+    advOffX = e.clientX - rect.left;
+    advOffY = e.clientY - rect.top;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!advDragging) return;
+    let nx = e.clientX - advOffX;
+    let ny = e.clientY - advOffY;
+    nx = Math.max(0, Math.min(nx, window.innerWidth - advPanel.offsetWidth));
+    ny = Math.max(0, Math.min(ny, window.innerHeight - advPanel.offsetHeight));
+    advPanel.style.left = nx + 'px';
+    advPanel.style.top = ny + 'px';
+  });
+  document.addEventListener('mouseup', function() { advDragging = false; });
+})();
 
 function clearFilters() {
   Object.keys(FILTER_SETS).forEach(function(key) {
